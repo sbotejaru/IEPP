@@ -1,0 +1,12 @@
+﻿<UserControl x:Class="IEPP.Views.UserTest"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:IEPP.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="200" d:DesignWidth="400" Background="#363636">
+    <Grid>
+        <Image Source="/gan_test/output.png" Margin="2,2,2,2" Stretch="Fill" Name="UserIMG"/>
+    </Grid>
+</UserControl>

@@ -1,0 +1,10 @@
+tabs title from webpage v
+tabs favicon from webpage v
+tabs animation on resize
+tabs resize when they dont fit
+
+menu button dropdown
+
+settings UI
+
+

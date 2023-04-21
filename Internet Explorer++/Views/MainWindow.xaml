@@ -1,0 +1,57 @@
+﻿<Window x:Class="IEPP.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:IEPP.Views"
+        xmlns:vm="clr-namespace:IEPP.ViewModels"
+        xmlns:ct="clr-namespace:ChromeTabs;assembly=ChromeTabs"
+        xmlns:controls="clr-namespace:IEPP.Controls"
+        xmlns:utils="clr-namespace:IEPP.Utils"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="720" Width="1024" Background="{StaticResource BackgroundColor}" MinWidth="500" MinHeight="500"
+        WindowStyle="None" WindowStartupLocation="CenterScreen" StateChanged="Window_StateChanged" Activated="Window_Activated" AllowsTransparency="True">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="35"/>
+    </WindowChrome.WindowChrome>
+
+    <Window.DataContext>
+        <vm:MainVM/>
+    </Window.DataContext>
+
+    <Grid Name="MainGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Background="{StaticResource CaptionBarColor}"/>
+
+        <local:ChooseProfile Grid.Row="1" BoolTest="{Binding BoolTest, Mode=OneWay}" x:Name="ChooseProfileUC" IsVisibleChanged="ChooseProfileUC_IsVisibleChanged"/>
+
+        <controls:BrowserTabControl Background="Transparent" BorderThickness="0" Grid.Row="0" Grid.RowSpan="2" Margin="0,2,0,0"
+                                    ItemsSource="{Binding Tabs}" NewTabCommand="{Binding AddTabCommand}" x:Name="BrowserTabs"
+                                    SelectedIndex="{Binding SelectedTabIndex}" Visibility="Collapsed"/>
+
+        <!--Caption buttons-->
+        <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal"
+                        WindowChrome.IsHitTestVisibleInChrome="True" Margin="0,5,5,0">            
+            <!--Minimize button-->
+            <Button Width="35" Height="25" Background="Transparent" BorderBrush="Transparent" Style="{DynamicResource CaptionButton}" Click="Minimize_Click">
+                <Image Source="/Icons/minimize.png" Width="18" Height="18"/>
+            </Button>
+
+            <!--Maximize/Restore down button-->
+            <Button Name="MaxBtn" Width="35" Height="25" Background="Transparent" BorderBrush="Transparent" Style="{DynamicResource CaptionButton}" Command="{Binding MaximizeCommand}">
+                <Image Name="MaxBtnIcon" Source="/Icons/maximize.png" Width="18" Height="18"/>
+            </Button>
+
+            <!--Close button-->
+            <Button Width="35" Height="25" Background="Transparent" BorderBrush="Transparent" Command="{Binding CloseCommand}" Style="{DynamicResource CloseButton}">
+                <Image Source="/Icons/close.png" Width="20" Height="20"/>
+            </Button>
+        </StackPanel>
+
+    </Grid>
+</Window>

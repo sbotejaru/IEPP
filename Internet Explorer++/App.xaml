@@ -1,0 +1,522 @@
+﻿<Application x:Class="IEPP.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:IEPP.Properties"
+             xmlns:controls="clr-namespace:IEPP.Controls"
+             xmlns:views="clr-namespace:IEPP.Views"
+             StartupUri="Views/MainWindow.xaml">
+    <Application.Resources>
+        <!--Round buttons style-->
+        <Style TargetType="Button" x:Key="RoundButton">
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="15" />
+                </Style>
+            </Style.Resources>
+            <Setter Property="Background" Value="LightBlue" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="Border" BorderBrush="Transparent" BorderThickness="0" Background="Transparent">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#4D4D4D" TargetName="Border" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!--Add profile button style-->
+        <Style TargetType="Button" x:Key="AddProfileButton">
+            <Setter Property="Background" Value="LightBlue" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="Border" BorderBrush="Transparent" BorderThickness="3" Background="Transparent">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="White" TargetName="Border" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--Back button style-->
+        <Style TargetType="Button" x:Key="GoBackButton">
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="15" />
+                </Style>
+            </Style.Resources>
+            <Setter Property="Background" Value="LightBlue" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="Border" BorderBrush="Transparent" BorderThickness="0" Background="Transparent">
+                            <Image Source="/Icons/back.png" Name="backButtonImg" Width="20" Height="20"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#4D4D4D" TargetName="Border" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Source" TargetName="backButtonImg" Value="/Icons/back_dim.png"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--Forward button style-->
+        <Style TargetType="Button" x:Key="GoForwardButton">
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="15" />
+                </Style>
+            </Style.Resources>
+            <Setter Property="Background" Value="LightBlue" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="Border" BorderBrush="Transparent" BorderThickness="0" Background="Transparent">
+                            <Image Source="/Icons/fwd.png" Name="fwdButtonImg" Width="20" Height="20"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#4D4D4D" TargetName="Border" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Source" TargetName="fwdButtonImg" Value="/Icons/fwd_dim.png"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--Caption buttons style-->
+        <Style TargetType="Button" x:Key="CaptionButton">
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="2" />
+                </Style>
+            </Style.Resources>
+            <Setter Property="Background" Value="LightBlue" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="Border" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#444444" TargetName="Border" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--Close button style-->
+        <Style TargetType="Button" x:Key="CloseButton">
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="2" />
+                </Style>
+            </Style.Resources>
+            <Setter Property="Background" Value="LightBlue" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="Border" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#FF3838" TargetName="Border" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--Colors-->
+        <SolidColorBrush x:Key="BackgroundColor" Color="#3D3D3D"/>
+        <SolidColorBrush x:Key="CaptionBarColor" Color="#242424"/>
+        <SolidColorBrush x:Key="SearchBarColor" Color="#333333"/>
+        <SolidColorBrush x:Key="ActiveText" Color="#EEEEEE"/>
+        <SolidColorBrush x:Key="InctiveText" Color="#AAAAAA"/>
+
+        <!--TextBox no color change on hover-->
+        <Style x:Key="StaticTextBox" TargetType="TextBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
+                                Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" 
+                                          VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Opacity" TargetName="border" Value="0.56"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="true">
+                                <Setter Property="Foreground" Value="#BBBBBB"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="Cyan"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="Cyan"/>
+                                <Setter Property="Foreground" Value="#EEEEEE"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+        </Style>
+
+        <!--Bookmark button-->
+        <ImageBrush x:Key="star_hover" ImageSource="/Icons/star_hover.png"/>
+        <Style x:Key="BookmarkButton" TargetType="{x:Type Button}">
+            <Style.Resources>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="CornerRadius" Value="15"/>
+                </Style>
+            </Style.Resources>
+            <Setter Property="Background" Value="LightBlue"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="Border" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" TargetName="Border" Value="{StaticResource star_hover}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--Tabs style-->
+        <Style TargetType="{x:Type controls:BrowserTab}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type controls:BrowserTab}">
+                        <Grid ToolTip="{TemplateBinding Title}">
+                            <Border Name="border" Background="{DynamicResource BackgroundColor}" BorderThickness="0"
+                                    BorderBrush="#888888" CornerRadius="7,7,0,0"
+                                    WindowChrome.IsHitTestVisibleInChrome="True">
+                                <Grid Height="28" Width="15" Margin="1,3,0,0" Name="Tab_Grid">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Image Grid.Column="0" Width="18" Height="18" Margin="10,0,0,0" x:Name="FavIcon" StretchDirection="Both"
+                                           Source="{Binding DisplayHandler.FavIcon, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type controls:BrowserTab}}}" />
+
+                                    <TextBlock Grid.Column="1" Margin="0,0,5,0" Padding="5,5,0,0"
+                                               Text="{TemplateBinding Title}"                                               
+                                               Foreground="{DynamicResource ActiveText}" 
+                                               x:Name="PageTitle"/>
+                                    <!-- Text="{Binding DataContext.PageTitle, RelativeSource={RelativeSource AncestorType={x:Type controls:BrowserTab}}}" -->
+
+                                    <Button Grid.Column="2" Width="16" Height="16" Margin="0,0,5,0" Style="{DynamicResource RoundButton}" x:Name="CloseTabButton"                                           
+                                            Command="{Binding DataContext.CloseTabCommand, RelativeSource={RelativeSource AncestorType={x:Type controls:BrowserTab}}}"
+                                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type controls:BrowserTab}}}">
+                                        <Image Source="/Icons/stop.png"/>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                            <Border BorderThickness="0,0,1,0" BorderBrush="#888888" Height="17" Name="RightBorder"
+                                    Visibility="{Binding SeparatorVisibility, RelativeSource={RelativeSource AncestorType={x:Type controls:BrowserTab}}}"/>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource BackgroundColor}"/>
+                                <Setter Property="BorderThickness" TargetName="RightBorder" Value="0"/>
+                            </Trigger>
+
+                            <Trigger Property="IsSelected" Value="False">
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource CaptionBarColor}"/>
+                            </Trigger>
+
+                            <EventTrigger RoutedEvent="TabItem.Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="Tab_Grid"
+                                            Storyboard.TargetProperty="(Grid.Width)"
+                                            To="200" Duration="0:0:0.10"
+                                             />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsMouseOver" Value="True"/>
+                                    <Condition Property="IsSelected" Value="False"/>
+                                </MultiTrigger.Conditions>
+
+                                <MultiTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.15" Storyboard.TargetName="border"
+                                                            Storyboard.TargetProperty="Background.Color" To="#303030"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </MultiTrigger.EnterActions>
+                                <MultiTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard FillBehavior="Stop">
+                                            <ColorAnimation Duration="00:00:00.15"
+                                                            Storyboard.TargetName="border"
+                                                            Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </MultiTrigger.ExitActions>
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--Tab Control with add button style-->
+        <Style TargetType="{x:Type controls:BrowserTabControl}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type controls:BrowserTabControl}">
+                        <Grid x:Name="templateRoot" ClipToBounds="true" SnapsToDevicePixels="true" KeyboardNavigation.TabNavigation="Local">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition x:Name="ColumnDefinition0"/>
+                                <ColumnDefinition x:Name="ColumnDefinition1" Width="0"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition x:Name="RowDefinition0" Height="Auto"/>
+                                <RowDefinition x:Name="RowDefinition1" Height="*"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal" Grid.Column="0">
+                                <TabPanel x:Name="headerPanel" Background="Transparent" IsItemsHost="true" Margin="0,2,0,0" Grid.Row="0" 
+                                          KeyboardNavigation.TabIndex="1" Panel.ZIndex="1"/>
+                                <Button WindowChrome.IsHitTestVisibleInChrome="True" Height="25" Width="25" Style="{DynamicResource RoundButton}"
+                                        Margin="5,3,0,0" Command="{TemplateBinding NewTabCommand}">
+                                    <Image Source="/Icons/Add.png" Height="16" Width="16"/>
+                                </Button>
+                            </StackPanel>
+
+                            <Border x:Name="contentPanel" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
+                                    Background="{TemplateBinding Background}" Grid.Column="0" KeyboardNavigation.DirectionalNavigation="Contained" 
+                                    Grid.Row="1" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local">
+                                <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" Margin="{TemplateBinding Padding}" 
+                                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                        </Grid>
+
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--Tooltip Style TODO-->
+
+
+        <!--Fade in ListBox-->
+        <Style TargetType="{x:Type controls:UserListBox}" x:Key="ProfileList">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type controls:UserListBox}">
+                        <Grid x:Name="templateRoot" ClipToBounds="True" SnapsToDevicePixels="True">
+                            <StackPanel Orientation="Horizontal">
+                                <WrapPanel IsItemsHost="True"/>
+
+                                <Border Name="lb_border" BorderThickness="0" Visibility="{TemplateBinding AddNewVisibility}">
+                                    <Grid Height="180" Width="150">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="130"/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <Button Name="AddPicBorder" Height="130" Width="130" Style="{StaticResource AddProfileButton}"
+                                                Command="{TemplateBinding NewProfileCommand}">
+                                            <Image Grid.Row="0" Source="Icons/add4.png" Width="80"/>
+                                        </Button>
+                                        <TextBlock Text="New Profile" FontSize="17" Grid.Row="1" HorizontalAlignment="Center" Padding="0,10,0,0"
+                                               Foreground="{StaticResource InctiveText}" FontFamily="Arial" Name="lb_textblock"/>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Visibility" Value="Hidden"/>
+            <Style.Triggers>
+                <Trigger Property="Visibility" Value="Visible">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                             From="0.0" To="1.0" Duration="0:0:0.4"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                             From="1.0" To="0.0" Duration="0:0:0.2"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ListBoxItemStyleTransparentSelect" TargetType="ListBoxItem">
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontFamily" Value="Arial"/>
+            <Setter Property="Padding" Value="3"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Top"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Grid Background="{TemplateBinding Background}">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="MouseOver">
+                                        <Storyboard>
+                                            <DoubleAnimation Duration="0" To=".35" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="fillColor"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <Storyboard>
+                                            <DoubleAnimation Duration="0" To=".55" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="contentPresenter"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="SelectionStates">
+                                    <VisualState x:Name="Unselected"/>
+                                    <VisualState x:Name="Selected"/>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="FocusStates">
+                                    <VisualState x:Name="Focused"/>
+                                    <VisualState x:Name="Unfocused"/>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Rectangle x:Name="fillColor" IsHitTestVisible="False" Opacity="0" RadiusY="1" RadiusX="1"/>
+                            <Rectangle x:Name="fillColor2" IsHitTestVisible="False" Opacity="0" RadiusY="1" RadiusX="1"/>
+                            <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}"/>
+                            <Rectangle x:Name="FocusVisualElement" RadiusY="1" RadiusX="1" StrokeThickness="1" Visibility="Collapsed"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+        <!--Fade in TextBlock-->
+        <Style TargetType="{x:Type TextBlock}" x:Key="FadeInText">
+            <Setter Property="Visibility" Value="Hidden"/>
+            <Style.Triggers>
+                <Trigger Property="Visibility" Value="Visible">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                             From="0.0" To="1.0" Duration="0:0:0.4"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                             From="1.0" To="0.0" Duration="0:0:0.2"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!--User container-->
+        <Style TargetType="{x:Type controls:UserContainer}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type controls:UserContainer}">
+                        <Grid>
+                            <Border Name="uc_border" BorderThickness="0">
+                                <Grid Height="180" Width="150">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="130"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Border Name="ProfilePicBorder" BorderThickness="3" BorderBrush="Transparent" Height="130" Width="130"
+                                            >
+                                        <Image Name="ProfilePicImg" Grid.Row="0" Source="{TemplateBinding ProfilePic}"/>
+                                    </Border>
+                                    <TextBlock Text="{TemplateBinding Username}" FontSize="17" Grid.Row="1" HorizontalAlignment="Center" Padding="0,10,0,0"
+                                               Foreground="{StaticResource InctiveText}" Name="tb_Username"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" TargetName="tb_Username" Value="White"/>
+                                <Setter Property="BorderBrush" TargetName="ProfilePicBorder" Value="White"/>
+                                <!--<Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.05" Storyboard.TargetName="ProfilePicBorder"
+                                                            Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" To="White"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard FillBehavior="Stop">
+                                            <ColorAnimation Duration="0:0:0.10" Storyboard.TargetName="ProfilePicBorder"
+                                                            Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" To="Transparent"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>  -->
+                            </Trigger>                           
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+    </Application.Resources>
+</Application>
