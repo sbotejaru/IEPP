@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using IEPP.Utils;
+using IEPP.Enums;
 using IEPP.ViewModels;
 using CefSharp.Wpf;
 using CefSharp.DevTools.HeapProfiler;
@@ -85,13 +86,13 @@ namespace IEPP.Controls
             var browser = GetCurrentBrowser();
             browser.TitleChanged += TitleChanged;
             browser.DisplayHandler = DisplayHandler;
-            var icon = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/IEPP.ico");
+            var icon = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/IEPP_gray.ico");
             DisplayHandler.FavIcon = new BitmapImage(icon);
         }
 
         private void InitializeSettings()
         {
-            var icon = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/IEPP.ico");
+            var icon = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/IEPP_gray.ico");
             DisplayHandler.FavIcon = new BitmapImage(icon);
         }
 

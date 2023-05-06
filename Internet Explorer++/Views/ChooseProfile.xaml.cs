@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IEPP.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,19 +34,22 @@ namespace IEPP.Views
 
         public ChooseProfile()
         {
-            InitializeComponent();            
+            InitializeComponent();
         }
 
-        private void SetElementsToVisible(bool isVisible)
+        private void SetChooseProfileToVisible(bool isVisible)
         {
-            ChooseProfileText.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
-            ChooseProfileList.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
+            //ChooseProfileText.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
+            //ChooseProfileList.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
+            //ChooseProfileStack.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+            var dc = DataContext as ChooseProfileVM;
+            dc.ChooseProfileVisibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private async void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             await Task.Delay(150);
-            SetElementsToVisible(true);
+            SetChooseProfileToVisible(true);
             //await Task.Delay(2000);
             //ChooseProfileList.IsEnabled = false;
             //ChooseProfileText.IsEnabled = false;

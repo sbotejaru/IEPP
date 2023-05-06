@@ -1,6 +1,7 @@
 ﻿using CefSharp.Wpf;
 using CefSharp;
 using IEPP.Utils;
+using IEPP.Enums;
 using Microsoft.Scripting.Metadata;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ using System.Windows.Controls;
 using IEPP.Controls;
 using System.Windows.Media.Imaging;
 using System.Diagnostics.PerformanceData;
+using System.Collections.Specialized;
 
 namespace IEPP.ViewModels
 {
@@ -37,6 +39,7 @@ namespace IEPP.ViewModels
         private string startUrl = "https://google.com";
         private int selectedTabIndex;
         private bool settingsTabOpen = false;
+        private string workingDir;
 
         private Visibility browserVis;
         public Visibility BrowserVis
@@ -111,13 +114,14 @@ namespace IEPP.ViewModels
         private void AddSettingsTab()
         {
             var newTab = new BrowserTab(TabType.Settings);
-            var icon = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/IEPP.ico");
+            var icon = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/IEPP_gray.ico");
 
             newTab.FavIconSource = new BitmapImage(icon);
             newTab.Title = "IEPP Settings";
 
             Tabs.Add(newTab);
         }
+        
 
         public RelayCommand CloseCommand { get; set; }
         public RelayCommand MaximizeCommand { get; set; }

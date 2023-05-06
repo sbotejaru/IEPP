@@ -136,9 +136,17 @@
     <Compile Include="Controls\BrowserTabControl.cs" />
     <Compile Include="Controls\UserContainer.cs" />
     <Compile Include="Controls\UserListBox.cs" />
+    <Compile Include="Controls\WatermarkAdorner.cs" />
+    <Compile Include="Controls\WatermarkService.cs" />
+    <Compile Include="Enums\Ethnicity.cs" />
+    <Compile Include="Enums\Gender.cs" />
+    <Compile Include="Enums\HairColor.cs" />
+    <Compile Include="Enums\HairStyle.cs" />
     <Compile Include="Utils\DisplayHandler.cs" />
+    <Compile Include="Utils\InverseBooleanConverter.cs" />
     <Compile Include="Utils\RelayCommand.cs" />
-    <Compile Include="Utils\TabType.cs" />
+    <Compile Include="Enums\TabType.cs" />
+    <Compile Include="Utils\User.cs" />
     <Compile Include="ViewModels\MainVM.cs" />
     <Compile Include="ViewModels\TabContentVM.cs" />
     <Compile Include="ViewModels\ChooseProfileVM.cs" />
@@ -254,6 +262,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="gan_test\gan.py" />
+    <Resource Include="Icons\coffee_hover.jpg" />
+    <Resource Include="Icons\avatar_placeholder.png" />
+    <Resource Include="Icons\avatar_placeholder_hover.png" />
+    <Resource Include="Icons\IEPP_gray.ico" />
+    <Resource Include="Icons\IEPP_gray.png" />
     <Resource Include="Icons\add4.png" />
     <Resource Include="Icons\add3.png" />
     <Resource Include="Icons\Add2.png" />

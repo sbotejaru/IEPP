@@ -140,7 +140,7 @@
 
         <!--</Grid>-->
 
-        <StackPanel Orientation="Vertical" Name="UserPanel" Grid.RowSpan="2">
+        <StackPanel Orientation="Vertical" Name="UserPanel" Grid.RowSpan="2" HorizontalAlignment="Right">
             <Button Height="25" Width="25" Padding="0" Margin="0,8,40,0" HorizontalAlignment="Right" Name="UserBtn" Click="UserBtn_Click"
                     BorderBrush="Transparent" BorderThickness="0" Background="Transparent" Style="{DynamicResource RoundButton}"
                     ToolTip="User settings" ToolTipService.InitialShowDelay="1">

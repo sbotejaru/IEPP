@@ -49,6 +49,40 @@
             </Setter>
         </Style>
 
+        <!--New profile buttons style-->
+        <Style TargetType="Button" x:Key="NewProfileButtonStyle">
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="10" />
+                </Style>
+            </Style.Resources>
+            <Setter Property="Background" Value="LightBlue" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="Border" BorderBrush="Transparent" BorderThickness="0" Background="Transparent">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#4D4D4D" TargetName="Border" />
+                            </Trigger>
+                            <Trigger Property="Visibility" Value="Visible">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                        From="0.0" To="1.0" Duration="0:0:0.4"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!--Back button style-->
         <Style TargetType="Button" x:Key="GoBackButton">
             <Style.Resources>
@@ -186,7 +220,39 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
 
+        <!--TextBox no color change on hover, no border, fade in animation-->
+        <Style x:Key="SimpleTextBox" TargetType="TextBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
+                                Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" 
+                                          VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="true">
+                                <Setter Property="Foreground" Value="#BBBBBB"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="true">
+                                <Setter Property="Foreground" Value="#EEEEEE"/>
+                            </Trigger>
+                            <Trigger Property="Visibility" Value="Visible">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                        From="0.0" To="1.0" Duration="0:0:0.4"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <!--Bookmark button-->
@@ -351,12 +417,12 @@
                                 <WrapPanel IsItemsHost="True"/>
 
                                 <Border Name="lb_border" BorderThickness="0" Visibility="{TemplateBinding AddNewVisibility}">
-                                    <Grid Height="180" Width="150">
+                                    <Grid Height="200" Width="170">
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="130"/>
+                                            <RowDefinition Height="160"/>
                                             <RowDefinition/>
                                         </Grid.RowDefinitions>
-                                        <Button Name="AddPicBorder" Height="130" Width="130" Style="{StaticResource AddProfileButton}"
+                                        <Button Name="AddPicBorder" Height="150" Width="150" Style="{StaticResource AddProfileButton}"
                                                 Command="{TemplateBinding NewProfileCommand}">
                                             <Image Grid.Row="0" Source="Icons/add4.png" Width="80"/>
                                         </Button>
@@ -454,17 +520,7 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.EnterActions>
-                </Trigger>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Trigger.EnterActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                             From="1.0" To="0.0" Duration="0:0:0.2"/>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </Trigger.EnterActions>
-                </Trigger>
+                </Trigger>                
             </Style.Triggers>
         </Style>
 
@@ -475,12 +531,12 @@
                     <ControlTemplate TargetType="{x:Type controls:UserContainer}">
                         <Grid>
                             <Border Name="uc_border" BorderThickness="0">
-                                <Grid Height="180" Width="150">
+                                <Grid Height="200" Width="170">
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="130"/>
+                                        <RowDefinition Height="160"/>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
-                                    <Border Name="ProfilePicBorder" BorderThickness="3" BorderBrush="Transparent" Height="130" Width="130"
+                                    <Border Name="ProfilePicBorder" BorderThickness="3" BorderBrush="Transparent" Height="150" Width="150"
                                             >
                                         <Image Name="ProfilePicImg" Grid.Row="0" Source="{TemplateBinding ProfilePic}"/>
                                     </Border>
@@ -510,11 +566,72 @@
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.ExitActions>  -->
-                            </Trigger>                           
+                            </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+        
+        <!--Change avatar button-->
+        <ImageBrush x:Key="avatar_hover" ImageSource="/Icons/coffee_hover.jpg"/>
+        <Style x:Key="AvatarButton" TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="Border" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" TargetName="Border" Value="{StaticResource avatar_hover}"/>
+                            </Trigger>
+                            <Trigger Property="Visibility" Value="Visible">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                        From="0.0" To="1.0" Duration="0:0:0.4"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--Fade in StackPanel-->
+        <Style TargetType="{x:Type StackPanel}" x:Key="FadeInStackPanel">
+            <Style.Triggers>
+                <Trigger Property="Visibility" Value="Visible">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                        From="0.0" To="1.0" Duration="0:0:0.4"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!--Fade in Grid-->
+        <Style TargetType="{x:Type Grid}" x:Key="FadeInGrid">
+            <Style.Triggers>
+                <Trigger Property="Visibility" Value="Visible">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                        From="0.0" To="1.0" Duration="0:0:0.4"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
 
