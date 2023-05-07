@@ -20,8 +20,10 @@ Instructions:
 
 ### 1. Internet Explorer++
 
-Opening screen: profile selection.
+**Profile selection**
 
 Up to 5 profiles, each one with its own avatar and browser settings/bookmarks/history.
 
-<img src="https://i.imgur.com/JnqeMIj.jpeg" width="800" alt="">
+If one chooses not to have a custom avatar, his avatar will be the default cup of coffee.
+
+<img src="https://i.imgur.com/FFjqs03.gif" width="800" alt="">
