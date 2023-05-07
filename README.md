@@ -42,3 +42,9 @@ The features will be fed to the generation model and generate the desired avatar
 After the profile has been selected, its data will be loaded and the browser will be displayed.
 
 <img src="https://i.imgur.com/bh7OWq6.gif" width="800" alt="">
+
+**Details**
+
+Page title and favicon on each tab.
+
+<img src="https://i.imgur.com/fNQkgUv.jpeg" width="600">
