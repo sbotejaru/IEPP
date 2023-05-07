@@ -15,7 +15,7 @@ Instructions:
 <img src="https://i.imgur.com/RIQ2dkc.gif" width="800" alt="">
 
 ## This project consists out of two parts:
- 1. Internet Explorer++ Web Browser - made in C# WPF with Chromium Framework
+ 1. Internet Explorer++ Web Browser - made in C# WPF with Chromium Embedded Framework
  2. Custom Avatars generation - made with StyleGAN, AnimeGANv3, MXNET-Face and DeepFace using PyTorch and Tensorflow.
 
 ## 1. Internet Explorer++
@@ -41,7 +41,7 @@ The features will be fed to the generation model and generate the desired avatar
 
 After the profile has been selected, its data will be loaded and the browser will be displayed.
 
-The web page is displayed using the Chromium framework.
+The web page is displayed using the Chromium Embedded Framework.
 
 <img src="https://i.imgur.com/bh7OWq6.gif" width="800" alt="">
 
