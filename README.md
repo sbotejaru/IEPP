@@ -20,7 +20,7 @@ Instructions:
 
 ## 1. Internet Explorer++
 
-###Profile selection
+### Profile selection
 
 Up to 5 profiles, each one with its own avatar and browser settings/bookmarks/history.
 
@@ -28,7 +28,7 @@ If one chooses not to have a custom avatar, his avatar will be the default cup o
 
 <img src="https://i.imgur.com/FFjqs03.gif" width="800" alt="">
 
-###Avatar generation
+### Avatar generation
 
 If the user wants a custom avatar, he will have to select his desired features/randomize them.
 
@@ -37,7 +37,7 @@ The features will be fed to the generation model and generate the desired avatar
 <img src="https://i.imgur.com/3cDRiIl.gif" width="800" alt="">
 
 
-###Browsing
+### Browsing
 
 After the profile has been selected, its data will be loaded and the browser will be displayed.
 
@@ -45,7 +45,7 @@ The web page is displayed using the Chromium framework.
 
 <img src="https://i.imgur.com/bh7OWq6.gif" width="800" alt="">
 
-**Details**
+### Details
 
 Page title and favicon on each tab.
 
