@@ -41,6 +41,8 @@ The features will be fed to the generation model and generate the desired avatar
 
 After the profile has been selected, its data will be loaded and the browser will be displayed.
 
+The web page is displayed using the Chromium framework.
+
 <img src="https://i.imgur.com/bh7OWq6.gif" width="800" alt="">
 
 **Details**
