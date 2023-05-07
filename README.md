@@ -10,6 +10,7 @@ Instructions:
 
 ## Demo examples:
 
+<img src="https://i.imgur.com/RIQ2dkc.gif" width="300" alt=""/>
 ![first demo](https://i.imgur.com/zZmKi6P.gif "First demo")
 ![second demo](https://i.imgur.com/bUWK7Yv.gif "Second demo")
 ![thrid demo](https://i.imgur.com/RIQ2dkc.gif "Third demo")
