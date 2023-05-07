@@ -4,12 +4,18 @@
 Instructions:
 1. Register/Login to Kaggle and verify your account.
 2. Press "Edit" on the project.
-3. Select a GPU accelerator (account must be verified) from the dots on the top right.
+3. Select a GPU accelerator (account must be verified) from the dots on the top right, and press "Run All"
 4. Press +/- on each feature to modify the generated image.
+5. If the demo freezes, reload the session from the top right.
+
+## Demo examples:
+
+![](https://i.imgur.com/cCbLIVN.gif)
 
 
 ### The project consists out of two parts:
  1. Internet Explorer++ Web Browser - made in C# WPF with Chromium Framework
  2. Custom Avatars generation - made with StyleGAN, AnimeGANv3, MXNET-Face and DeepFace using PyTorch and Tensorflow.
 
+## 1. Internet Explorer++
 
