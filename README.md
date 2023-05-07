@@ -57,4 +57,4 @@ Tab animation and subtle loading bar.
 
 ## 2. Avatar generation
 
-
+to be continued
