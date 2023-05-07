@@ -47,7 +47,7 @@ After the profile has been selected, its data will be loaded and the browser wil
 
 Page title and favicon on each tab.
 
-<img src="https://i.imgur.com/fNQkgUv.jpeg" width="600">
+<img src="https://i.imgur.com/LoznIH3.gif" width="600">
 
 Tab animation and subtle loading bar.
 
