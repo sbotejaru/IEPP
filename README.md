@@ -14,7 +14,7 @@ Instructions:
 <img src="https://i.imgur.com/bUWK7Yv.gif" width="800" alt="">
 <img src="https://i.imgur.com/RIQ2dkc.gif" width="800" alt="">
 
-## The project consists out of two parts:
+## This project consists out of two parts:
  1. Internet Explorer++ Web Browser - made in C# WPF with Chromium Framework
  2. Custom Avatars generation - made with StyleGAN, AnimeGANv3, MXNET-Face and DeepFace using PyTorch and Tensorflow.
 
@@ -54,3 +54,7 @@ Page title and favicon on each tab.
 Tab animation and subtle loading bar.
 
 <img src="https://i.imgur.com/AijVtfe.gif" width="500">
+
+## 2. Avatar generation
+
+
