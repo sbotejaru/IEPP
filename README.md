@@ -20,3 +20,7 @@ Instructions:
 
 ### 1. Internet Explorer++
 
+Opening screen: profile selection
+Up to 5 profiles, each one with its own avatar and browser settings/bookmarks/history.
+
+<img src="https://i.imgur.com/JnqeMIj.jpeg" width="800" alt="">
