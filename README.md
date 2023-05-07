@@ -7,8 +7,9 @@ Instructions:
 3. Select a GPU accelerator (account must be verified) from the dots on the top right.
 4. Press +/- on each feature to modify the generated image.
 
+
 ### The project consists out of two parts:
-### 1. Internet Explorer++ Web Browser - made in C# WPF with Chromium Framework
-### 2. Custom Avatars generation - made with StyleGAN, AnimeGANv3, MXNET-Face and DeepFace using PyTorch and Tensorflow.
+ 1. Internet Explorer++ Web Browser - made in C# WPF with Chromium Framework
+ 2. Custom Avatars generation - made with StyleGAN, AnimeGANv3, MXNET-Face and DeepFace using PyTorch and Tensorflow.
 
 
