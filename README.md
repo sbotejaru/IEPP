@@ -11,6 +11,8 @@ Instructions:
 ## Demo examples:
 
 ![first demo](https://i.imgur.com/zZmKi6P.gif "First demo")
+![second demo](https://i.imgur.com/bUWK7Yv.gif "Second demo")
+![thrid demo](https://i.imgur.com/RIQ2dkc.gif "Third demo")
 
 
 ### The project consists out of two parts:
