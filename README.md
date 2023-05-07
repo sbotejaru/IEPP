@@ -10,7 +10,7 @@ Instructions:
 
 ## Demo examples:
 
-![first demo](https://i.imgur.com/cCbLIVN.gif)
+![first demo](https://i.imgur.com/zZmKi6P.gif "First demo")
 
 
 ### The project consists out of two parts:
