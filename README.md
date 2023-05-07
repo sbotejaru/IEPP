@@ -1,7 +1,7 @@
 # WebGAN
 
-## Avatar Generation Demo: https://www.kaggle.com/code/sbotejaru/avatar-gen-demo
-### Instructions:
+### Avatar Generation Demo: https://www.kaggle.com/code/sbotejaru/avatar-gen-demo
+Instructions:
 1. Register/Login to Kaggle and verify your account.
 2. Press "Edit" on the project.
 3. Select a GPU accelerator (account must be verified) from the dots on the top right.
