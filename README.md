@@ -15,9 +15,9 @@ Instructions:
 ![thrid demo](https://i.imgur.com/RIQ2dkc.gif "Third demo")
 
 
-### The project consists out of two parts:
+## The project consists out of two parts:
  1. Internet Explorer++ Web Browser - made in C# WPF with Chromium Framework
  2. Custom Avatars generation - made with StyleGAN, AnimeGANv3, MXNET-Face and DeepFace using PyTorch and Tensorflow.
 
-## 1. Internet Explorer++
+### 1. Internet Explorer++
 
