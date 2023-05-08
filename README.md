@@ -73,4 +73,4 @@ The input vector and the extracted features are collected into a dataset and use
 
 The image is then animated with the AnimeGAN_v3 model to create the final unique avatar.
 
-<img src="https://i.imgur.com/N89Jb6k.png" width="700"
+<img src="https://i.imgur.com/N89Jb6k.png" width="700">
