@@ -63,4 +63,8 @@ The StyleGAN takes as an input a Gaussian Distribution of 512 random float numbe
 
 <img src="https://i.imgur.com/1TOCgER.png" width="700">
 
+The photos are fed into a feature extractor(DeepFace and MXNET-Face) that predicts the existing facial features in the image.
+
+<img src="https://i.imgur.com/TvfYVYq.png" width="700">
+
 
