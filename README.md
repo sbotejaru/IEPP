@@ -61,7 +61,7 @@ The photo-realistic generated images are done with the help of StyleGAN by Nvidi
 
 The StyleGAN takes as an input a Gaussian Distribution of 512 random float numbers, and outputs an image of a generated person.
 
-<img src="https://i.imgur.com/1TOCgER.png" width="700">
+<img src="https://i.imgur.com/1TOCgER.png" width="800">
 
 The photos are fed into a feature extractor(DeepFace and MXNET-Face) that predicts the existing facial features in the image.
 
@@ -69,4 +69,4 @@ The photos are fed into a feature extractor(DeepFace and MXNET-Face) that predic
 
 The input vector and the extracted features are collected into a dataset and used as a training set for a linear regression, that predicts the latent space from the input features.
 
-<img src="https://i.imgur.com/3WushHP.png" width="700">
+<img src="https://i.imgur.com/3WushHP.png" width="800">
