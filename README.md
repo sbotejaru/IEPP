@@ -61,6 +61,6 @@ The photo-realistic generated images are done with the help of StyleGAN by Nvidi
 
 The StyleGAN takes as an input a Gaussian Distribution of 512 random float numbers, and outputs an image of a generated person.
 
-<img src="https://machinelearningmastery.com/wp-content/uploads/2019/06/Summary-of-the-StyleGAN-Generator-Model-Architecture.png" height="700">
+<img src="https://i.imgur.com/PavZFbv.png" width="700">
 
 
