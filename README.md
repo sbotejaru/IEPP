@@ -57,4 +57,10 @@ Tab animation and subtle loading bar.
 
 ## 2. Avatar generation
 
-to be continued
+The photo-realistic generated images are done with the help of StyleGAN by Nvidia.
+
+The StyleGAN takes as an input a Gaussian Distribution of 512 random float numbers, and outputs an image of a generated person.
+
+<img src="https://machinelearningmastery.com/wp-content/uploads/2019/06/Summary-of-the-StyleGAN-Generator-Model-Architecture.png" height="700">
+
+
