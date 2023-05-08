@@ -77,3 +77,4 @@ Instructions:
 <img src="https://i.imgur.com/bUWK7Yv.gif" width="800" alt="">
 <img src="https://i.imgur.com/RIQ2dkc.gif" width="800" alt="">
 
+That's all folks!
