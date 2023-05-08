@@ -61,6 +61,6 @@ The photo-realistic generated images are done with the help of StyleGAN by Nvidi
 
 The StyleGAN takes as an input a Gaussian Distribution of 512 random float numbers, and outputs an image of a generated person.
 
-<img src="https://i.imgur.com/PavZFbv.png" width="700">
+<img src="https://i.imgur.com/1TOCgER.png" width="700">
 
 
