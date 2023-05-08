@@ -67,4 +67,6 @@ The photos are fed into a feature extractor(DeepFace and MXNET-Face) that predic
 
 <img src="https://i.imgur.com/TvfYVYq.png" width="700">
 
+The input vector and the extracted features are collected into a dataset and used as a training set for a linear regression, that predicts the latent space from the input features.
 
+<img src="https://i.imgur.com/Oc1oQE5.png" width="700">
