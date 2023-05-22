@@ -39,36 +39,36 @@
                     <!--Back button-->
                     <Button Name="Back" Height="25" Width="25" Padding="0" Margin="0,0,5,0"               
                             BorderBrush="Transparent" BorderThickness="0" Background="Transparent" Style="{DynamicResource GoBackButton}" Command="{Binding BackCommand}"
-                            ToolTip="Navigate back" ToolTipService.InitialShowDelay="1" IsEnabled="{Binding WebBrowser.CanGoBack}">
+                            ToolTip="Navigate back" ToolTipService.InitialShowDelay="400" IsEnabled="{Binding WebBrowser.CanGoBack}">
                         <!--<Image Source="/Icons/back.png" Width="20" Height="20"/>-->
                     </Button>
 
                     <!--Forward button-->
                     <Button Name="Fwd" Height="25" Width="25" Padding="0" Margin="0,0,5,0"                    
                             BorderBrush="Transparent" BorderThickness="0" Background="Transparent" Style="{DynamicResource GoForwardButton}" Command="{Binding ForwardCommand}"
-                            ToolTip="Navigate forward" ToolTipService.InitialShowDelay="1" IsEnabled="{Binding WebBrowser.CanGoForward}">
+                            ToolTip="Navigate forward" ToolTipService.InitialShowDelay="400" IsEnabled="{Binding WebBrowser.CanGoForward}">
                         <!--<Image Source="/Icons/fwd.png" Height="20" Width="20"/>-->
                     </Button>
 
                     <!--Stop refresh button-->
                     <Button Height="25" Width="25" Padding="0" Margin="0,0,5,0" Name="StopLoadButton"
                             BorderBrush="Transparent" BorderThickness="0" Background="Transparent" Style="{DynamicResource RoundButton}"
-                            ToolTip="Stop page load" ToolTipService.InitialShowDelay="1" Command="{Binding StopLoadCommand}">
+                            ToolTip="Stop page load" ToolTipService.InitialShowDelay="400" Command="{Binding StopLoadCommand}">
                         <Image Source="/Icons/stop.png" Height="20" Width="20"/>
                     </Button>
 
                     <!--Refresh button-->
                     <Button Height="25" Width="25" Padding="0" Margin="0,0,5,0" Name="RefreshButton"
                             BorderBrush="Transparent" BorderThickness="0" Background="Transparent" Style="{DynamicResource RoundButton}" Command="{Binding RefreshCommand}"
-                            ToolTip="Refresh page" ToolTipService.InitialShowDelay="1">
+                            ToolTip="Refresh page" ToolTipService.InitialShowDelay="400">
                         <Image Source="/Icons/reset.png" Width="20" Height="20" SnapsToDevicePixels="True"/>
                     </Button>
                 </StackPanel>                
             </Grid>
 
             <!--Center column-->
-            <TextBox Grid.Column="1" Margin="7,0" Padding="25,2,30,0" Background="{StaticResource SearchBarColor}" Height="26"
-                     BorderBrush="Cyan" BorderThickness="1"  FontSize="15" Style="{DynamicResource StaticTextBox}"
+            <TextBox Grid.Column="1" Margin="7,0" Padding="25,1.5,30,0" Background="{StaticResource SearchBarColor}" Height="26"
+                     BorderBrush="Cyan" BorderThickness="1.5"  FontSize="15" Style="{DynamicResource StaticTextBox}"
                      Text="{Binding SearchBarText, UpdateSourceTrigger=PropertyChanged}" Name="SearchBar" LostFocus="SearchBar_LostFocus"
                      GotMouseCapture="SearchBar_GotMouseCapture">
                 <TextBox.Resources>
@@ -87,14 +87,14 @@
             <!--Bookmark button-->
             <Button Height="20" Width="20" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,10,0"
                     BorderBrush="Transparent" BorderThickness="0" Style="{DynamicResource BookmarkButton}"
-                    ToolTip="Edit bookmark settings" ToolTipService.InitialShowDelay="1">
+                    ToolTip="Edit bookmark settings" ToolTipService.InitialShowDelay="400">
                 <Button.Background>
                     <ImageBrush ImageSource="{Binding BookmarkedIconPath}"/>
                 </Button.Background>
             </Button>
 
             <!--Secure button-->
-            <Viewbox Height="20" Width="20" Grid.Column="1" HorizontalAlignment="Left" Margin="13,0,0,0" ToolTip="Website is secure" ToolTipService.InitialShowDelay="1">
+            <Viewbox Height="20" Width="20" Grid.Column="1" HorizontalAlignment="Left" Margin="13,0,0,0" ToolTip="Website is secure" ToolTipService.InitialShowDelay="400">
                 <Image Source="{Binding SecureIconPath}" Width="17" Height="18"/>
             </Viewbox>
 
@@ -104,7 +104,7 @@
                     <!--Search button-->
                     <Button Height="25" Width="25" Padding="0" Margin="0,0,5,0" Command="{Binding SearchCommand}"
                             BorderBrush="Transparent" BorderThickness="0" Background="Transparent" Style="{DynamicResource RoundButton}"
-                            ToolTip="Search" ToolTipService.InitialShowDelay="1">
+                            ToolTip="Search" ToolTipService.InitialShowDelay="400">
                         <Image Source="/Icons/search.png" Width="20" Height="20"/>
                     </Button>
                 </StackPanel>
@@ -113,7 +113,7 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <Button Height="25" Width="25" Padding="0" Margin="0,0,5,0"
                             BorderBrush="Transparent" BorderThickness="0" Background="Transparent" Style="{DynamicResource RoundButton}"
-                            ToolTip="Menu" ToolTipService.InitialShowDelay="1">
+                            ToolTip="Menu" ToolTipService.InitialShowDelay="400">
                         <Image Source="/Icons/Menu.png" Height="25" Width="25"/>
                     </Button>
                 </StackPanel>
@@ -133,21 +133,21 @@
         <cef:ChromiumWebBrowser x:Name="webBrowser" WebBrowser="{Binding WebBrowser, Mode=OneWayToSource}" Grid.Row="2" 
                                 Loaded="webBrowser_Loaded" Address="{Binding Url}" AddressChanged="webBrowser_AddressChanged"
                                 LoadingStateChanged="webBrowser_LoadingStateChanged"
-                                >            
+                                >
         </cef:ChromiumWebBrowser>
 
-        
 
         <!--</Grid>-->
 
-        <StackPanel Orientation="Vertical" Name="UserPanel" Grid.RowSpan="2" HorizontalAlignment="Right">
+        <StackPanel Orientation="Vertical" Name="UserPanel" Grid.RowSpan="3" HorizontalAlignment="Right">
             <Button Height="25" Width="25" Padding="0" Margin="0,8,40,0" HorizontalAlignment="Right" Name="UserBtn" Click="UserBtn_Click"
                     BorderBrush="Transparent" BorderThickness="0" Background="Transparent" Style="{DynamicResource RoundButton}"
-                    ToolTip="User settings" ToolTipService.InitialShowDelay="1">
+                    ToolTip="User settings" ToolTipService.InitialShowDelay="400">
                 <!-- bind tooltip to username -->
                 <Image Source="/Icons/user.png" Height="20" Width="20"/>
             </Button>
-            <local:UserTest Width="300" Height="150" HorizontalAlignment="Right" BorderThickness="5" Margin="0,0,15,0" Visibility="Collapsed" x:Name="UserTestPopup"/>
+            <local:UserTest Width="150" Height="150" HorizontalAlignment="Right" BorderThickness="5" Margin="0,0,15,0" Visibility="Collapsed" x:Name="UserTestPopup"
+                            Panel.ZIndex="1024"/>
         </StackPanel>
     </Grid>
 </UserControl>

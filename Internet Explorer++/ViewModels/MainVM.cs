@@ -48,11 +48,11 @@ namespace IEPP.ViewModels
             set { browserVis = value; NotifyPropertyChanged("BrowserVis"); }
         }
 
-        private bool boolTest;
-        public bool BoolTest
+        private Visibility vis;
+        public Visibility Vis
         {
-            get { return boolTest; }
-            set { boolTest = value; NotifyPropertyChanged("BoolTest"); Console.WriteLine("yes"); }
+            get { return vis; }
+            set { vis = value; NotifyPropertyChanged("Vis"); }
         }
 
         public int SelectedTabIndex
@@ -65,7 +65,6 @@ namespace IEPP.ViewModels
                 NotifyPropertyChanged("SelectedTabIndex");
             }
         }
-
         private void SetSeparatorVisibilities(int oldIndex, int newIndex)
         {
             if (newIndex == -1 || oldIndex == -1)
@@ -134,6 +133,7 @@ namespace IEPP.ViewModels
         public MainVM()
         {
             BrowserVis = Visibility.Collapsed;
+            Vis = Visibility.Visible;
             Tabs = new ObservableCollection<BrowserTab>();
 
             CloseCommand = new RelayCommand(o =>

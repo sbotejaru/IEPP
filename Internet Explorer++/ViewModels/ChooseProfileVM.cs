@@ -36,7 +36,17 @@ namespace IEPP.ViewModels
         public Visibility Vis
         {
             get { return vis; }
-            set { vis = value; NotifyPropertyChanged("Vis"); }
+            set
+            { 
+                vis = value;
+
+                if (vis == Visibility.Visible)
+                    ChooseProfileVisibility = Visibility.Visible;
+                else
+                    ChooseProfileVisibility = Visibility.Collapsed;
+
+                NotifyPropertyChanged("Vis");
+            }
         }
 
         private void CreateAppDirectory()
@@ -139,19 +149,20 @@ namespace IEPP.ViewModels
         // Init function that sets all values to null / resets everything
         private void Init()
         {
-            HideErrors();
             ChooseProfileVisibility = Visibility.Collapsed;
             NewProfileVisibility = Visibility.Collapsed;
             CreateAvatarVisibility = Visibility.Collapsed;
             UserList = new ObservableCollection<UserContainer>();
-            CreateAppDirectory();
-            CreateUsersDirectory();
-            LoadUsers();
-            InitAttrbiuteValues();
             NewUsername = "";
             NewProfileErrorMessage = "A profile with that name already exists!";
             FacialHairOpacity = 1;
             HairAttributesOpacity = 1;
+
+            HideErrors();
+            CreateAppDirectory();
+            CreateUsersDirectory();
+            LoadUsers();
+            InitAttrbiuteValues();            
         }
 
         private void RandomizeAttributes()
@@ -162,23 +173,34 @@ namespace IEPP.ViewModels
             int RandomEthnicity = random.Next(0, 6);
             int RandomAge = random.Next(1, 60);
             int RandomHairColor = random.Next(0, 4);
-            int RandomHairStyle = random.Next(0, 2);
+            int RandomHairStyle = random.Next(0, 3);
             int RandomMoustache = random.Next(0, 2);
             int RandomBeard = random.Next(0, 2);
             int RandomAccessory = random.Next(0, 2);
             int RandomBald = random.Next(0, 2);
             int RandomBangs = random.Next(0, 2);
 
+            SelectedGender = RandomGender;
+
+            if (!IsFemale)
+            {
+                HasBeard = true ? RandomBeard == 1 : RandomBeard == 0;
+                HasMoustache = true ? RandomMoustache == 1 : RandomMoustache == 0;
+                IsBald = true ? RandomBald == 1 : RandomBald == 0;
+            }
+
+            if (!IsBald)
+            {
+                HasBangs = true ? RandomBangs == 1 : RandomBangs == 0;
+                SelectedHairColor = RandomHairColor;
+                SelectedHairStyle = RandomHairStyle;
+            }           
+            
             SelectedEthnicity = RandomEthnicity;
             SelectedAge = RandomAge;
-            SelectedHairColor = RandomHairColor;
-            SelectedHairStyle = RandomHairStyle;
-            HasMoustache = true ? RandomMoustache == 1 : RandomMoustache == 0;
-            HasBangs = true ? RandomBangs == 1 : RandomBangs == 0;
+            
             HasGlasses = true ? RandomAccessory == 1 : RandomAccessory == 0;
-            HasBeard = true ? RandomBeard == 1 : RandomBeard == 0;
-            IsBald = true ? RandomBald == 1 : RandomBald == 0;
-            SelectedGender = RandomGender;
+            
         }
 
         // visibilities binds

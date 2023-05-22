@@ -8,7 +8,7 @@
              xmlns:utils="clr-namespace:IEPP.Utils"
              xmlns:local="clr-namespace:IEPP.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded" Visibility="{Binding Vis}">
+             d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded" Visibility="{Binding Vis, Mode=TwoWay}">
     <UserControl.DataContext>
         <vm:ChooseProfileVM/>
     </UserControl.DataContext>
@@ -26,17 +26,18 @@
         </StackPanel>
 
         <!--Choose profiles-->
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,50" Visibility="{Binding ChooseProfileVisibility}"
-                    Name="ChooseProfileStack">
-            <TextBlock Text="Who's browsing?" Foreground="{StaticResource ActiveText}" FontFamily="Century Gothic" FontSize="40" Padding="0,0,0,30" Name="ChooseProfileText"
-                       HorizontalAlignment="Center" Style="{DynamicResource FadeInText}" Visibility="{Binding ChooseProfileVisibility}"/>
-            <controls:UserListBox Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Foreground="White" Style="{DynamicResource ProfileList}"
+        <Grid Style="{StaticResource FadeInGrid}" Visibility="{Binding ChooseProfileVisibility}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,50" Name="ChooseProfileStack">
+                <TextBlock Text="Who's browsing?" Foreground="{StaticResource ActiveText}" FontFamily="Century Gothic" FontSize="40" Padding="0,0,0,30" Name="ChooseProfileText"
+                       HorizontalAlignment="Center"/>
+                <controls:UserListBox Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Foreground="White" Style="{DynamicResource ProfileList}"
                      x:Name="ChooseProfileList" BorderBrush="Transparent" BorderThickness="0" ItemsSource="{Binding UserList}" 
                      ItemContainerStyle="{StaticResource ListBoxItemStyleTransparentSelect}" SelectedItem="{Binding SelectedUser}"
                      AddNewVisibility="{Binding AddNewVisibility}" NewProfileCommand="{Binding AddNewProfileCommand}" HorizontalAlignment="Center"
-                     Visibility="{Binding ChooseProfileVisibility}">
-            </controls:UserListBox>
-        </StackPanel>
+                     Visibility="Visible">
+                </controls:UserListBox>
+            </StackPanel>
+        </Grid>
 
         <!--Create profile-->
         <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding NewProfileVisibility}" Style="{StaticResource FadeInGrid}">
@@ -173,21 +174,21 @@
                                TextDecorations="Underline" FontFamily="Century Gothic"/>
                     <StackPanel Orientation="Vertical" Margin="0,20,0,0" HorizontalAlignment="Center">
                         <!--Bald-->
-                        <StackPanel Orientation="Horizontal" Margin="5,0,0,0" Opacity="{Binding FacialHairOpacity}">
+                        <StackPanel Orientation="Horizontal" Margin="15,0,0,0" Opacity="{Binding FacialHairOpacity}">
                             <TextBlock Text="Bald:" Foreground="{StaticResource ActiveText}" Padding="0,0,5,0" VerticalAlignment="Center"
                                        FontSize="14"/>
                             <CheckBox VerticalAlignment="Center" IsChecked="{Binding IsBald}" IsEnabled="{Binding IsFemale, Converter={StaticResource InverseBool}}"/>
                         </StackPanel>
 
                         <!--Bangs-->
-                        <StackPanel Orientation="Horizontal" Margin="-5,15,0,0" Opacity="{Binding HairAttributesOpacity}">
+                        <StackPanel Orientation="Horizontal" Margin="5,15,0,0" Opacity="{Binding HairAttributesOpacity}">
                             <TextBlock Text="Bangs:" Foreground="{StaticResource ActiveText}" Padding="0,0,5,0" VerticalAlignment="Center"
                                        FontSize="14"/>
                             <CheckBox VerticalAlignment="Center" IsChecked="{Binding HasBangs}" IsEnabled="{Binding IsBald, Converter={StaticResource InverseBool}}"/>
                         </StackPanel>
 
                         <!--Color-->
-                        <StackPanel Orientation="Horizontal" Margin="0,15,0,0" Opacity="{Binding HairAttributesOpacity}">
+                        <StackPanel Orientation="Horizontal" Margin="0,15,0,0" Opacity="{Binding HairAttributesOpacity}" HorizontalAlignment="Right">
                             <TextBlock Text="Color:" Foreground="{StaticResource ActiveText}" Padding="0,0,5,0" VerticalAlignment="Center"
                                        FontSize="14"/>
                             <ComboBox Width="100" SelectedIndex="{Binding SelectedHairColor}" IsEnabled="{Binding IsBald, Converter={StaticResource InverseBool}}">
@@ -200,11 +201,12 @@
 
                         <!--Style-->
                         <StackPanel Orientation="Horizontal" Margin="0,15,0,0" HorizontalAlignment="Right" Opacity="{Binding HairAttributesOpacity}">
-                            <TextBlock Text="Style:" Foreground="{StaticResource ActiveText}" Padding="0,0,5,0" VerticalAlignment="Center"
+                            <TextBlock Text="Length:" Foreground="{StaticResource ActiveText}" Padding="0,0,5,0" VerticalAlignment="Center"
                                        FontSize="14"/>
                             <ComboBox Width="100" SelectedIndex="{Binding SelectedHairStyle}" IsEnabled="{Binding IsBald, Converter={StaticResource InverseBool}}">
-                                <ComboBoxItem Content="Straight"/>
-                                <ComboBoxItem Content="Wavy"/>
+                                <ComboBoxItem Content="Short"/>
+                                <ComboBoxItem Content="Medium"/>
+                                <ComboBoxItem Content="Long"/>
                             </ComboBox>
                         </StackPanel>
 

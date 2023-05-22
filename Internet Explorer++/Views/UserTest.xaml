@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:IEPP.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="400" Background="#363636">
+             d:DesignHeight="200" d:DesignWidth="200" Background="#363636">
     <Grid>
-        <Image Source="/gan_test/output.png" Margin="2,2,2,2" Stretch="Fill" Name="UserIMG"/>
+        <Image Source="/Icons/coffee.jpg" Margin="2,2,2,2" Stretch="Fill" Name="UserIMG"/>
     </Grid>
 </UserControl>

@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using CefSharp;
+using IEPP.ViewModels;
 using IronPython.Hosting;
 using Microsoft.Scripting.Hosting;
 
@@ -45,17 +46,20 @@ namespace IEPP.Views
 
         private void UserBtn_Click(object sender, RoutedEventArgs e)
         {
-            var outputImg = new Uri("pack://application:,,,/Internet Explorer++;component/gan_test/output.png");
+            //var outputImg = new Uri("pack://application:,,,/Internet Explorer++;component/gan_test/output.png");
             //run_cmd();
-            UserTestPopup.UserIMG.Source = new BitmapImage(outputImg);
+            //UserTestPopup.UserIMG.Source = new BitmapImage(outputImg);
 
 
-            if (this.UserTestPopup.Visibility == Visibility.Collapsed)
+            /*if (this.UserTestPopup.Visibility == Visibility.Collapsed)
             {
                 UserTestPopup.Visibility = Visibility.Visible;
             }
             else
-                UserTestPopup.Visibility = Visibility.Collapsed;
+                UserTestPopup.Visibility = Visibility.Collapsed;*/
+
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+            mainWindow.ChooseProfileUC.Visibility = Visibility.Visible;
         }
 
         private void webBrowser_Loaded(object sender, RoutedEventArgs e)

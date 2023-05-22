@@ -21,17 +21,6 @@ namespace IEPP.Views
     /// </summary>
     public partial class ChooseProfile : UserControl
     {
-        public bool BoolTest
-        {
-            get { return (bool)GetValue(BoolTestProperty); }
-            set { SetValue(BoolTestProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for BoolTest.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty BoolTestProperty =
-            DependencyProperty.Register("BoolTest", typeof(bool), typeof(ChooseProfile), new PropertyMetadata(false));
-
-
         public ChooseProfile()
         {
             InitializeComponent();
@@ -39,9 +28,6 @@ namespace IEPP.Views
 
         private void SetChooseProfileToVisible(bool isVisible)
         {
-            //ChooseProfileText.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
-            //ChooseProfileList.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
-            //ChooseProfileStack.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
             var dc = DataContext as ChooseProfileVM;
             dc.ChooseProfileVisibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
@@ -50,9 +36,6 @@ namespace IEPP.Views
         {
             await Task.Delay(150);
             SetChooseProfileToVisible(true);
-            //await Task.Delay(2000);
-            //ChooseProfileList.IsEnabled = false;
-            //ChooseProfileText.IsEnabled = false;
         }
     }
 }
