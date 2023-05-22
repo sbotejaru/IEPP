@@ -92,7 +92,7 @@ namespace IEPP.Controls
 
         private void InitializeSettings()
         {
-            var icon = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/IEPP_gray.ico");
+            var icon = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/settings.png");
             DisplayHandler.FavIcon = new BitmapImage(icon);
         }
 
@@ -112,8 +112,7 @@ namespace IEPP.Controls
                     break;
 
                 case TabType.Settings:
-                    //this.Content = new Settings();
-                    Content = new ChooseProfile();
+                    this.Content = new Settings();
                     InitializeSettings();
                     break;                    
             }

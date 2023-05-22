@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace IEPP.Enums
 {
-    public enum HairStyle
+    public enum HairLength
     {
-        Straight,
-        Wavy
+        Short,
+        Medium,
+        Long
     }
 }

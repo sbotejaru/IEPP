@@ -104,6 +104,7 @@
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
     </Reference>
@@ -134,6 +135,7 @@
     </ApplicationDefinition>
     <Compile Include="Controls\BrowserTab.cs" />
     <Compile Include="Controls\BrowserTabControl.cs" />
+    <Compile Include="Controls\SettingsTab.cs" />
     <Compile Include="Controls\UserContainer.cs" />
     <Compile Include="Controls\UserListBox.cs" />
     <Compile Include="Controls\WatermarkAdorner.cs" />
@@ -141,7 +143,7 @@
     <Compile Include="Enums\Ethnicity.cs" />
     <Compile Include="Enums\Gender.cs" />
     <Compile Include="Enums\HairColor.cs" />
-    <Compile Include="Enums\HairStyle.cs" />
+    <Compile Include="Enums\HairLength.cs" />
     <Compile Include="Utils\DisplayHandler.cs" />
     <Compile Include="Utils\InverseBooleanConverter.cs" />
     <Compile Include="Utils\RelayCommand.cs" />
@@ -210,8 +212,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.manifest" />
-    <None Include="gan_test\sin-gan-snapshot.pickle" />
-    <None Include="gan_test\sin-gan-snapshot2.pickle" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -261,7 +261,6 @@
     <Resource Include="Icons\user.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="gan_test\gan.py" />
     <Resource Include="Icons\coffee_hover.jpg" />
     <Resource Include="Icons\avatar_placeholder.png" />
     <Resource Include="Icons\avatar_placeholder_hover.png" />
@@ -277,8 +276,13 @@
     <Resource Include="Icons\back_dim.png" />
     <Resource Include="Icons\fwd_dim.png" />
     <Resource Include="Icons\Add.png" />
-    <Resource Include="gan_test\output.png" />
-    <Content Include="gan_test\sin_gan.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\download.png" />
+    <Resource Include="Icons\history.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\settings.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

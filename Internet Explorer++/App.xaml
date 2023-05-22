@@ -285,7 +285,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type controls:BrowserTab}">
-                        <Grid ToolTip="{TemplateBinding Title}">
+                        <Grid ToolTip="{TemplateBinding Title}" ToolTipService.InitialShowDelay="600">
                             <Border Name="border" Background="{DynamicResource BackgroundColor}" BorderThickness="0"
                                     BorderBrush="#888888" CornerRadius="7,7,0,0"
                                     WindowChrome.IsHitTestVisibleInChrome="True">
@@ -386,7 +386,7 @@
                                 <TabPanel x:Name="headerPanel" Background="Transparent" IsItemsHost="true" Margin="0,2,0,0" Grid.Row="0" 
                                           KeyboardNavigation.TabIndex="1" Panel.ZIndex="1"/>
                                 <Button WindowChrome.IsHitTestVisibleInChrome="True" Height="25" Width="25" Style="{DynamicResource RoundButton}"
-                                        Margin="5,3,0,0" Command="{TemplateBinding NewTabCommand}">
+                                        Margin="5,3,0,0" Command="{TemplateBinding NewTabCommand}" ToolTip="New Tab" ToolTipService.InitialShowDelay="600">
                                     <Image Source="/Icons/Add.png" Height="16" Width="16"/>
                                 </Button>
                             </StackPanel>
@@ -633,7 +633,83 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        
+        <!--Settings tabs style-->
+        <Style TargetType="{x:Type controls:SettingsTab}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type controls:SettingsTab}">
+                        <Grid>
+                            <Border Name="border" Background="{DynamicResource BackgroundColor}" BorderThickness="0"
+                                    BorderBrush="#888888" CornerRadius="0,18,18,0"
+                                    WindowChrome.IsHitTestVisibleInChrome="True">
+                                <Grid Height="40" Width="15" Name="Tab_Grid">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
 
+                                    <Image Grid.Column="0" Width="20" Height="20" Margin="15,0,0,0" x:Name="tab_Icon"
+                                           Source="{TemplateBinding IconSource}" VerticalAlignment="Center"/>
+
+                                    <TextBlock Grid.Column="1" Margin="0,0,0,0" Padding="20,0,0,2" FontSize="17" VerticalAlignment="Center"
+                                               Text="{TemplateBinding Title}"                                               
+                                               Foreground="{DynamicResource ActiveText}" 
+                                               x:Name="tab_Title"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="False">
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource BackgroundColor}"/>
+                            </Trigger>
+
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource CaptionBarColor}"/>
+                            </Trigger>
+
+                            <EventTrigger RoutedEvent="TabItem.Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="Tab_Grid"
+                                            Storyboard.TargetProperty="(Grid.Width)"
+                                            To="220" Duration="0:0:0.15"
+                                             />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsMouseOver" Value="True"/>
+                                    <Condition Property="IsSelected" Value="False"/>
+                                </MultiTrigger.Conditions>
+
+                                <MultiTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Duration="0:0:0.15" Storyboard.TargetName="border"
+                                                            Storyboard.TargetProperty="Background.Color" To="#505050"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </MultiTrigger.EnterActions>
+                                <MultiTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard FillBehavior="Stop">
+                                            <ColorAnimation Duration="00:00:00.15"
+                                                            Storyboard.TargetName="border"
+                                                            Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </MultiTrigger.ExitActions>
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
     </Application.Resources>
 </Application>

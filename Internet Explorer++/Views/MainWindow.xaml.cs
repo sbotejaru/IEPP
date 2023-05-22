@@ -73,6 +73,8 @@ namespace IEPP.Views
         {
             if (e.NewValue.ToString() == "False")
                 BrowserTabs.Visibility = Visibility.Visible;
+            else if (e.NewValue.ToString() == "True")
+                BrowserTabs.Visibility = Visibility.Collapsed;
         }
     }
 }

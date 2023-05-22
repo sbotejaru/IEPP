@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:IEPP.Views"
+             xmlns:controls="clr-namespace:IEPP.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -13,25 +14,29 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Background="{DynamicResource BackgroundColor}">
-            <Border BorderThickness="0,0,0,1" BorderBrush="#888888"/>            
+            <Border BorderThickness="0,0,0,1" BorderBrush="#888888"/>
         </Grid>
         <Grid Grid.Row="1" Background="{StaticResource BackgroundColor}"/>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <Image Source="../Icons/IEPP.png" Width="50" VerticalAlignment="Center"/>
+            <Image Source="/Icons/IEPP.png" Width="50" VerticalAlignment="Center"/>
             <TextBlock Text="Settings" Foreground="{StaticResource ActiveText}" FontSize="40" VerticalAlignment="Center" Padding="10,0,0,0"/>
         </StackPanel>
 
         <TabControl Grid.Row="1" TabStripPlacement="Left" Background="Transparent" BorderThickness="0" Margin="0" Padding="0">
-            <TabItem Header="ioan" Width="200" VerticalAlignment="Center">
+            <controls:SettingsTab Title="Search" IconSource="/Icons/search.png">
+                <Image Source="/Icons/warning.png"/>
+            </controls:SettingsTab>
+            <controls:SettingsTab Title="History" IconSource="/Icons/history.png">
                 <Grid Background="Red"/>
-            </TabItem>
-            <TabItem Header="ioan">
+            </controls:SettingsTab>
+            <controls:SettingsTab Title="Bookmarks" IconSource="/Icons/star.png">
+                <Grid Background="Yellow"/>
+            </controls:SettingsTab>
+            <controls:SettingsTab Title="Downloads" IconSource="/Icons/download.png">
                 <Grid Background="Aqua"/>
-            </TabItem>
+            </controls:SettingsTab>
         </TabControl>
 
-                
-        
     </Grid>
 </UserControl>
