@@ -29,7 +29,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
         <!--Add profile button style-->
         <Style TargetType="Button" x:Key="AddProfileButton">
             <Setter Property="Background" Value="LightBlue" />
@@ -185,12 +185,15 @@
             </Setter>
         </Style>
 
+        <!--Bookmark container style-->
+
         <!--Colors-->
         <SolidColorBrush x:Key="BackgroundColor" Color="#3D3D3D"/>
         <SolidColorBrush x:Key="CaptionBarColor" Color="#242424"/>
         <SolidColorBrush x:Key="SearchBarColor" Color="#333333"/>
         <SolidColorBrush x:Key="ActiveText" Color="#EEEEEE"/>
-        <SolidColorBrush x:Key="InctiveText" Color="#AAAAAA"/>
+        <SolidColorBrush x:Key="InactiveText" Color="#AAAAAA"/>
+        <SolidColorBrush x:Key="SettingsHoverColor" Color="#505050"/>
 
         <!--TextBox no color change on hover-->
         <Style x:Key="StaticTextBox" TargetType="TextBox">
@@ -256,7 +259,7 @@
         </Style>
 
         <!--Bookmark button-->
-        <ImageBrush x:Key="star_hover" ImageSource="/Icons/star_hover.png"/>
+        <ImageBrush x:Key="star_hover" ImageSource="/Icons/star_half.png"/>
         <Style x:Key="BookmarkButton" TargetType="{x:Type Button}">
             <Style.Resources>
                 <Style TargetType="{x:Type Border}">
@@ -427,7 +430,7 @@
                                             <Image Grid.Row="0" Source="Icons/add4.png" Width="80"/>
                                         </Button>
                                         <TextBlock Text="New Profile" FontSize="17" Grid.Row="1" HorizontalAlignment="Center" Padding="0,10,0,0"
-                                               Foreground="{StaticResource InctiveText}" FontFamily="Arial" Name="lb_textblock"/>
+                                               Foreground="{StaticResource InactiveText}" FontFamily="Arial" Name="lb_textblock"/>
                                     </Grid>
                                 </Border>
                             </StackPanel>
@@ -447,24 +450,11 @@
                         </BeginStoryboard>
                     </Trigger.EnterActions>
                 </Trigger>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Trigger.EnterActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                             From="1.0" To="0.0" Duration="0:0:0.2"/>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </Trigger.EnterActions>
-                </Trigger>
             </Style.Triggers>
         </Style>
 
+        <!--ListBoxItem without hover box style-->
         <Style x:Key="ListBoxItemStyleTransparentSelect" TargetType="ListBoxItem">
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="FontFamily" Value="Arial"/>
-            <Setter Property="Padding" Value="3"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
             <Setter Property="VerticalContentAlignment" Value="Top"/>
             <Setter Property="Background" Value="Transparent"/>
@@ -520,7 +510,7 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.EnterActions>
-                </Trigger>                
+                </Trigger>
             </Style.Triggers>
         </Style>
 
@@ -541,7 +531,7 @@
                                         <Image Name="ProfilePicImg" Grid.Row="0" Source="{TemplateBinding ProfilePic}"/>
                                     </Border>
                                     <TextBlock Text="{TemplateBinding Username}" FontSize="17" Grid.Row="1" HorizontalAlignment="Center" Padding="0,10,0,0"
-                                               Foreground="{StaticResource InctiveText}" Name="tb_Username"/>
+                                               Foreground="{StaticResource InactiveText}" Name="tb_Username"/>
                                 </Grid>
                             </Border>
                         </Grid>
@@ -572,7 +562,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
         <!--Change avatar button-->
         <ImageBrush x:Key="avatar_hover" ImageSource="/Icons/coffee_hover.jpg"/>
         <Style x:Key="AvatarButton" TargetType="{x:Type Button}">
@@ -633,7 +623,7 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
+
         <!--Settings tabs style-->
         <Style TargetType="{x:Type controls:SettingsTab}">
             <Setter Property="Template">
@@ -643,7 +633,7 @@
                             <Border Name="border" Background="{DynamicResource BackgroundColor}" BorderThickness="0"
                                     BorderBrush="#888888" CornerRadius="0,18,18,0"
                                     WindowChrome.IsHitTestVisibleInChrome="True">
-                                <Grid Height="40" Width="15" Name="Tab_Grid">
+                                <Grid Height="40" Width="200" Name="Tab_Grid">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
@@ -668,7 +658,7 @@
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter Property="Background" TargetName="border" Value="{StaticResource CaptionBarColor}"/>
                             </Trigger>
-
+                            <!--
                             <EventTrigger RoutedEvent="TabItem.Loaded">
                                 <BeginStoryboard>
                                     <Storyboard>
@@ -680,6 +670,7 @@
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
+                            -->
 
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
@@ -705,6 +696,43 @@
                                     </BeginStoryboard>
                                 </MultiTrigger.ExitActions>
                             </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--Bookmark container style-->
+        <Style TargetType="{x:Type controls:BookmarkContainer}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type controls:BookmarkContainer}">
+                        <Grid>
+                            <Border Name="bc_border" BorderThickness="0" CornerRadius="15" Height="30">
+                                <Border.ToolTip>
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="{TemplateBinding Title}"/>
+                                        <TextBlock Text="{Binding Url}"/>
+                                    </StackPanel>                                    
+                                </Border.ToolTip>
+                                <Grid MaxWidth="200" Margin="5,0,10,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <Image Name="BookmarkFavIcon" Grid.Column="0" Source="/Icons/avatar.png" Height="17" HorizontalAlignment="Left"/>
+                                    
+                                    <TextBlock Text="{TemplateBinding Title}" Grid.Column="1" FontSize="12" VerticalAlignment="Center" Margin="5,0,0,0"
+                                               Foreground="{StaticResource ActiveText}" Name="bc_Title"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" TargetName="bc_border" Value="#505050"/>
+                            </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>

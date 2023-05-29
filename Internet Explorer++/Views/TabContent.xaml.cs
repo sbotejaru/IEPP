@@ -124,5 +124,11 @@ namespace IEPP.Views
                 progressBar.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
             });
         }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            (DataContext as TabContentVM).LoadMainDC();
+            this.BookmarkList.ItemsSource = (DataContext as TabContentVM).MainWinDC.Bookmarks;
+        }
     }
 }

@@ -100,9 +100,14 @@ namespace IEPP.Controls
         {
         }
 
+        public string GetURL()
+        {
+            return null;
+        }
+
         public BrowserTab(TabType tabType)
         {
-            DisplayHandler = new DisplayHandler();
+            DisplayHandler = new DisplayHandler();            
 
             switch (tabType)
             {
@@ -112,7 +117,7 @@ namespace IEPP.Controls
                     break;
 
                 case TabType.Settings:
-                    this.Content = new Settings();
+                    this.Content = new SettingsControl();
                     InitializeSettings();
                     break;                    
             }

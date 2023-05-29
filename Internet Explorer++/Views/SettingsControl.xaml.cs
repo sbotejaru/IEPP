@@ -18,9 +18,9 @@ namespace IEPP.Views
     /// <summary>
     /// Interaction logic for Settings.xaml
     /// </summary>
-    public partial class Settings : UserControl
+    public partial class SettingsControl : UserControl
     {
-        public Settings()
+        public SettingsControl()
         {
             InitializeComponent();
         }

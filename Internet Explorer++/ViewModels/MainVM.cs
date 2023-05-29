@@ -36,23 +36,23 @@ namespace IEPP.ViewModels
 
         #endregion
 
-        private string startUrl = "https://google.com";
+        //private string startUrl = "https://google.com";
         private int selectedTabIndex;
         private bool settingsTabOpen = false;
-        private string workingDir;
+        //private string workingDir;
+
+        private string username;
+        public string Username
+        {
+            get { return username; }
+            set { username = value; NotifyPropertyChanged("Username"); Console.WriteLine(Username); }
+        }
 
         private Visibility browserVis;
         public Visibility BrowserVis
         {
             get { return browserVis; }
             set { browserVis = value; NotifyPropertyChanged("BrowserVis"); }
-        }
-
-        private Visibility vis;
-        public Visibility Vis
-        {
-            get { return vis; }
-            set { vis = value; NotifyPropertyChanged("Vis"); }
         }
 
         public int SelectedTabIndex
@@ -129,12 +129,13 @@ namespace IEPP.ViewModels
         public RelayCommand<BrowserTab> CloseTabCommand { get; set; }
 
         public ObservableCollection<BrowserTab> Tabs { get; set; }
+        public ObservableCollection<BookmarkContainer> Bookmarks { get; set; }
 
         public MainVM()
         {
             BrowserVis = Visibility.Collapsed;
-            Vis = Visibility.Visible;
             Tabs = new ObservableCollection<BrowserTab>();
+            Bookmarks = new ObservableCollection<BookmarkContainer>();
 
             CloseCommand = new RelayCommand(o =>
             {

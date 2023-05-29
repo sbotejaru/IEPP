@@ -99,6 +99,9 @@
     <Reference Include="Microsoft.Scripting.Metadata, Version=1.3.3.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
       <HintPath>..\packages\DynamicLanguageRuntime.1.3.3\lib\net452\Microsoft.Scripting.Metadata.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
@@ -133,6 +136,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\BookmarkContainer.cs" />
     <Compile Include="Controls\BrowserTab.cs" />
     <Compile Include="Controls\BrowserTabControl.cs" />
     <Compile Include="Controls\SettingsTab.cs" />
@@ -144,10 +148,13 @@
     <Compile Include="Enums\Gender.cs" />
     <Compile Include="Enums\HairColor.cs" />
     <Compile Include="Enums\HairLength.cs" />
+    <Compile Include="Utils\Bookmark.cs" />
     <Compile Include="Utils\DisplayHandler.cs" />
+    <Compile Include="Utils\HistoryItem.cs" />
     <Compile Include="Utils\InverseBooleanConverter.cs" />
     <Compile Include="Utils\RelayCommand.cs" />
     <Compile Include="Enums\TabType.cs" />
+    <Compile Include="Utils\Settings.cs" />
     <Compile Include="Utils\User.cs" />
     <Compile Include="ViewModels\MainVM.cs" />
     <Compile Include="ViewModels\TabContentVM.cs" />
@@ -155,8 +162,8 @@
     <Compile Include="Views\ChooseProfile.xaml.cs">
       <DependentUpon>ChooseProfile.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Settings.xaml.cs">
-      <DependentUpon>Settings.xaml</DependentUpon>
+    <Compile Include="Views\SettingsControl.xaml.cs">
+      <DependentUpon>SettingsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TabContent.xaml.cs">
       <DependentUpon>TabContent.xaml</DependentUpon>
@@ -180,7 +187,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\Settings.xaml">
+    <Page Include="Views\SettingsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

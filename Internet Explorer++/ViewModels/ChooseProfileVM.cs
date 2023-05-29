@@ -245,7 +245,7 @@ namespace IEPP.ViewModels
         public UserContainer SelectedUser
         {
             get { return selectedUser; }
-            set { selectedUser = value; NotifyPropertyChanged("SelectedUser"); Console.WriteLine(selectedUser.Username); Vis = Visibility.Collapsed; }
+            set { selectedUser = value; NotifyPropertyChanged("SelectedUser"); Vis = Visibility.Collapsed; }
         }
 
         private string newUsername;

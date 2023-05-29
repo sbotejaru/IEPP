@@ -28,10 +28,12 @@ namespace IEPP.Views
     {
         Uri restoreDownSource = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/restore_down.png");
         Uri maximizeSource = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/maximize.png");
+        MainVM dataContextVM;
 
         public MainWindow()
         {
             InitializeComponent();
+            dataContextVM = DataContext as MainVM;
             this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
             this.MaxWidth = SystemParameters.MaximizedPrimaryScreenWidth;
         }
@@ -42,10 +44,10 @@ namespace IEPP.Views
             this.WindowState = WindowState.Minimized;
         }
 
-       /* private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            this.WindowState = WindowState.Maximized;
-        }*/
+        /* private void Button_Click(object sender, RoutedEventArgs e)
+         {
+             this.WindowState = WindowState.Maximized;
+         }*/
 
         private void Window_StateChanged(object sender, EventArgs e)
         {
@@ -72,7 +74,14 @@ namespace IEPP.Views
         private void ChooseProfileUC_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue.ToString() == "False")
+            {
+                var chooseProfileDC = ChooseProfileUC.DataContext as ChooseProfileVM;
+
+                if (chooseProfileDC.SelectedUser != null)
+                    dataContextVM.Username = chooseProfileDC.SelectedUser.Username;
+
                 BrowserTabs.Visibility = Visibility.Visible;
+            }
             else if (e.NewValue.ToString() == "True")
                 BrowserTabs.Visibility = Visibility.Collapsed;
         }
