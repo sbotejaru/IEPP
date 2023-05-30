@@ -1,7 +1,12 @@
 tabs title from webpage v
 tabs favicon from webpage v
-tabs animation on resize
-tabs resize when they dont fit
+tabs animation on resize kinda?
+tabs resize when they dont fit v
+bookmark 
+history 
+downloads
+search
+
 
 menu button dropdown
 

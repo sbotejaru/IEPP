@@ -56,6 +56,14 @@ namespace IEPP.Controls
             set { separatorVisibility = value; NotifyPropertyChanged("SeparatorVisibility"); }
         }
 
+        private BrowserTabControl btabControl;
+
+        public BrowserTabControl BTabControl
+        {
+            get { return btabControl; }
+            set { btabControl = value; }
+        }
+
         protected ChromiumWebBrowser GetCurrentBrowser()
         {
             if (this.Content as TabContent != null)
@@ -96,6 +104,12 @@ namespace IEPP.Controls
             DisplayHandler.FavIcon = new BitmapImage(icon);
         }
 
+        private void GetTabControl()
+        {
+            var mainWin = App.Current.MainWindow as MainWindow;
+            BTabControl = mainWin.BrowserTabs;
+        }
+
         public BrowserTab()
         {
         }
@@ -121,6 +135,8 @@ namespace IEPP.Controls
                     InitializeSettings();
                     break;                    
             }
+
+            GetTabControl();
         }
 
         public BrowserTab(TabContent browser)

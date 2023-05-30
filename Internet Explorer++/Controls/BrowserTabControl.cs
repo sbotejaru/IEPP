@@ -19,7 +19,16 @@ namespace IEPP.Controls
             DependencyProperty.Register("NewTabCommand", typeof(ICommand), typeof(BrowserTabControl), new PropertyMetadata(null));
 
         public static readonly DependencyProperty BookmarksSourceProperty =
-            DependencyProperty.Register("BookmarksSource", typeof(ItemCollection), typeof(BrowserTabControl), new PropertyMetadata(null));
+            DependencyProperty.Register("BookmarksSource", typeof(ItemCollection), typeof(BrowserTabControl), new PropertyMetadata(null));        
+
+        public static readonly DependencyProperty MaxTabWidthProperty =
+            DependencyProperty.Register("MaxTabWidth", typeof(double), typeof(BrowserTabControl), new PropertyMetadata(null));
+
+        public double MaxTabWidth
+        {
+            get { return (double)GetValue(MaxTabWidthProperty); }
+            set { SetValue(MaxTabWidthProperty, value); }
+        }
 
         public ICommand NewTabCommand
         {

@@ -40,6 +40,7 @@ namespace IEPP.ViewModels
         private int selectedTabIndex;
         private bool settingsTabOpen = false;
         //private string workingDir;
+        private double defaultMaxTabWidth = 200.0;
 
         private string username;
         public string Username
@@ -65,6 +66,28 @@ namespace IEPP.ViewModels
                 NotifyPropertyChanged("SelectedTabIndex");
             }
         }
+
+        private double maxTabsScreenWidth;
+        public double MaxTabsScreenWidth
+        {
+            get { return maxTabsScreenWidth; }
+            set { maxTabsScreenWidth = value; NotifyPropertyChanged("MaxTabsScreenWidth"); ResizeTabs(); }
+        }
+
+        private double maxTabWidth;
+        public double MaxTabWidth
+        {
+            get { return maxTabWidth; }
+            set
+            {
+                maxTabWidth = value > defaultMaxTabWidth ? defaultMaxTabWidth : value;
+                Console.WriteLine(maxTabWidth);
+
+                NotifyPropertyChanged("MaxTabWidth");
+            }
+        }
+
+
         private void SetSeparatorVisibilities(int oldIndex, int newIndex)
         {
             if (newIndex == -1 || oldIndex == -1)
@@ -120,7 +143,12 @@ namespace IEPP.ViewModels
 
             Tabs.Add(newTab);
         }
-        
+
+        private void ResizeTabs()
+        {
+            double result = MaxTabsScreenWidth / (double)Tabs.Count;
+            MaxTabWidth = result;
+        }
 
         public RelayCommand CloseCommand { get; set; }
         public RelayCommand MaximizeCommand { get; set; }
@@ -136,6 +164,7 @@ namespace IEPP.ViewModels
             BrowserVis = Visibility.Collapsed;
             Tabs = new ObservableCollection<BrowserTab>();
             Bookmarks = new ObservableCollection<BookmarkContainer>();
+            MaxTabWidth = defaultMaxTabWidth;
 
             CloseCommand = new RelayCommand(o =>
             {
@@ -170,12 +199,17 @@ namespace IEPP.ViewModels
 
                 if (Tabs.Count == 0)
                     Dispose();
+
+                ResizeTabs();
             });
 
             AddTabCommand = new RelayCommand(o =>
             {
                 AddBrowserTab();
                 SelectedTabIndex = Tabs.Count - 1;
+
+                if (MaxTabWidth * Tabs.Count > MaxTabsScreenWidth)
+                    ResizeTabs();
             });
 
             AddSettingsTabCommand = new RelayCommand(o =>
@@ -187,9 +221,6 @@ namespace IEPP.ViewModels
                     settingsTabOpen = true;
                 }
             });
-
-            AddTabCommand.Execute(null);
-            //AddSettingsTabCommand.Execute(null);
         }
     }
 }

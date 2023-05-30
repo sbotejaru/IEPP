@@ -85,5 +85,15 @@ namespace IEPP.Views
             else if (e.NewValue.ToString() == "True")
                 BrowserTabs.Visibility = Visibility.Collapsed;
         }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            dataContextVM.MaxTabsScreenWidth = e.NewSize.Width - 220.0;
+        }
+
+        private void BrowserTabs_Loaded(object sender, RoutedEventArgs e)
+        {
+            dataContextVM.AddTabCommand.Execute(null);
+        }
     }
 }
