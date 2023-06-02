@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IEPP.Utils
+namespace IEPP.Models
 {
-    public class Settings
+    public class User
     {
-        public Uri StartUrl { get; set; }
-
+        public string Username { get; set; }
+        public string AvatarPath { get; set; }
     }
 }

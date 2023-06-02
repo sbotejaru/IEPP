@@ -81,8 +81,6 @@ namespace IEPP.ViewModels
             set
             {
                 maxTabWidth = value > defaultMaxTabWidth ? defaultMaxTabWidth : value;
-                Console.WriteLine(maxTabWidth);
-
                 NotifyPropertyChanged("MaxTabWidth");
             }
         }
@@ -146,8 +144,7 @@ namespace IEPP.ViewModels
 
         private void ResizeTabs()
         {
-            double result = MaxTabsScreenWidth / (double)Tabs.Count;
-            MaxTabWidth = result;
+            MaxTabWidth = MaxTabsScreenWidth / Tabs.Count;   
         }
 
         public RelayCommand CloseCommand { get; set; }
@@ -169,12 +166,9 @@ namespace IEPP.ViewModels
             CloseCommand = new RelayCommand(o =>
             {
                 foreach (var tab in Tabs)
-                {
-                    //if (tab.Content as) DACA E WEBBROWSER
                     tab.Dispose();
-                }
 
-                Dispose();
+                this.Dispose();
             });
 
             MaximizeCommand = new RelayCommand(o =>
@@ -191,16 +185,17 @@ namespace IEPP.ViewModels
             {
                 int closedIndex = Tabs.IndexOf(closedTab);
 
-                if (Tabs[closedIndex].Content as TabContent == null) // TO BE CHANGED as Settings != null
+                if (Tabs[closedIndex].Content as SettingsControl != null)
                     settingsTabOpen = false;
 
                 Tabs[closedIndex].Dispose();
                 Tabs.Remove(closedTab);
 
                 if (Tabs.Count == 0)
-                    Dispose();
+                    this.Dispose();
 
-                ResizeTabs();
+                if (MaxTabWidth != defaultMaxTabWidth)
+                    ResizeTabs();
             });
 
             AddTabCommand = new RelayCommand(o =>
@@ -218,6 +213,10 @@ namespace IEPP.ViewModels
                 {
                     AddSettingsTab();
                     SelectedTabIndex = Tabs.Count - 1;
+
+                    if (MaxTabWidth * Tabs.Count > MaxTabsScreenWidth)
+                        ResizeTabs();
+
                     settingsTabOpen = true;
                 }
             });

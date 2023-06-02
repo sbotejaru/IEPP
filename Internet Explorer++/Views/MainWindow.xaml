@@ -21,6 +21,7 @@
     </Window.DataContext>
 
     <Grid Name="MainGrid">
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="35"/>
             <RowDefinition/>
@@ -28,28 +29,32 @@
 
         <Grid Grid.Row="0" Background="{StaticResource CaptionBarColor}"/>
 
-        <local:ChooseProfile Grid.Row="1" x:Name="ChooseProfileUC" IsVisibleChanged="ChooseProfileUC_IsVisibleChanged"/>
+        <local:ChooseProfile Grid.Row="1" x:Name="ChooseProfileUC" 
+                             IsVisibleChanged="ChooseProfileUC_IsVisibleChanged"/>
 
         <controls:BrowserTabControl Background="Transparent" BorderThickness="0" Grid.Row="0" Grid.RowSpan="2" Margin="0,2,0,0"
                                     ItemsSource="{Binding Tabs}" NewTabCommand="{Binding AddTabCommand}" x:Name="BrowserTabs"
-                                    SelectedIndex="{Binding SelectedTabIndex}" Visibility="{Binding BrowserVis}" BookmarksSource="{Binding Bookmarks, Mode=TwoWay}"
-                                    MaxTabWidth="{Binding MaxTabWidth}" Loaded="BrowserTabs_Loaded"/>        
+                                    SelectedIndex="{Binding SelectedTabIndex}" Visibility="{Binding BrowserVis}" 
+                                    MaxTabWidth="{Binding MaxTabWidth}" Loaded="BrowserTabs_Loaded"/>
 
         <!--Caption buttons-->
         <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal"
-                        WindowChrome.IsHitTestVisibleInChrome="True" Margin="0,5,5,0">            
+                        WindowChrome.IsHitTestVisibleInChrome="True" Margin="0,5,5,0" Grid.Row="0">
             <!--Minimize button-->
-            <Button Width="35" Height="25" Background="Transparent" BorderBrush="Transparent" Style="{DynamicResource CaptionButton}" Click="Minimize_Click">
+            <Button Width="35" Height="25" Background="Transparent" BorderBrush="Transparent" 
+                    Style="{DynamicResource CaptionButton}" Click="Minimize_Click">
                 <Image Source="/Icons/minimize.png" Width="18" Height="18"/>
             </Button>
 
             <!--Maximize/Restore down button-->
-            <Button Name="MaxBtn" Width="35" Height="25" Background="Transparent" BorderBrush="Transparent" Style="{DynamicResource CaptionButton}" Command="{Binding MaximizeCommand}">
+            <Button Name="MaxBtn" Width="35" Height="25" Background="Transparent" BorderBrush="Transparent" 
+                    Style="{DynamicResource CaptionButton}" Command="{Binding MaximizeCommand}">
                 <Image Name="MaxBtnIcon" Source="/Icons/maximize.png" Width="18" Height="18"/>
             </Button>
 
             <!--Close button-->
-            <Button Width="35" Height="25" Background="Transparent" BorderBrush="Transparent" Command="{Binding CloseCommand}" Style="{DynamicResource CloseButton}">
+            <Button Width="35" Height="25" Background="Transparent" BorderBrush="Transparent" 
+                    Command="{Binding CloseCommand}" Style="{DynamicResource CloseButton}">
                 <Image Source="/Icons/close.png" Width="20" Height="20"/>
             </Button>
         </StackPanel>
