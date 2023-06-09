@@ -16,6 +16,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using CefSharp;
+using CefSharp.Wpf;
+using IEPP.Models;
 using IEPP.ViewModels;
 using IronPython.Hosting;
 using Microsoft.Scripting.Hosting;
@@ -27,9 +29,40 @@ namespace IEPP.Views
     /// </summary>
     public partial class TabContent : UserControl
     {
+        private TabContentVM vm;
+        private bool browserLoaded = false;
+        private bool addressChanged = false;
+
         public TabContent()
         {
             InitializeComponent();
+        }
+
+        public TabContent(MainVM mainDC)
+        {
+            InitializeComponent();
+            vm = DataContext as TabContentVM;
+            vm.MainWinDC = mainDC;
+        }
+        public TabContent(MainVM mainDC, string url)
+        {
+            InitializeComponent();
+            vm = DataContext as TabContentVM;
+            vm.MainWinDC = mainDC;
+
+            vm.Url = url;
+        }
+
+        public TabContent(MainVM mainDC, Settings settings)
+        {
+            vm = DataContext as TabContentVM;
+            vm.MainWinDC = mainDC;
+        }
+
+        public TabContent(MainVM mainDC, string url, Settings settings)
+        {
+            vm = DataContext as TabContentVM;
+            vm.MainWinDC = mainDC;
         }
 
         private void run_cmd()
@@ -59,17 +92,25 @@ namespace IEPP.Views
                 UserTestPopup.Visibility = Visibility.Collapsed;*/
 
             var mainWindow = Application.Current.MainWindow as MainWindow;
-            mainWindow.ChooseProfileUC.Visibility = Visibility.Visible;
+            mainWindow.InitChooseProfile();
+            mainWindow.ChooseProfile.UserListGrid.IsEnabled = true;
+            mainWindow.ChooseProfile.IsEnabled = true;
+            mainWindow.BrowserTabs.Visibility = Visibility.Collapsed;
+            mainWindow.ChooseProfile.Visibility = Visibility.Visible;
         }
 
         private void webBrowser_Loaded(object sender, RoutedEventArgs e)
         {
             this.SearchBar.Text = this.webBrowser.Address;
+            browserLoaded = true;
+            Back.GetBindingExpression(IsEnabledProperty).UpdateTarget();
+            Fwd.GetBindingExpression(IsEnabledProperty).UpdateTarget();
         }
 
         private void webBrowser_AddressChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            this.SearchBar.Text = this.webBrowser.Address;            
+            this.SearchBar.Text = this.webBrowser.Address;
+            addressChanged = true;
         }
 
         private void SearchBar_LostFocus(object sender, RoutedEventArgs e)
@@ -127,8 +168,35 @@ namespace IEPP.Views
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            (DataContext as TabContentVM).LoadMainDC();
-            this.BookmarkList.ItemsSource = (DataContext as TabContentVM).MainWinDC.Bookmarks;
+            //(DataContext as TabContentVM).LoadMainDC();
+            //if (vm.MainWinDC.Bookmarks.Count != 0)
+               // BookmarkList.GetBindingExpression(ItemsControl.ItemsSourceProperty).UpdateTarget();
+        }
+
+        public void RefreshBookmarkList()
+        {
+            BookmarkList.ItemsSource = vm.Bookmarks;
+            BookmarkList.InvalidateVisual();
+            //Console.WriteLine("refresh, doesnt do anythng");
+        }
+
+        private void MainButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainButton.ContextMenu.IsOpen = true;
+        }
+
+        private void webBrowser_TitleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (browserLoaded && !vm.WentBackOrForward && addressChanged)
+                vm.LogHistory(webBrowser.Address, webBrowser.Title);
+
+            vm.WentBackOrForward = false;
+            addressChanged = false;
+        }
+
+        private void BookmarkList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            BookmarkList.UnselectAll();
         }
     }
 }

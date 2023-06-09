@@ -25,9 +25,7 @@ namespace IEPP
         }*/      
         public App()
         {
-            CefSettings s = new CefSettings();
-            s.CefCommandLineArgs.Add("disable-threaded-scrolling", "1");
-            Cef.Initialize(s);
+            
         }
     }
 }

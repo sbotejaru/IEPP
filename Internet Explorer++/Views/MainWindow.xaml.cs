@@ -18,6 +18,8 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using IEPP.Controls;
 using IEPP.ViewModels;
+using System.ComponentModel;
+using System.Threading;
 
 namespace IEPP.Views
 {
@@ -29,13 +31,21 @@ namespace IEPP.Views
         Uri restoreDownSource = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/restore_down.png");
         Uri maximizeSource = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/maximize.png");
         MainVM dataContextVM;
+        public ChooseProfile ChooseProfile;
+        private BackgroundWorker bgWorker;
+        private bool historyLoaded;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            InitChooseProfile();
+
+            bgWorker = new BackgroundWorker();
             dataContextVM = DataContext as MainVM;
             this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
             this.MaxWidth = SystemParameters.MaximizedPrimaryScreenWidth;
+            historyLoaded = false;
         }
 
         private void Minimize_Click(object sender, RoutedEventArgs e)
@@ -48,6 +58,16 @@ namespace IEPP.Views
          {
              this.WindowState = WindowState.Maximized;
          }*/
+
+        public void InitChooseProfile()
+        {
+            ChooseProfile = new ChooseProfile();
+            ChooseProfile.IsVisibleChanged += ChooseProfileUC_IsVisibleChanged;
+            ChooseProfile.Loaded += ChooseProfileUC_Loaded;
+            ChooseProfile.IsEnabledChanged += ChooseProfileUC_IsEnabledChanged;
+
+            ChooseProfileGrid.Children.Add(ChooseProfile);
+        }
 
         private void Window_StateChanged(object sender, EventArgs e)
         {
@@ -73,17 +93,21 @@ namespace IEPP.Views
 
         private void ChooseProfileUC_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (e.NewValue.ToString() == "False")
+            /*if (e.NewValue.ToString() == "False")
             {
                 var chooseProfileDC = ChooseProfileUC.DataContext as ChooseProfileVM;
 
                 if (chooseProfileDC.SelectedUser != null)
+                {
                     dataContextVM.Username = chooseProfileDC.SelectedUser.Username;
+                    dataContextVM.UserPath = chooseProfileDC.CurrentUserPath;
+                    dataContextVM.AddTabCommand.Execute(null);
+                }
 
                 BrowserTabs.Visibility = Visibility.Visible;
             }
             else if (e.NewValue.ToString() == "True")
-                BrowserTabs.Visibility = Visibility.Collapsed;
+                BrowserTabs.Visibility = Visibility.Collapsed;*/
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -93,7 +117,90 @@ namespace IEPP.Views
 
         private void BrowserTabs_Loaded(object sender, RoutedEventArgs e)
         {
-            dataContextVM.AddTabCommand.Execute(null);
+            //
+        }
+
+        private void ChooseProfileUC_Loaded(object sender, RoutedEventArgs e)
+        {
+            ChooseProfile.UsersDir = dataContextVM.UsersDir;
+        }
+
+        private void bgWorker_LoadHistory(object sender, DoWorkEventArgs e)
+        {
+            if (!historyLoaded)
+                dataContextVM.LoadHistory();
+        }
+
+        private void bgWorker_LoadBookmarks(object sender, DoWorkEventArgs e)
+        {
+            dataContextVM.LoadBookmarks();
+        }
+
+        private void bgWorker_LoadHistoryCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            /*Dispatcher.Invoke(() =>
+            {
+                dataContextVM.HistoryDataToUI();
+                dataContextVM.GetSettings().LoadHistoryUI();
+            });*/
+
+            historyLoaded = true;
+        }
+
+        private void bgWorker_LoadBookmarksCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                dataContextVM.BookmarkDataToUI();
+            });
+
+            bgWorker = null;
+            StartHistoryLoad();
+        }
+
+        private void StartBookmarksLoad()
+        {
+            bgWorker.DoWork += bgWorker_LoadBookmarks;
+            bgWorker.RunWorkerCompleted += bgWorker_LoadBookmarksCompleted;
+            bgWorker.RunWorkerAsync();
+        }
+
+        public void StartHistoryLoad()
+        {
+            bgWorker = new BackgroundWorker();
+            bgWorker.DoWork += bgWorker_LoadHistory;
+            bgWorker.RunWorkerCompleted += bgWorker_LoadHistoryCompleted;
+            bgWorker.RunWorkerAsync();
+        }
+
+        private void ChooseProfileUC_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue.ToString() == "False")
+            {
+                var chooseProfileDC = ChooseProfile.DataContext as ChooseProfileVM;
+
+                if (chooseProfileDC.SelectedUser != null)
+                {
+                    if (dataContextVM.Username != chooseProfileDC.SelectedUser.Username)
+                    {
+                        dataContextVM.Username = chooseProfileDC.SelectedUser.Username;
+                        dataContextVM.UserPath = chooseProfileDC.CurrentUserPath;
+                        dataContextVM.InitCef();
+
+                        StartBookmarksLoad();
+
+                        dataContextVM.AddTabCommand.Execute(null);
+                        this.ChooseProfile = null;
+                    }
+                }
+
+                BrowserTabs.Visibility = Visibility.Visible;
+            }
+            else if (e.NewValue.ToString() == "True")
+            {
+                //InitChooseProfile();
+                BrowserTabs.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }

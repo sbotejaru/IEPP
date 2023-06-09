@@ -8,7 +8,7 @@
              xmlns:utils="clr-namespace:IEPP.Utils"
              xmlns:local="clr-namespace:IEPP.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded" Visibility="{Binding Vis, Mode=TwoWay}">
+             d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded" Visibility="{Binding Vis, Mode=TwoWay}" IsEnabled="{Binding ChooseProfileEnabled}">
     <UserControl.DataContext>
         <vm:ChooseProfileVM/>
     </UserControl.DataContext>
@@ -26,17 +26,22 @@
         </StackPanel>
 
         <!--Choose profiles-->
-        <Grid Style="{StaticResource FadeInGrid}" Visibility="{Binding ChooseProfileVisibility}">
+        <Grid Style="{StaticResource FadeInOutGrid}" Visibility="{Binding ChooseProfileVisibility}" Name="UserListGrid" IsEnabledChanged="UserListGrid_IsEnabledChanged">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,50" Name="ChooseProfileStack">
                 <TextBlock Text="Who's browsing?" Foreground="{StaticResource ActiveText}" FontFamily="Century Gothic" FontSize="40" Padding="0,0,0,30" Name="ChooseProfileText"
-                       HorizontalAlignment="Center"/>
+                       HorizontalAlignment="Center" Margin="0,0,0,20"/>
                 <controls:UserListBox Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Foreground="White" Style="{DynamicResource ProfileList}"
                      x:Name="ChooseProfileList" BorderBrush="Transparent" BorderThickness="0" ItemsSource="{Binding UserList}" 
                      ItemContainerStyle="{StaticResource ListBoxItemStyleTransparentSelect}" SelectedItem="{Binding SelectedUser}"
                      AddNewVisibility="{Binding AddNewVisibility}" NewProfileCommand="{Binding AddNewProfileCommand}" HorizontalAlignment="Center"
-                     Visibility="Visible">
+                     Visibility="Visible" SelectionChanged="ChooseProfileList_SelectionChanged">
                 </controls:UserListBox>
+                
+                <Button Style="{StaticResource RoundButton}" Content="Browse as Guest" Height="30" Foreground="{StaticResource InactiveText}"
+                        Width="150" FontSize="15" Margin="0,50,0,0" VerticalAlignment="Bottom"/>
             </StackPanel>
+
+            
         </Grid>
 
         <!--Create profile-->
@@ -187,6 +192,8 @@
                             <CheckBox VerticalAlignment="Center" IsChecked="{Binding HasBangs}" IsEnabled="{Binding IsBald, Converter={StaticResource InverseBool}}"/>
                         </StackPanel>
 
+                        
+
                         <!--Color-->
                         <StackPanel Orientation="Horizontal" Margin="0,15,0,0" Opacity="{Binding HairAttributesOpacity}" HorizontalAlignment="Right">
                             <TextBlock Text="Color:" Foreground="{StaticResource ActiveText}" Padding="0,0,5,0" VerticalAlignment="Center"
@@ -214,27 +221,28 @@
                 </StackPanel>
 
                 <!--Facial hair-->
-                <StackPanel Margin="30,0,0,0">
-                    <TextBlock Text="Facial hair" Foreground="{StaticResource ActiveText}" FontSize="20" HorizontalAlignment="Center" FontWeight="Medium"
-                               TextDecorations="Underline" FontFamily="Century Gothic"/>
-                    <StackPanel Orientation="Vertical" Margin="0,20,0,0" HorizontalAlignment="Center">
-                        <!--Moustache-->
-                        <StackPanel Orientation="Horizontal" Opacity="{Binding FacialHairOpacity}">
-                            <TextBlock Text="Moustache:" Foreground="{StaticResource ActiveText}" Padding="0,0,5,0" VerticalAlignment="Center"
-                                       FontSize="14"/>
-                            <CheckBox VerticalAlignment="Bottom" IsChecked="{Binding HasMoustache}" IsEnabled="{Binding IsFemale, Converter={StaticResource InverseBool}}"/>
-                        </StackPanel>
 
-                        <!--Beard-->
-                        <StackPanel Orientation="Horizontal" Margin="0,15,0,0" HorizontalAlignment="Right" Opacity="{Binding FacialHairOpacity}">
-                            <TextBlock Text="Beard:" Foreground="{StaticResource ActiveText}" Padding="0,0,5,0" VerticalAlignment="Center"
+                <StackPanel Margin="30,0,0,0">
+                <TextBlock Text="Facial hair" Foreground="{StaticResource ActiveText}" FontSize="20" HorizontalAlignment="Center" FontWeight="Medium"
+                               TextDecorations="Underline" FontFamily="Century Gothic"/>
+                <StackPanel Orientation="Vertical" Margin="0,20,0,0" HorizontalAlignment="Center">
+                    <!--Moustache-->
+                    <StackPanel Orientation="Horizontal" Opacity="{Binding FacialHairOpacity}">
+                        <TextBlock Text="Moustache:" Foreground="{StaticResource ActiveText}" Padding="0,0,5,0" VerticalAlignment="Center"
                                        FontSize="14"/>
-                            <CheckBox VerticalAlignment="Bottom" IsChecked="{Binding HasBeard}" IsEnabled="{Binding IsFemale, Converter={StaticResource InverseBool}}"/>
-                        </StackPanel>
+                        <CheckBox VerticalAlignment="Bottom" IsChecked="{Binding HasMoustache}" IsEnabled="{Binding IsFemale, Converter={StaticResource InverseBool}}"/>
+                    </StackPanel>
+
+                    <!--Beard-->
+                    <StackPanel Orientation="Horizontal" Margin="0,15,0,0" HorizontalAlignment="Right" Opacity="{Binding FacialHairOpacity}">
+                        <TextBlock Text="Beard:" Foreground="{StaticResource ActiveText}" Padding="0,0,5,0" VerticalAlignment="Center"
+                                       FontSize="14"/>
+                        <CheckBox VerticalAlignment="Bottom" IsChecked="{Binding HasBeard}" IsEnabled="{Binding IsFemale, Converter={StaticResource InverseBool}}"/>
                     </StackPanel>
                 </StackPanel>
+            </StackPanel>
 
-                <!--Accessories-->
+            <!--Accessories-->
                 <StackPanel Margin="40,0,0,0">
                     <TextBlock Text="Accesories" Foreground="{StaticResource ActiveText}" FontSize="20" HorizontalAlignment="Center" FontWeight="Medium"
                                TextDecorations="Underline" FontFamily="Century Gothic"/>

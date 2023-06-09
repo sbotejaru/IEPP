@@ -15,6 +15,7 @@ using IEPP.Enums;
 using IEPP.ViewModels;
 using CefSharp.Wpf;
 using CefSharp.DevTools.HeapProfiler;
+using System.Collections.ObjectModel;
 
 namespace IEPP.Controls
 {
@@ -57,7 +58,6 @@ namespace IEPP.Controls
         }
 
         private BrowserTabControl btabControl;
-
         public BrowserTabControl BTabControl
         {
             get { return btabControl; }
@@ -80,7 +80,8 @@ namespace IEPP.Controls
             if (this.Content as TabContent != null)
             {
                 var tabDataContext = (this.Content as TabContent).DataContext as TabContentVM;
-                tabDataContext.Dispose();
+                tabDataContext.Dispose();                
+                this.Content = null;
             }
         }
 
@@ -94,14 +95,14 @@ namespace IEPP.Controls
             var browser = GetCurrentBrowser();
             browser.TitleChanged += TitleChanged;
             browser.DisplayHandler = DisplayHandler;
-            var icon = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/IEPP_gray.ico");
-            DisplayHandler.FavIcon = new BitmapImage(icon);
+            //var icon = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/IEPP_gray.ico");
+            //DisplayHandler.IconHandler.FavIcon = new BitmapImage(icon);
         }
 
         private void InitializeSettings()
         {
-            var icon = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/settings.png");
-            DisplayHandler.FavIcon = new BitmapImage(icon);
+            //var icon = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/settings.png");
+            //DisplayHandler.IconHandler.FavIcon = new BitmapImage(icon);
         }
 
         private void GetTabControl()
@@ -119,19 +120,21 @@ namespace IEPP.Controls
             return null;
         }
 
-        public BrowserTab(TabType tabType)
+        public BrowserTab(TabType tabType, MainVM mainDC)
         {
-            DisplayHandler = new DisplayHandler();            
+            DisplayHandler = new DisplayHandler();
+
+            //new tab from link, see https://stackoverflow.com/a/67261947, https://stackoverflow.com/a/32092384
 
             switch (tabType)
             {
                 case TabType.Browser:
-                    this.Content = new TabContent();
+                    this.Content = new TabContent(mainDC);
                     InitializeBrowser();
                     break;
 
                 case TabType.Settings:
-                    this.Content = new SettingsControl();
+                    this.Content = new SettingsControl(mainDC);
                     InitializeSettings();
                     break;                    
             }
@@ -139,9 +142,35 @@ namespace IEPP.Controls
             GetTabControl();
         }
 
+        public BrowserTab(MainVM mainDC, string url)
+        {
+            DisplayHandler = new DisplayHandler();
+
+            this.Content = new TabContent(mainDC, url);
+            InitializeBrowser();
+        }
+
         public BrowserTab(TabContent browser)
         {
             this.Content = browser;
+        }
+
+        public void RefreshBookmarks()
+        {
+            var tabContent = this.Content as TabContent;
+            if (tabContent != null)
+            {
+                tabContent.RefreshBookmarkList();
+            }            
+        }
+
+        public void RemoveBookmarkUI()
+        {
+            var tabContent = this.Content as TabContent;
+            if (tabContent != null)
+            {
+                tabContent.BookmarkList.ItemsSource = null;
+            }
         }
     }
 }

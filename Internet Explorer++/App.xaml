@@ -56,7 +56,6 @@
                     <Setter Property="CornerRadius" Value="10" />
                 </Style>
             </Style.Resources>
-            <Setter Property="Background" Value="LightBlue" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
@@ -90,7 +89,6 @@
                     <Setter Property="CornerRadius" Value="15" />
                 </Style>
             </Style.Resources>
-            <Setter Property="Background" Value="LightBlue" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
@@ -117,7 +115,6 @@
                     <Setter Property="CornerRadius" Value="15" />
                 </Style>
             </Style.Resources>
-            <Setter Property="Background" Value="LightBlue" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
@@ -184,8 +181,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-        <!--Bookmark container style-->
 
         <!--Colors-->
         <SolidColorBrush x:Key="BackgroundColor" Color="#3D3D3D"/>
@@ -283,6 +278,8 @@
             </Setter>
         </Style>
 
+        <BitmapImage x:Key="browser_icon_gray" UriSource="/Icons/IEPP_gray.png"/>
+
         <!--Tabs style-->
         <Style TargetType="{x:Type controls:BrowserTab}">
             <Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -293,7 +290,7 @@
                             <Border Name="border" Background="{DynamicResource BackgroundColor}" BorderThickness="0"
                                     BorderBrush="#888888" CornerRadius="7,7,0,0"
                                     WindowChrome.IsHitTestVisibleInChrome="True">
-                                <Grid Height="28" Width="200" Margin="1,3,0,0" Name="Tab_Grid" 
+                                <Grid Height="28" Width="15" Margin="1,3,0,0" Name="Tab_Grid" 
                                       MaxWidth="{Binding BTabControl.MaxTabWidth, RelativeSource={RelativeSource AncestorType={x:Type controls:BrowserTab}}}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
@@ -303,7 +300,8 @@
                                     
 
                                     <Image Grid.Column="0" Width="18" Height="18" Margin="10,0,0,0" x:Name="FavIcon" StretchDirection="Both"
-                                           Source="{Binding DisplayHandler.FavIcon, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type controls:BrowserTab}}}" />
+                                           Source="{Binding DisplayHandler.IconHandler.FavIcon, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type controls:BrowserTab}},
+                                        TargetNullValue={StaticResource browser_icon_gray}}" />
 
                                     <TextBlock Grid.Column="1" Margin="0,0,5,0" Padding="5,5,0,0"
                                                Text="{TemplateBinding Title}"                                               
@@ -331,8 +329,7 @@
                             <Trigger Property="IsSelected" Value="False">
                                 <Setter Property="Background" TargetName="border" Value="{DynamicResource CaptionBarColor}"/>
                             </Trigger>
-
-                            <!--
+                            
                             <EventTrigger RoutedEvent="TabItem.Loaded">
                                 <BeginStoryboard>
                                     <Storyboard>
@@ -343,8 +340,7 @@
                                              />
                                     </Storyboard>
                                 </BeginStoryboard>
-                            </EventTrigger>
-                            -->
+                            </EventTrigger>                            
 
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
@@ -612,11 +608,12 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
-        <!--Fade in Grid-->
-        <Style TargetType="{x:Type Grid}" x:Key="FadeInGrid">
+        
+        <!--Fade in and out Grid-->
+        <Style TargetType="{x:Type Grid}" x:Key="FadeInOutGrid">
             <Style.Triggers>
-                <Trigger Property="Visibility" Value="Visible">
+
+                <Trigger Property="IsVisible" Value="True">
                     <Trigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
@@ -626,6 +623,44 @@
                         </BeginStoryboard>
                     </Trigger.EnterActions>
                 </Trigger>
+                
+                <Trigger Property="IsEnabled" Value="False">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                        From="1.0" To="0.0" Duration="0:0:0.4"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard FillBehavior="Stop">
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                        From="0.0" To="1.0" Duration="0:0:0.4"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>                
+
+            </Style.Triggers>
+        </Style>
+
+        <!--Fade in Grid-->
+        <Style TargetType="{x:Type Grid}" x:Key="FadeInGrid">
+            <Style.Triggers>
+                <Trigger Property="Visibility" Value="Visible">
+                    <Setter Property="IsEnabled" Value="True"/>
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                        From="0.0" To="1.0" Duration="0:0:0.4"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                </Trigger>                
             </Style.Triggers>
         </Style>
 
@@ -720,16 +755,16 @@
                                         <TextBlock Text="{Binding Url}"/>
                                     </StackPanel>                                    
                                 </Border.ToolTip>
-                                <Grid MaxWidth="200" Margin="5,0,10,0">
+                                <Grid MaxWidth="220" Margin="5,0,5,0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     
-                                    <Image Name="BookmarkFavIcon" Grid.Column="0" Source="/Icons/avatar.png" Height="17" HorizontalAlignment="Left"/>
+                                    <Image Name="BookmarkFavIcon" Grid.Column="0" Source="{Binding IconHandler.FavIcon}" Height="17" HorizontalAlignment="Left"/>
                                     
                                     <TextBlock Text="{TemplateBinding Title}" Grid.Column="1" FontSize="12" VerticalAlignment="Center" Margin="5,0,0,0"
-                                               Foreground="{StaticResource ActiveText}" Name="bc_Title"/>
+                                               Foreground="{StaticResource ActiveText}" Name="bc_Title" TextTrimming="CharacterEllipsis"/>
                                 </Grid>
                             </Border>
                         </Grid>
@@ -738,6 +773,62 @@
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Background" TargetName="bc_border" Value="#505050"/>
                             </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--HistoryItem container style-->
+        <Style TargetType="{x:Type controls:HistoryItemContainer}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type controls:HistoryItemContainer}">
+                        <Grid>
+                            <Border Name="hic_border" BorderThickness="0" CornerRadius="15" Height="30">                                
+                                <Grid Margin="5,0,10,0" MaxWidth="1000" MinWidth="500" Width="850">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto" MaxWidth="700" MinWidth="50"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="{TemplateBinding BrowseDate}" Grid.Column="0" Foreground="{StaticResource ActiveText}"
+                                               VerticalAlignment="Center" FontSize="14" Width="140"/>
+
+                                    <TextBlock Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock.ToolTip>
+                                            <StackPanel Orientation="Vertical">
+                                                <TextBlock Text="{TemplateBinding Title}"/>
+                                                <TextBlock Text="{Binding Url}"/>
+                                            </StackPanel>
+                                        </TextBlock.ToolTip>
+                                        <Hyperlink TextDecorations="None" Command="{Binding NewTabFromHistory}">
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                
+                                                <Image Name="hic_FavIcon" Source="{Binding IconHandler.FavIcon}" Height="18" HorizontalAlignment="Left"
+                                                       VerticalAlignment="Bottom"/>
+                                                
+                                                <TextBlock Text="{TemplateBinding Title}" FontSize="14" VerticalAlignment="Center" 
+                                               Foreground="{StaticResource ActiveText}" Name="hic_Title" Padding="10,0,0,0" TextTrimming="CharacterEllipsis"/>
+                                                
+                                            </StackPanel>
+                                        </Hyperlink>
+                                    </TextBlock>
+
+                                    <TextBlock Text="{Binding HostName}" Grid.Column="2" Foreground="{StaticResource InactiveText}"
+                                               VerticalAlignment="Center" Margin="10,0,0,0"/>
+
+                                    <Button Grid.Column="3" HorizontalAlignment="Right" Content="Delete" Style="{StaticResource RoundButton}"
+                                            Foreground="{StaticResource ActiveText}" Width="50"/>
+
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>

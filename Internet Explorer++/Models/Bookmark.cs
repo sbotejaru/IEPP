@@ -1,4 +1,6 @@
 ﻿using IEPP.Controls;
+using IEPP.Utils;
+using Nager.PublicSuffix;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +13,11 @@ namespace IEPP.Models
     {
         public string Title { get; set; }
         public string Url { get; set; }
-        // favicon?
-        public BookmarkContainer ToContainer()
+        public string Domain { get; set; }
+
+        public BookmarkContainer ToContainer(string cacheDir)
         {
-            return new BookmarkContainer() { Title = this.Title, Url = this.Url };
+            return new BookmarkContainer() { Title = this.Title, Url = this.Url, Domain=this.Domain };
         }
     }
 }

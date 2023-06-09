@@ -19,6 +19,11 @@ using IEPP.Controls;
 using System.Windows.Media.Imaging;
 using System.Diagnostics.PerformanceData;
 using System.Collections.Specialized;
+using IEPP.Models;
+using Newtonsoft.Json;
+using System.IO;
+using Newtonsoft.Json.Linq;
+using System.Threading;
 
 namespace IEPP.ViewModels
 {
@@ -39,14 +44,39 @@ namespace IEPP.ViewModels
         //private string startUrl = "https://google.com";
         private int selectedTabIndex;
         private bool settingsTabOpen = false;
-        //private string workingDir;
+        private string workingDir;
+        private string usersDir;
+        private string cacheDir;
         private double defaultMaxTabWidth = 200.0;
+
+        public int SettingsTabIndex { get; set; }
+
+        public JsonHelper JsonHelper { get; set; }
+
+        public string CacheDir
+        {
+            get => cacheDir;
+            set => cacheDir = value;
+        }
 
         private string username;
         public string Username
         {
             get { return username; }
-            set { username = value; NotifyPropertyChanged("Username"); Console.WriteLine(Username); }
+            set { username = value; NotifyPropertyChanged("Username"); }
+        }
+
+        public string UsersDir
+        {
+            get { return usersDir; }
+            set { usersDir = value; NotifyPropertyChanged("UsersDir"); }
+        }
+
+        private string userPath;
+        public string UserPath
+        {
+            get { return userPath; }
+            set { userPath = value; JsonHelper = new JsonHelper(userPath); }
         }
 
         private Visibility browserVis;
@@ -63,6 +93,15 @@ namespace IEPP.ViewModels
             {
                 SetSeparatorVisibilities(selectedTabIndex, value);
                 selectedTabIndex = value;
+
+                foreach (var tab in Tabs)
+                {
+                    tab.RemoveBookmarkUI();
+                }
+
+                if (selectedTabIndex != -1)
+                    Tabs[selectedTabIndex].RefreshBookmarks();
+
                 NotifyPropertyChanged("SelectedTabIndex");
             }
         }
@@ -85,6 +124,38 @@ namespace IEPP.ViewModels
             }
         }
 
+        private void CreateAppDirectory()
+        {
+            var docsFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+            string subPath = "/Internet Explorer++";
+            workingDir = docsFolder + subPath;
+
+            bool exists = Directory.Exists(workingDir);
+
+            if (!exists)
+            {
+                Directory.CreateDirectory(workingDir);
+            }
+        }
+
+        private void CreateCacheDirectory()
+        {
+            CacheDir = workingDir + "/Cache";
+            bool exists = Directory.Exists(CacheDir);
+
+            if (!exists)
+                Directory.CreateDirectory(CacheDir);
+        }
+
+        private void CreateUsersDirectory()
+        {
+            UsersDir = workingDir + "/Users";
+            bool exists = Directory.Exists(usersDir);
+
+            if (!exists)
+                Directory.CreateDirectory(usersDir);
+        }
 
         private void SetSeparatorVisibilities(int oldIndex, int newIndex)
         {
@@ -123,28 +194,139 @@ namespace IEPP.ViewModels
 
         private void AddBrowserTab()
         {
-            var newTab = new BrowserTab(TabType.Browser);
-
-            newTab.FavIconSource = null;
-            newTab.Title = "New Tab";
+            var newTab = new BrowserTab(TabType.Browser, this)
+            {
+                FavIconSource = null,
+                Title = "New Tab"
+            };
 
             Tabs.Add(newTab);
+        }
+
+        public void AddBrowserTab(string url)
+        {
+            var newTab = new BrowserTab(this, url)
+            {
+                FavIconSource = null,
+                Title = "New Tab"
+            };
+
+            Tabs.Add(newTab);
+
+            SelectedTabIndex = Tabs.Count - 1;
+
+            if (MaxTabWidth * Tabs.Count > MaxTabsScreenWidth)
+                ResizeTabs();
         }
 
         private void AddSettingsTab()
         {
-            var newTab = new BrowserTab(TabType.Settings);
-            var icon = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/IEPP_gray.ico");
-
-            newTab.FavIconSource = new BitmapImage(icon);
-            newTab.Title = "IEPP Settings";
+            var newTab = new BrowserTab(TabType.Settings, this)
+            {
+                Title = "IEPP Settings"
+            };
 
             Tabs.Add(newTab);
         }
 
+        public SettingsControl GetSettings()
+        {
+            if (SettingsTabIndex != -1 && settingsTabOpen != false)
+                return Tabs[SettingsTabIndex].Content as SettingsControl;
+
+            return null;
+        }
+
+        public void AddBookmark(Bookmark newBookmark)
+        {
+            Bookmarks.Add(newBookmark.ToContainer(cacheDir));
+        }
+
+        public void AddHistoryItem(HistoryItem newHistoryItem)
+        {
+            HistoryData.Insert(0, newHistoryItem);
+        }
+
         private void ResizeTabs()
         {
-            MaxTabWidth = MaxTabsScreenWidth / Tabs.Count;   
+            MaxTabWidth = MaxTabsScreenWidth / Tabs.Count;
+        }        
+
+        public void LoadBookmarks()
+        {
+            BookmarksData = JsonHelper.ReadAllBookmarks();
+        }
+
+        public void BookmarkDataToUI()
+        {
+            foreach (var bookmark in BookmarksData)
+            {
+                Bookmarks.Add(bookmark.ToContainer(CacheDir));
+            }
+
+            BookmarksData.Clear();
+        }
+
+        public void HistoryDataToUI()
+        {
+            /*Thread t = new Thread(() =>
+            {
+                foreach (var historyItem in HistoryData)
+                {
+                    History.Add(historyItem.ToContainer());
+                }
+            });
+
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+            *//*await Task.Run(() =>
+            {
+                foreach (var historyItem in HistoryData)
+                {
+                    History.Add(historyItem.ToContainer());
+                }
+            });*//*            
+
+            //HistoryData.Clear();*/
+        }
+
+        public void LoadHistory()
+        {
+            JsonHelper.StartRange = 80;
+            HistoryData = JsonHelper.ReadPartialHistory();
+        }
+
+        public void LoadUserData()
+        {
+            LoadBookmarks();
+            LoadHistory();
+            //
+        }
+
+        public void InitCef()
+        {
+            CefSettings settings = new CefSettings();
+
+            if (UserPath != "")
+                settings.CachePath = UserPath + "/cache";
+
+            settings.CefCommandLineArgs.Add("disable-threaded-scrolling", "1");
+            Cef.Initialize(settings); // closing from chooseprofile after selecting user first time crashes ??? not anymore :)
+        }
+
+        private void Init()
+        {
+            BrowserVis = Visibility.Collapsed;
+            Tabs = new ObservableCollection<BrowserTab>();
+            Bookmarks = new ObservableCollection<BookmarkContainer>();
+            History = new ObservableCollection<HistoryItemContainer>();
+            BookmarksData = new List<Bookmark>();
+            HistoryData = new List<HistoryItem>();
+            MaxTabWidth = defaultMaxTabWidth;
+            SettingsTabIndex = -1;
+            CreateAppDirectory();
+            CreateCacheDirectory();
+            CreateUsersDirectory();
         }
 
         public RelayCommand CloseCommand { get; set; }
@@ -155,18 +337,21 @@ namespace IEPP.ViewModels
 
         public ObservableCollection<BrowserTab> Tabs { get; set; }
         public ObservableCollection<BookmarkContainer> Bookmarks { get; set; }
+        public ObservableCollection<HistoryItemContainer> History { get; set; }
+        public List<Bookmark> BookmarksData { get; set; }
+        public List<HistoryItem> HistoryData { get; set; }
 
         public MainVM()
         {
-            BrowserVis = Visibility.Collapsed;
-            Tabs = new ObservableCollection<BrowserTab>();
-            Bookmarks = new ObservableCollection<BookmarkContainer>();
-            MaxTabWidth = defaultMaxTabWidth;
+            Init();
 
             CloseCommand = new RelayCommand(o =>
             {
                 foreach (var tab in Tabs)
                     tab.Dispose();
+
+                //JsonHelper.Save(BookmarksData, "bookmarks");
+                //JsonHelper.Save(HistoryData, "history");
 
                 this.Dispose();
             });
@@ -186,7 +371,11 @@ namespace IEPP.ViewModels
                 int closedIndex = Tabs.IndexOf(closedTab);
 
                 if (Tabs[closedIndex].Content as SettingsControl != null)
+                {
                     settingsTabOpen = false;
+                    SettingsTabIndex = -1;
+                    History.Clear();
+                }
 
                 Tabs[closedIndex].Dispose();
                 Tabs.Remove(closedTab);
@@ -213,6 +402,8 @@ namespace IEPP.ViewModels
                 {
                     AddSettingsTab();
                     SelectedTabIndex = Tabs.Count - 1;
+
+                    SettingsTabIndex = SelectedTabIndex;
 
                     if (MaxTabWidth * Tabs.Count > MaxTabsScreenWidth)
                         ResizeTabs();

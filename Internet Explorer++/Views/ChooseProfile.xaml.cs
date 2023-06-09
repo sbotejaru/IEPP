@@ -1,4 +1,6 @@
-﻿using IEPP.ViewModels;
+﻿using CefSharp.DevTools.CSS;
+using IEPP.Controls;
+using IEPP.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,14 +23,25 @@ namespace IEPP.Views
     /// </summary>
     public partial class ChooseProfile : UserControl
     {
+
+        private ChooseProfileVM dc;
+        public string UsersDir
+        {
+            get { return (string)GetValue(UsersDirProperty); }
+            set { SetValue(UsersDirProperty, value); dc.WorkingDir = value; }
+        }
+
+        public static readonly DependencyProperty UsersDirProperty =
+            DependencyProperty.Register("UsersDir", typeof(string), typeof(ChooseProfile), new PropertyMetadata(null));
+
         public ChooseProfile()
         {
             InitializeComponent();
+            dc = DataContext as ChooseProfileVM;
         }
 
         private void SetChooseProfileToVisible(bool isVisible)
         {
-            var dc = DataContext as ChooseProfileVM;
             dc.ChooseProfileVisibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
 
@@ -36,6 +49,21 @@ namespace IEPP.Views
         {
             await Task.Delay(150);
             SetChooseProfileToVisible(true);
+        }
+
+        private async void ChooseProfileList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UserListGrid.IsEnabled = false;
+            this.IsEnabled = false;
+            await Task.Delay(400);
+
+            Visibility = Visibility.Collapsed;
+        }
+
+        private void UserListGrid_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            //await Task.Delay(10);
+            //this.IsEnabled = false;
         }
     }
 }

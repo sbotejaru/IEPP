@@ -1,4 +1,7 @@
-﻿using IEPP.Models;
+﻿using IEPP.Utils;
+using IEPP.ViewModels;
+using Nager.PublicSuffix;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,15 +10,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
-using Newtonsoft.Json;
-using System.Windows.Media;
-using IEPP.Utils;
 
 namespace IEPP.Controls
 {
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public class BookmarkContainer : ContentControl, INotifyPropertyChanged
+    public class HistoryItemContainer : ContentControl, INotifyPropertyChanged
     {
         #region PropertyChanged declaration
         public event PropertyChangedEventHandler PropertyChanged;
@@ -26,18 +25,6 @@ namespace IEPP.Controls
         }
         #endregion
 
-        public static readonly DependencyProperty FavIconSourceProperty =
-           DependencyProperty.Register("FavIconSource", typeof(ImageSource), typeof(BookmarkContainer), new PropertyMetadata(null));
-
-        public static readonly DependencyProperty TitleProperty =
-            DependencyProperty.Register("Title", typeof(string), typeof(BookmarkContainer), new PropertyMetadata(null));
-
-        public ImageSource FavIconSource
-        {
-            get { return (ImageSource)GetValue(FavIconSourceProperty); }
-            set { SetValue(FavIconSourceProperty, value); NotifyPropertyChanged("FavIconSource"); }
-        }
-
         [JsonProperty]
         public string Title
         {
@@ -45,7 +32,19 @@ namespace IEPP.Controls
             set { SetValue(TitleProperty, value); NotifyPropertyChanged("Title"); }
         }
 
-        //public string Url { get; set; }
+        public static readonly DependencyProperty TitleProperty =
+            DependencyProperty.Register("Title", typeof(string), typeof(HistoryItemContainer), new PropertyMetadata(null));
+
+        [JsonProperty]
+        public string BrowseDate
+        {
+            get { return (string)GetValue(BrowseDateProperty); }
+            set { SetValue(BrowseDateProperty, value); NotifyPropertyChanged("BrowseDate"); }
+        }
+
+        public static readonly DependencyProperty BrowseDateProperty =
+            DependencyProperty.Register("BrowseDate", typeof(string), typeof(HistoryItemContainer), new PropertyMetadata(null));
+
 
         private string url;
 
@@ -66,18 +65,23 @@ namespace IEPP.Controls
                 domain = value;
                 IconHandler.GetFavIcon(Url, domain);
             }
-        }
+        } // for favicon, load favicon on set
+
+        [JsonProperty]
+        public string HostName { get; set; } // for website name
 
         public FavIconHandler IconHandler { get; }
 
-        public Bookmark ToModel()
-        {
-            return new Bookmark() { Title = this.Title, Url = this.Url };
-        }
+        public RelayCommand NewTabFromHistory { get; set; }
 
-        public BookmarkContainer()
+        public HistoryItemContainer()
         {
             IconHandler = new FavIconHandler();
+
+            NewTabFromHistory = new RelayCommand(o =>
+            {
+                (App.Current.MainWindow.DataContext as MainVM).AddBrowserTab(Url);
+            });
         }
     }
 }

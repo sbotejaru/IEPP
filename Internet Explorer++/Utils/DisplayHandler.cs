@@ -1,6 +1,7 @@
 ﻿using CefSharp;
 using CefSharp.Enums;
 using CefSharp.Structs;
+using CefSharp.Wpf.Experimental;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,7 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using static Community.CsharpSqlite.Sqlite3;
+using Nager.PublicSuffix;
+using System.IO;
+using System.Security.Policy;
 
 namespace IEPP.Utils
 {
@@ -18,6 +21,20 @@ namespace IEPP.Utils
         public event PropertyChangedEventHandler PropertyChanged;
 
         bool firstLoad = true;
+        //private string cacheDirPath;
+        //private string currentDomainName;
+        //private bool downloadForTab;
+        private FavIconHandler iconHandler;
+
+        public FavIconHandler IconHandler
+        {
+            get => iconHandler;
+        }
+
+        public DisplayHandler()
+        {
+            iconHandler = new FavIconHandler();
+        }
 
         private object _favIcon;
 
@@ -30,7 +47,7 @@ namespace IEPP.Utils
             set { _favIcon = value; OnPropertyChanged("FavIcon"); }
         }
 
-        private BitmapDecoder _decoder;
+        /*private BitmapDecoder _decoder;
         private BitmapDecoder Decoder
         {
             get => _decoder;
@@ -44,9 +61,37 @@ namespace IEPP.Utils
 
         private void decoderDownloadCompleted(object sender, EventArgs e)
         {
-            FavIcon = Decoder.Frames.OrderBy(f => f.Width).FirstOrDefault();
+            if (downloadForTab)
+                FavIcon = Decoder.Frames.OrderBy(f => f.Width).FirstOrDefault();
+
+            SaveFavIconToCache(currentDomainName + ".png");
+
             Decoder = null;
         }
+
+        private void SaveFavIconToCache(string filename)
+        {
+            BitmapEncoder encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(Decoder.Frames.OrderBy(f => f.Width).FirstOrDefault());
+
+            var filePath = cacheDirPath + '/' + filename;
+
+            if (!File.Exists(filePath))
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    encoder.Save(fileStream);
+                }
+        }
+
+        public void DownloadFavIcon(Uri url, bool forTab)
+        {
+            downloadForTab = forTab;
+
+            string favIconUrl = "http://www.google.com/s2/favicons?domain=";
+            var baseUrl = url.GetLeftPart(UriPartial.Authority);
+
+            Decoder = BitmapDecoder.Create(new Uri(favIconUrl + baseUrl + "&sz=32"), BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.None);
+        }*/
 
         protected void OnPropertyChanged(string propertyName)
         {
@@ -59,14 +104,16 @@ namespace IEPP.Utils
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                var oldUrl = new Uri(chromiumWebBrowser.Address);
-                var newUrl = new Uri(addressChangedArgs.Address);
+                var oldDomain = new Uri(chromiumWebBrowser.Address).GetLeftPart(UriPartial.Authority);
+                var newDomain = new Uri(addressChangedArgs.Address).GetLeftPart(UriPartial.Authority);
 
-                if ((oldUrl.GetLeftPart(UriPartial.Authority) != newUrl.GetLeftPart(UriPartial.Authority)) || firstLoad)
+                if (oldDomain != newDomain || firstLoad)
                 {
-                    string favIconUrl = "http://www.google.com/s2/favicons?domain=";
-                    var baseUrl = newUrl.GetLeftPart(UriPartial.Authority);
-                    Decoder = BitmapDecoder.Create(new Uri(favIconUrl + baseUrl + "&sz=32"), BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.None);
+                    var domainParser = new DomainParser(new WebTldRuleProvider());
+                    var domainName = domainParser.Parse(newDomain).Domain;
+
+                    iconHandler.GetFavIcon(addressChangedArgs.Address, domainName);
+
                     firstLoad = false;
                 }
             });
@@ -83,7 +130,7 @@ namespace IEPP.Utils
         }
 
         public void OnFaviconUrlChange(IWebBrowser chromiumWebBrowser, IBrowser browser, IList<string> urls)
-        {
+        { 
         }
 
         public void OnFullscreenModeChange(IWebBrowser chromiumWebBrowser, IBrowser browser, bool fullscreen)

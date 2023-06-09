@@ -28,16 +28,20 @@ namespace IEPP.ViewModels
 
         private UserContainer selectedUser;
         private Visibility addNewVisibility;
+
         private string workingDir;
-        private string usersDir;
+        public string WorkingDir
+        {
+            get { return workingDir; }
+            set { workingDir = value; LoadUsers(); }
+        }
 
         private Visibility vis;
-
         public Visibility Vis
         {
             get { return vis; }
             set
-            { 
+            {
                 vis = value;
 
                 if (vis == Visibility.Visible)
@@ -47,33 +51,11 @@ namespace IEPP.ViewModels
 
                 NotifyPropertyChanged("Vis");
             }
-        }
-
-        private void CreateAppDirectory()
-        {
-            var docsFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-            string subPath = "/Internet Explorer++";
-            workingDir = docsFolder + subPath;
-
-            bool exists = Directory.Exists(workingDir);
-
-            if (!exists)
-                Directory.CreateDirectory(workingDir);
-        }
-
-        private void CreateUsersDirectory()
-        {
-            usersDir = workingDir + "/Users";
-            bool exists = Directory.Exists(usersDir);
-
-            if (!exists)
-                Directory.CreateDirectory(usersDir);
-        }
+        }  
 
         private void CreateNewUserDirectory(string username, Uri avatarSrc) // + image
         {
-            var newUserDir = usersDir + "/" + username;
+            var newUserDir = WorkingDir + "/" + username;
             bool exists = Directory.Exists(newUserDir);
 
             if (!exists)
@@ -92,9 +74,9 @@ namespace IEPP.ViewModels
                 encoder.Save(stream);
         }
 
-        private void LoadUsers()
+        public void LoadUsers()
         {
-            string[] users = Directory.GetDirectories(usersDir);
+            string[] users = Directory.GetDirectories(WorkingDir);
             if (users.Length == 0)
                 return;
 
@@ -121,7 +103,7 @@ namespace IEPP.ViewModels
 
         private void AddToUserList(string username)
         {
-            var userPath = usersDir + "/" + username;
+            var userPath = WorkingDir + "/" + username;
             var avatarPath = new Uri(userPath + "/avatar.jpg");
             UserList.Add(new UserContainer() { Username = username, ProfilePic = new BitmapImage(avatarPath) });
         }
@@ -157,12 +139,13 @@ namespace IEPP.ViewModels
             NewProfileErrorMessage = "A profile with that name already exists!";
             FacialHairOpacity = 1;
             HairAttributesOpacity = 1;
+            ChooseProfileEnabled = true;
 
             HideErrors();
-            CreateAppDirectory();
-            CreateUsersDirectory();
-            LoadUsers();
-            InitAttrbiuteValues();            
+            //CreateAppDirectory();
+            //CreateUsersDirectory();
+            //LoadUsers();
+            InitAttrbiuteValues();
         }
 
         private void RandomizeAttributes()
@@ -194,13 +177,13 @@ namespace IEPP.ViewModels
                 HasBangs = true ? RandomBangs == 1 : RandomBangs == 0;
                 SelectedHairColor = RandomHairColor;
                 SelectedHairStyle = RandomHairStyle;
-            }           
-            
+            }
+
             SelectedEthnicity = RandomEthnicity;
             SelectedAge = RandomAge;
-            
+
             HasGlasses = true ? RandomAccessory == 1 : RandomAccessory == 0;
-            
+
         }
 
         // visibilities binds
@@ -245,7 +228,22 @@ namespace IEPP.ViewModels
         public UserContainer SelectedUser
         {
             get { return selectedUser; }
-            set { selectedUser = value; NotifyPropertyChanged("SelectedUser"); Vis = Visibility.Collapsed; }
+            set
+            {                
+                selectedUser = value;
+                NotifyPropertyChanged("SelectedUser");
+                CurrentUserPath = WorkingDir + "/" + selectedUser.Username;
+                //ChooseProfileEnabled = false;
+
+                //Vis = Visibility.Collapsed;
+            }
+        }
+
+        private string currentUserPath;
+        public string CurrentUserPath
+        {
+            get { return currentUserPath; }
+            set { currentUserPath = value; }
         }
 
         private string newUsername;
@@ -260,6 +258,13 @@ namespace IEPP.ViewModels
         {
             get { return newProfileErrorMessage; }
             set { newProfileErrorMessage = value; NotifyPropertyChanged("NewProfileErrorMessage"); }
+        }
+
+        private bool chooseProfileEnabled;
+        public bool ChooseProfileEnabled
+        {
+            get { return chooseProfileEnabled; }
+            set { chooseProfileEnabled = value; NotifyPropertyChanged("ChooseProfileEnabled"); }
         }
 
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IEPP.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,38 @@ namespace IEPP.Views
     /// </summary>
     public partial class SettingsControl : UserControl
     {
-        public SettingsControl()
+        private TabContentVM vm;
+        private bool loaded = false;
+        public SettingsControl(MainVM mainVM)
         {
             InitializeComponent();
+            vm = DataContext as TabContentVM;
+            vm.MainWinDC = mainVM;
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            //vm.MainWinDC.bgWorker.DoWork += vm.MainWinDC.bgWorker_LoadHistory;
+            HistoryList.GetBindingExpression(ItemsControl.ItemsSourceProperty).UpdateTarget();
+            loaded = true;
+        }
+
+        public void LoadHistoryUI()
+        {
+            vm.HistoryLoadingTextVisibility = Visibility.Collapsed;
+        }
+
+        private async void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (loaded)
+            {
+                if (vm.SelectedSettingsTab == 1)
+                {
+                    await vm.LoadHistory();
+                }
+                else
+                    Console.WriteLine("not 1");
+            }
         }
     }
 }

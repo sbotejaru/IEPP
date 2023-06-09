@@ -1,12 +1,16 @@
 tabs title from webpage v
 tabs favicon from webpage v
-tabs animation on resize kinda?
+tabs animation on resize v kinda?
 tabs resize when they dont fit v
-bookmark 
-history 
-downloads
+bookmark v
+history v
+downloads 
 search
 
+choose profile and mainwindow 2 different windows for making profile change posssible and for better manipulation
+maybe load icons directly from class and call iconhandler only to download? prob the same thing
+
+load history when settings are open/history tab is open - READ ONLY A PORTION OF THE JSON (test if it works ok) AND LOAD MORE AS THE USER SCROLLS DOWN. see chat
 
 menu button dropdown
 
