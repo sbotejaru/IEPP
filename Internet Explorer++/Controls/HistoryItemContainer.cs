@@ -65,7 +65,7 @@ namespace IEPP.Controls
                 domain = value;
                 IconHandler.GetFavIcon(Url, domain);
             }
-        } // for favicon, load favicon on set
+        }
 
         [JsonProperty]
         public string HostName { get; set; } // for website name

@@ -41,7 +41,6 @@ namespace IEPP.ViewModels
 
         #endregion
 
-        //private string startUrl = "https://google.com";
         private int selectedTabIndex;
         private bool settingsTabOpen = false;
         private string workingDir;
@@ -51,7 +50,17 @@ namespace IEPP.ViewModels
 
         public int SettingsTabIndex { get; set; }
 
+        public Settings SettingsData { get; set; }
+
         public JsonHelper JsonHelper { get; set; }
+
+        private bool bookmarkDeleted;
+
+        public bool BookmarkDeleted
+        {
+            get { return bookmarkDeleted; }
+            set { bookmarkDeleted = value; }
+        }
 
         public string CacheDir
         {
@@ -91,18 +100,20 @@ namespace IEPP.ViewModels
             get { return selectedTabIndex; }
             set
             {
-                SetSeparatorVisibilities(selectedTabIndex, value);
-                selectedTabIndex = value;
+                if (selectedTabIndex != value && selectedTabIndex != -1)
+                    if (selectedTabIndex < Tabs.Count)
+                        Tabs[selectedTabIndex].RemoveBookmarkUI();
 
-                foreach (var tab in Tabs)
+                if (selectedTabIndex != value)
                 {
-                    tab.RemoveBookmarkUI();
+                    SetSeparatorVisibilities(selectedTabIndex, value);
+                    selectedTabIndex = value;
+
+                    NotifyPropertyChanged("SelectedTabIndex");
                 }
 
                 if (selectedTabIndex != -1)
                     Tabs[selectedTabIndex].RefreshBookmarks();
-
-                NotifyPropertyChanged("SelectedTabIndex");
             }
         }
 
@@ -151,10 +162,10 @@ namespace IEPP.ViewModels
         private void CreateUsersDirectory()
         {
             UsersDir = workingDir + "/Users";
-            bool exists = Directory.Exists(usersDir);
+            bool exists = Directory.Exists(UsersDir);
 
             if (!exists)
-                Directory.CreateDirectory(usersDir);
+                Directory.CreateDirectory(UsersDir);
         }
 
         private void SetSeparatorVisibilities(int oldIndex, int newIndex)
@@ -229,78 +240,222 @@ namespace IEPP.ViewModels
             Tabs.Add(newTab);
         }
 
-        public SettingsControl GetSettings()
+        public void AddSettingsTab(int tabIndex)
         {
-            if (SettingsTabIndex != -1 && settingsTabOpen != false)
-                return Tabs[SettingsTabIndex].Content as SettingsControl;
+            if (!settingsTabOpen)
+            {
+                var newTab = new BrowserTab(this, tabIndex)
+                {
+                    Title = "IEPP Settings"
+                };
 
-            return null;
+                Tabs.Add(newTab);
+
+                SelectedTabIndex = Tabs.Count - 1;
+                SettingsTabIndex = SelectedTabIndex;
+
+                if (MaxTabWidth * Tabs.Count > MaxTabsScreenWidth)
+                    ResizeTabs();
+
+                settingsTabOpen = true;
+            }
+            else
+            {
+                SelectedTabIndex = SettingsTabIndex;
+                Tabs[SettingsTabIndex].UpdateSettingsTab(tabIndex);
+            }
+        }
+
+        private void UpdateSettingsTabIndex()
+        {
+            for (int index = 0; index < Tabs.Count; ++index)
+            {
+                if (Tabs[index].IsSettingsTab())
+                    SettingsTabIndex = index;
+            }
         }
 
         public void AddBookmark(Bookmark newBookmark)
         {
+            if (Username == "")
+                return;
+
             Bookmarks.Add(newBookmark.ToContainer(cacheDir));
+            CurrentSessionBookmarksData.Add(newBookmark);
         }
 
         public void AddHistoryItem(HistoryItem newHistoryItem)
         {
-            HistoryData.Insert(0, newHistoryItem);
+            if (Username == "")
+                return;
+
+            CurrentSessionHistoryData.Insert(0, newHistoryItem);
+
+            if (History.Count != 0)
+                History.Insert(0, newHistoryItem.ToContainer());
         }
 
         private void ResizeTabs()
         {
             MaxTabWidth = MaxTabsScreenWidth / Tabs.Count;
-        }        
+        }
 
         public void LoadBookmarks()
         {
-            BookmarksData = JsonHelper.ReadAllBookmarks();
+            SavedBookmarksData = JsonHelper.ReadAllBookmarks();
         }
 
         public void BookmarkDataToUI()
         {
-            foreach (var bookmark in BookmarksData)
+            if (Username == "")
+                return;
+            
+            if (SavedBookmarksData != null)
             {
-                Bookmarks.Add(bookmark.ToContainer(CacheDir));
+                foreach (var bookmark in SavedBookmarksData)
+                {
+                    Bookmarks.Add(bookmark.ToContainer(CacheDir));
+                }
+
+                SavedBookmarksData.Clear();
+            }
+        }
+
+        public void LoadHistory(int scrollNumber)
+        {
+            if (Username == "")
+                return;
+
+            if (scrollNumber == 0)
+                SavedHistoryData = JsonHelper.ReadPartialHistory();
+            else
+            {
+                JsonHelper.StartRange = scrollNumber * 50 + 1; // adding 1 because previous last item will be the next first item, so we skip it
+                var temp = JsonHelper.ReadPartialHistory();
+
+                if (temp != null)
+                    TemporaryHistoryData.AddRange(temp);
+            }
+        }
+
+        public async Task LoadTemporaryHistoryData()
+        {
+            await LoadHistoryDataToUI(TemporaryHistoryData, false);
+        }
+
+        public async Task LoadHistoryDataToUI(List<HistoryItem> historyItems, bool isCurrentSessionData)
+        {
+            int batchSize = 5; // Number of items to process per batch
+            int currentIndex = 0; // Current index of HistoryData being processed
+
+            while (currentIndex < historyItems.Count)
+            {
+                // Get the next batch of HistoryData to process
+                var batchData = historyItems.Skip(currentIndex).Take(batchSize).ToList();
+
+                // Process the batch of HistoryData asynchronously
+                await Task.Run(() =>
+                {
+                    // Update the UI on the UI thread
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        var batchUI = new List<HistoryItemContainer>();
+
+                        // Convert the batchData to HistoryUI elements
+                        foreach (var historyItem in batchData)
+                        {
+                            // Convert historyItem to HistoryUI and add it to the batchUI list
+                            // ...
+                            batchUI.Add(historyItem.ToContainer());
+                        }
+
+                        // Add the batchUI elements to the ObservableCollection
+                        foreach (var historyUI in batchUI)
+                        {
+                            if (isCurrentSessionData)
+                                CurrentSessionHistory.Add(historyUI);
+                            else
+                                History.Add(historyUI);
+                        }
+                    });
+                });
+
+                // Increase the currentIndex to process the next batch
+                currentIndex += batchSize;
+
+                // Delay to allow the UI to remain responsive
+                await Task.Delay(0); // Adjust the delay duration as needed
+            }
+        }
+
+        public void LoadSettings()
+        {
+            SettingsData = JsonHelper.ReadSettings();
+        }
+
+        public void ApplySettingsChanges()
+        {
+            foreach (var tab in Tabs)
+            {
+                tab.ApplySettingsChanges(SettingsData);
+            }
+        }
+
+        private void SaveHistoryData()
+        {
+            BackgroundWorker bw = new BackgroundWorker();
+            bw.DoWork += BgWorker_SaveHistory;
+            bw.RunWorkerAsync();
+        }
+
+        private void SaveBookmarkData()
+        {
+            BackgroundWorker bw = new BackgroundWorker();
+            bw.DoWork += BgWorker_SaveBookmarks;
+            bw.RunWorkerAsync();
+        }
+
+        public void SaveSettingsData()
+        {
+            BackgroundWorker bw = new BackgroundWorker();
+            bw.DoWork += BgWorker_SaveSettings;
+            bw.RunWorkerAsync();
+        }
+
+        private void BgWorker_SaveHistory(object sender, DoWorkEventArgs e)
+        {
+            if (CurrentSessionHistoryData.Count == 0)
+                return;
+
+            var savedHistoryList = JsonHelper.ReadAllHistory();
+            if (savedHistoryList == null || savedHistoryList.Count == 0)
+            {
+                JsonHelper.Save(CurrentSessionHistoryData, "history");
+                return;
             }
 
-            BookmarksData.Clear();
+            CurrentSessionHistoryData.AddRange(savedHistoryList);
+            savedHistoryList.Clear();
+            JsonHelper.Save(CurrentSessionHistoryData, "history");
+            CurrentSessionHistoryData.Clear();
         }
 
-        public void HistoryDataToUI()
+        private void BgWorker_SaveBookmarks(object sender, DoWorkEventArgs e)
         {
-            /*Thread t = new Thread(() =>
+            if (CurrentSessionBookmarksData.Count == 0 && !BookmarkDeleted)
+                return;
+
+            App.Current.Dispatcher.Invoke(() => JsonHelper.Save(Bookmarks, "bookmarks"));
+            //Bookmarks.Clear();
+        }
+
+        private void BgWorker_SaveSettings(object sender, DoWorkEventArgs e)
+        {
+            if (SettingsData != null)
             {
-                foreach (var historyItem in HistoryData)
-                {
-                    History.Add(historyItem.ToContainer());
-                }
-            });
-
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
-            *//*await Task.Run(() =>
-            {
-                foreach (var historyItem in HistoryData)
-                {
-                    History.Add(historyItem.ToContainer());
-                }
-            });*//*            
-
-            //HistoryData.Clear();*/
-        }
-
-        public void LoadHistory()
-        {
-            JsonHelper.StartRange = 80;
-            HistoryData = JsonHelper.ReadPartialHistory();
-        }
-
-        public void LoadUserData()
-        {
-            LoadBookmarks();
-            LoadHistory();
-            //
+                JsonHelper.Save(SettingsData, "settings");
+                SettingsData = null;
+            }
         }
 
         public void InitCef()
@@ -311,7 +466,8 @@ namespace IEPP.ViewModels
                 settings.CachePath = UserPath + "/cache";
 
             settings.CefCommandLineArgs.Add("disable-threaded-scrolling", "1");
-            Cef.Initialize(settings); // closing from chooseprofile after selecting user first time crashes ??? not anymore :)
+            settings.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36 /CefSharp Browser" + Cef.CefSharpVersion;
+            Cef.Initialize(settings);
         }
 
         private void Init()
@@ -320,8 +476,13 @@ namespace IEPP.ViewModels
             Tabs = new ObservableCollection<BrowserTab>();
             Bookmarks = new ObservableCollection<BookmarkContainer>();
             History = new ObservableCollection<HistoryItemContainer>();
-            BookmarksData = new List<Bookmark>();
-            HistoryData = new List<HistoryItem>();
+            CurrentSessionHistory = new ObservableCollection<HistoryItemContainer>();
+            SavedBookmarksData = new List<Bookmark>();
+            CurrentSessionBookmarksData = new List<Bookmark>();
+            SavedHistoryData = new List<HistoryItem>();
+            CurrentSessionHistoryData = new List<HistoryItem>();
+            TemporaryHistoryData = new List<HistoryItem>();
+            BookmarkDeleted = false;
             MaxTabWidth = defaultMaxTabWidth;
             SettingsTabIndex = -1;
             CreateAppDirectory();
@@ -338,8 +499,12 @@ namespace IEPP.ViewModels
         public ObservableCollection<BrowserTab> Tabs { get; set; }
         public ObservableCollection<BookmarkContainer> Bookmarks { get; set; }
         public ObservableCollection<HistoryItemContainer> History { get; set; }
-        public List<Bookmark> BookmarksData { get; set; }
-        public List<HistoryItem> HistoryData { get; set; }
+        public ObservableCollection<HistoryItemContainer> CurrentSessionHistory { get; set; }
+        public List<Bookmark> SavedBookmarksData { get; set; }
+        public List<Bookmark> CurrentSessionBookmarksData { get; set; }
+        public List<HistoryItem> SavedHistoryData { get; set; }
+        public List<HistoryItem> TemporaryHistoryData { get; set; }
+        public List<HistoryItem> CurrentSessionHistoryData { get; set; }
 
         public MainVM()
         {
@@ -350,10 +515,14 @@ namespace IEPP.ViewModels
                 foreach (var tab in Tabs)
                     tab.Dispose();
 
-                //JsonHelper.Save(BookmarksData, "bookmarks");
-                //JsonHelper.Save(HistoryData, "history");
+                if (UserPath != "")
+                {
+                    SaveHistoryData();
+                    SaveBookmarkData();
+                    SaveSettingsData();
+                }
 
-                this.Dispose();
+                Dispose();
             });
 
             MaximizeCommand = new RelayCommand(o =>
@@ -375,16 +544,21 @@ namespace IEPP.ViewModels
                     settingsTabOpen = false;
                     SettingsTabIndex = -1;
                     History.Clear();
+                    CurrentSessionHistory.Clear();
+                    JsonHelper.NoMoreHistoryItems = false;
                 }
 
                 Tabs[closedIndex].Dispose();
                 Tabs.Remove(closedTab);
 
                 if (Tabs.Count == 0)
-                    this.Dispose();
+                    Dispose();
 
                 if (MaxTabWidth != defaultMaxTabWidth)
                     ResizeTabs();
+
+                if (settingsTabOpen)
+                    UpdateSettingsTabIndex();
             });
 
             AddTabCommand = new RelayCommand(o =>

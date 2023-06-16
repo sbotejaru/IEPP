@@ -28,5 +28,21 @@ namespace IEPP.Models
                 HostName = HostName
             };
         }
+
+        public static bool operator == (HistoryItem h1, HistoryItem h2)
+        {
+            if (ReferenceEquals(h1, h2))
+                return true;
+
+            if (ReferenceEquals(h2, null))
+                return false;
+
+            if (ReferenceEquals(h1, null))
+                return false;
+
+            return h1.BrowseDate == h2.BrowseDate && h1.Title == h2.Title && h1.Url == h2.Url;
+        }
+
+        public static bool operator !=(HistoryItem h1, HistoryItem h2) => !(h1 == h2);
     }
 }

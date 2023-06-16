@@ -53,18 +53,6 @@ namespace IEPP.Views
             vm.Url = url;
         }
 
-        public TabContent(MainVM mainDC, Settings settings)
-        {
-            vm = DataContext as TabContentVM;
-            vm.MainWinDC = mainDC;
-        }
-
-        public TabContent(MainVM mainDC, string url, Settings settings)
-        {
-            vm = DataContext as TabContentVM;
-            vm.MainWinDC = mainDC;
-        }
-
         private void run_cmd()
         {
             ScriptEngine engine = Python.CreateEngine();
@@ -92,11 +80,8 @@ namespace IEPP.Views
                 UserTestPopup.Visibility = Visibility.Collapsed;*/
 
             var mainWindow = Application.Current.MainWindow as MainWindow;
-            mainWindow.InitChooseProfile();
-            mainWindow.ChooseProfile.UserListGrid.IsEnabled = true;
-            mainWindow.ChooseProfile.IsEnabled = true;
-            mainWindow.BrowserTabs.Visibility = Visibility.Collapsed;
-            mainWindow.ChooseProfile.Visibility = Visibility.Visible;
+            mainWindow.ChangeVisibilityToChooseProfile();
+            // place all this into a function inside mainwindow.xaml.cs
         }
 
         private void webBrowser_Loaded(object sender, RoutedEventArgs e)
@@ -111,6 +96,11 @@ namespace IEPP.Views
         {
             this.SearchBar.Text = this.webBrowser.Address;
             addressChanged = true;
+            if (browserLoaded)
+            {
+                vm.CheckBookmarkedAddress(webBrowser.Address);
+                vm.CheckSecureAddress(webBrowser.Address);
+            }
         }
 
         private void SearchBar_LostFocus(object sender, RoutedEventArgs e)
@@ -170,7 +160,7 @@ namespace IEPP.Views
         {
             //(DataContext as TabContentVM).LoadMainDC();
             //if (vm.MainWinDC.Bookmarks.Count != 0)
-               // BookmarkList.GetBindingExpression(ItemsControl.ItemsSourceProperty).UpdateTarget();
+            // BookmarkList.GetBindingExpression(ItemsControl.ItemsSourceProperty).UpdateTarget();
         }
 
         public void RefreshBookmarkList()
@@ -197,6 +187,27 @@ namespace IEPP.Views
         private void BookmarkList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             BookmarkList.UnselectAll();
+        }
+
+        private void SettingsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            vm.AddSettingsTabCommand.Execute(0);
+        }
+
+        private void HistoryMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            vm.AddSettingsTabCommand.Execute(1); // not loading history
+        }
+
+        private void BookmarksMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            vm.AddSettingsTabCommand.Execute(2);
+        }
+
+        private void DownloadsBookmarkItem_Click(object sender, RoutedEventArgs e)
+        {
+            vm.AddSettingsTabCommand.Execute(3);
+
         }
     }
 }

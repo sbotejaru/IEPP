@@ -311,7 +311,8 @@
 
                                     <Button Grid.Column="2" Width="16" Height="16" Margin="0,0,5,0" Style="{DynamicResource RoundButton}" x:Name="CloseTabButton"                                           
                                             Command="{Binding DataContext.CloseTabCommand, RelativeSource={RelativeSource AncestorType={x:Type controls:BrowserTab}}}"
-                                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type controls:BrowserTab}}}">
+                                            CommandParameter="{Binding RelativeSource=
+                                                    {RelativeSource AncestorType={x:Type controls:BrowserTab}}}">
                                         <Image Source="/Icons/stop.png"/>
                                     </Button>
                                 </Grid>
@@ -324,6 +325,10 @@
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter Property="Background" TargetName="border" Value="{DynamicResource BackgroundColor}"/>
                                 <Setter Property="BorderThickness" TargetName="RightBorder" Value="0"/>
+                            </Trigger>
+
+                            <Trigger Property="Title" Value="IEPP Settings">
+                                <Setter Property="Source" TargetName="FavIcon" Value="/Icons/settings.png"/>
                             </Trigger>
 
                             <Trigger Property="IsSelected" Value="False">
@@ -407,9 +412,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-        <!--Tooltip Style TODO-->
-
 
         <!--Fade in ListBox-->
         <Style TargetType="{x:Type controls:UserListBox}" x:Key="ProfileList">

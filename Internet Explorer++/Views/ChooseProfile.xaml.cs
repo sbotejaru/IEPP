@@ -23,8 +23,9 @@ namespace IEPP.Views
     /// </summary>
     public partial class ChooseProfile : UserControl
     {
+        private readonly ChooseProfileVM dc;
+        public bool FirstSelection { get; set; }
 
-        private ChooseProfileVM dc;
         public string UsersDir
         {
             get { return (string)GetValue(UsersDirProperty); }
@@ -38,6 +39,7 @@ namespace IEPP.Views
         {
             InitializeComponent();
             dc = DataContext as ChooseProfileVM;
+            FirstSelection = true;
         }
 
         private void SetChooseProfileToVisible(bool isVisible)
@@ -55,15 +57,28 @@ namespace IEPP.Views
         {
             UserListGrid.IsEnabled = false;
             this.IsEnabled = false;
-            await Task.Delay(400);
+
+            if (FirstSelection)
+                await Task.Delay(400);
+            else
+                await Task.Delay(0);
 
             Visibility = Visibility.Collapsed;
         }
 
-        private void UserListGrid_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            //await Task.Delay(10);
-            //this.IsEnabled = false;
+            dc.SelectedUser = new UserContainer() { Username = "" };
+
+            UserListGrid.IsEnabled = false;
+            this.IsEnabled = false;
+
+            if (FirstSelection)
+                await Task.Delay(400);
+            else
+                await Task.Delay(0);
+
+            Visibility = Visibility.Collapsed;
         }
     }
 }

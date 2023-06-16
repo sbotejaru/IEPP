@@ -16,6 +16,7 @@ using IEPP.ViewModels;
 using CefSharp.Wpf;
 using CefSharp.DevTools.HeapProfiler;
 using System.Collections.ObjectModel;
+using IEPP.Models;
 
 namespace IEPP.Controls
 {
@@ -32,7 +33,7 @@ namespace IEPP.Controls
 
         public static readonly DependencyProperty FavIconSourceProperty =
             DependencyProperty.Register("FavIconSource", typeof(BitmapImage), typeof(BrowserTab), new PropertyMetadata(null));
-        
+
         public static readonly DependencyProperty TitleProperty =
             DependencyProperty.Register("Title", typeof(string), typeof(BrowserTab), new PropertyMetadata(null));
 
@@ -45,8 +46,8 @@ namespace IEPP.Controls
         }
 
         public string Title
-        { 
-            get { return (string)GetValue(TitleProperty); } 
+        {
+            get { return (string)GetValue(TitleProperty); }
             set { SetValue(TitleProperty, value); NotifyPropertyChanged("Title"); }
         }
 
@@ -73,14 +74,14 @@ namespace IEPP.Controls
             }
 
             return null;
-        }        
+        }
 
         public void Dispose()
         {
             if (this.Content as TabContent != null)
             {
                 var tabDataContext = (this.Content as TabContent).DataContext as TabContentVM;
-                tabDataContext.Dispose();                
+                tabDataContext.Dispose();
                 this.Content = null;
             }
         }
@@ -120,6 +121,17 @@ namespace IEPP.Controls
             return null;
         }
 
+        public void ApplySettingsChanges(Settings s)
+        {
+            if (this.Content as TabContent != null)
+            {
+                var tabDataContext = (this.Content as TabContent).DataContext as TabContentVM;
+                tabDataContext.BookmarkBarIsVisible = s.BookmarkVisible;
+                tabDataContext.CurrentSearchEngine = s.SearchEngine;
+                tabDataContext.DownloadsFolderPath = s.DownloadsFolder;
+            }
+        }
+
         public BrowserTab(TabType tabType, MainVM mainDC)
         {
             DisplayHandler = new DisplayHandler();
@@ -136,18 +148,56 @@ namespace IEPP.Controls
                 case TabType.Settings:
                     this.Content = new SettingsControl(mainDC);
                     InitializeSettings();
-                    break;                    
+                    break;
             }
 
             GetTabControl();
         }
 
+        /// <summary>
+        /// Only for settings tab.
+        /// </summary>
+        /// <param name="mainDC"></param>
+        /// <param name="settingsTabIndex"></param>
+        public BrowserTab(MainVM mainDC, int settingsTabIndex)
+        {
+            DisplayHandler = new DisplayHandler();
+
+            this.Content = new SettingsControl(mainDC, settingsTabIndex);
+            InitializeSettings();
+
+            GetTabControl();
+        }
+
+        /// <summary>
+        /// Only for browser tab.
+        /// </summary>
+        /// <param name="mainDC"></param>
+        /// <param name="url"></param>
         public BrowserTab(MainVM mainDC, string url)
         {
             DisplayHandler = new DisplayHandler();
 
             this.Content = new TabContent(mainDC, url);
             InitializeBrowser();
+
+            GetTabControl();
+        }
+
+        public bool IsSettingsTab()
+        {
+            if (this.Content as SettingsControl != null)
+                return true;
+
+            return false;
+        }
+
+        public void UpdateSettingsTab(int tabIndex)
+        {
+            var settings = this.Content as SettingsControl;
+
+            if (settings != null)
+                settings.UpdateSelectedTab(tabIndex);
         }
 
         public BrowserTab(TabContent browser)
@@ -161,7 +211,7 @@ namespace IEPP.Controls
             if (tabContent != null)
             {
                 tabContent.RefreshBookmarkList();
-            }            
+            }
         }
 
         public void RemoveBookmarkUI()

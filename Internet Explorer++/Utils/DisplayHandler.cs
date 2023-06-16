@@ -47,52 +47,6 @@ namespace IEPP.Utils
             set { _favIcon = value; OnPropertyChanged("FavIcon"); }
         }
 
-        /*private BitmapDecoder _decoder;
-        private BitmapDecoder Decoder
-        {
-            get => _decoder;
-            set
-            {
-                if (_decoder != null) _decoder.DownloadCompleted -= decoderDownloadCompleted;
-                _decoder = value;
-                if (_decoder != null) _decoder.DownloadCompleted += decoderDownloadCompleted;
-            }
-        }
-
-        private void decoderDownloadCompleted(object sender, EventArgs e)
-        {
-            if (downloadForTab)
-                FavIcon = Decoder.Frames.OrderBy(f => f.Width).FirstOrDefault();
-
-            SaveFavIconToCache(currentDomainName + ".png");
-
-            Decoder = null;
-        }
-
-        private void SaveFavIconToCache(string filename)
-        {
-            BitmapEncoder encoder = new PngBitmapEncoder();
-            encoder.Frames.Add(Decoder.Frames.OrderBy(f => f.Width).FirstOrDefault());
-
-            var filePath = cacheDirPath + '/' + filename;
-
-            if (!File.Exists(filePath))
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    encoder.Save(fileStream);
-                }
-        }
-
-        public void DownloadFavIcon(Uri url, bool forTab)
-        {
-            downloadForTab = forTab;
-
-            string favIconUrl = "http://www.google.com/s2/favicons?domain=";
-            var baseUrl = url.GetLeftPart(UriPartial.Authority);
-
-            Decoder = BitmapDecoder.Create(new Uri(favIconUrl + baseUrl + "&sz=32"), BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.None);
-        }*/
-
         protected void OnPropertyChanged(string propertyName)
         {
             if (!Application.Current.Dispatcher.CheckAccess())
@@ -109,10 +63,9 @@ namespace IEPP.Utils
 
                 if (oldDomain != newDomain || firstLoad)
                 {
-                    var domainParser = new DomainParser(new WebTldRuleProvider());
-                    var domainName = domainParser.Parse(newDomain).Domain;
+                    string fullDomain = newDomain.Replace("/www.", "/").Replace("http://", "").Replace("https://", "").ToString();
 
-                    iconHandler.GetFavIcon(addressChangedArgs.Address, domainName);
+                    iconHandler.GetFavIcon(addressChangedArgs.Address, fullDomain);
 
                     firstLoad = false;
                 }
@@ -130,7 +83,7 @@ namespace IEPP.Utils
         }
 
         public void OnFaviconUrlChange(IWebBrowser chromiumWebBrowser, IBrowser browser, IList<string> urls)
-        { 
+        {
         }
 
         public void OnFullscreenModeChange(IWebBrowser chromiumWebBrowser, IBrowser browser, bool fullscreen)

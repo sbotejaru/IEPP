@@ -128,7 +128,7 @@ namespace IEPP.Views
         private void bgWorker_LoadHistory(object sender, DoWorkEventArgs e)
         {
             if (!historyLoaded)
-                dataContextVM.LoadHistory();
+                dataContextVM.LoadHistory(0);
         }
 
         private void bgWorker_LoadBookmarks(object sender, DoWorkEventArgs e)
@@ -136,14 +136,19 @@ namespace IEPP.Views
             dataContextVM.LoadBookmarks();
         }
 
+        private void bgWorker_LoadSettings(object sender, DoWorkEventArgs e)
+        {
+            dataContextVM.LoadSettings();
+        }
+
+        private void bgWorker_LoadSettingsCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            bgWorker = null;
+            StartBookmarksLoad();
+        }
+
         private void bgWorker_LoadHistoryCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            /*Dispatcher.Invoke(() =>
-            {
-                dataContextVM.HistoryDataToUI();
-                dataContextVM.GetSettings().LoadHistoryUI();
-            });*/
-
             historyLoaded = true;
         }
 
@@ -158,8 +163,17 @@ namespace IEPP.Views
             StartHistoryLoad();
         }
 
+        private void StartDataLoad()
+        {
+            bgWorker = new BackgroundWorker();
+            bgWorker.DoWork += bgWorker_LoadSettings;
+            bgWorker.RunWorkerCompleted += bgWorker_LoadSettingsCompleted;
+            bgWorker.RunWorkerAsync();
+        }
+
         private void StartBookmarksLoad()
         {
+            bgWorker = new BackgroundWorker();
             bgWorker.DoWork += bgWorker_LoadBookmarks;
             bgWorker.RunWorkerCompleted += bgWorker_LoadBookmarksCompleted;
             bgWorker.RunWorkerAsync();
@@ -187,6 +201,7 @@ namespace IEPP.Views
                         dataContextVM.UserPath = chooseProfileDC.CurrentUserPath;
                         dataContextVM.InitCef();
 
+                        dataContextVM.LoadSettings();
                         StartBookmarksLoad();
 
                         dataContextVM.AddTabCommand.Execute(null);
@@ -196,11 +211,20 @@ namespace IEPP.Views
 
                 BrowserTabs.Visibility = Visibility.Visible;
             }
-            else if (e.NewValue.ToString() == "True")
+            /*else if (e.NewValue.ToString() == "True")
             {
-                //InitChooseProfile();
                 BrowserTabs.Visibility = Visibility.Collapsed;
-            }
+            }*/
+        }
+
+        public void ChangeVisibilityToChooseProfile()
+        {
+            InitChooseProfile();
+            ChooseProfile.FirstSelection = false;
+            ChooseProfile.UserListGrid.IsEnabled = true;
+            ChooseProfile.IsEnabled = true;
+            BrowserTabs.Visibility = Visibility.Collapsed;
+            ChooseProfile.Visibility = Visibility.Visible;
         }
     }
 }

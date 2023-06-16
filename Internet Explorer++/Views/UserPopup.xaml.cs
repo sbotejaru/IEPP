@@ -18,9 +18,9 @@ namespace IEPP.Views
     /// <summary>
     /// Interaction logic for UserTest.xaml
     /// </summary>
-    public partial class UserTest : UserControl
+    public partial class UserPopup : UserControl
     {
-        public UserTest()
+        public UserPopup()
         {
             InitializeComponent();
         }

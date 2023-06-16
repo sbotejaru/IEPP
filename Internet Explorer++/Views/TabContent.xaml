@@ -32,7 +32,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="2" Grid.ColumnSpan="3" Height="Auto" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Grid Grid.Row="2" Grid.ColumnSpan="3" Height="Auto" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="{Binding BookmarkBarVisibility}">
                 <ListBox Background="Transparent" ItemContainerStyle="{StaticResource ListBoxItemStyleTransparentSelect}"
                          ScrollViewer.HorizontalScrollBarVisibility="Disabled" Foreground="White" ItemsSource="{Binding Bookmarks}"
                          BorderBrush="Transparent" BorderThickness="0" 
@@ -111,7 +111,7 @@
             </Button>
 
             <!--Secure button-->
-            <Viewbox Height="20" Width="20" Grid.Column="1" HorizontalAlignment="Left" Margin="13,0,0,0" ToolTip="Website is secure" ToolTipService.InitialShowDelay="400">
+            <Viewbox Height="20" Width="20" Grid.Column="1" HorizontalAlignment="Left" Margin="13,0,0,0" ToolTip="{Binding SecureIconToolTip}" ToolTipService.InitialShowDelay="400">
                 <Image Source="{Binding SecureIconPath}" Width="17" Height="18"/>
             </Viewbox>
 
@@ -139,11 +139,11 @@
                             ToolTip="Menu" ToolTipService.InitialShowDelay="400" Click="MainButton_Click">
                         <Image Source="/Icons/Menu.png" Height="25" Width="25"/>
                         <Button.ContextMenu>
-                            <ContextMenu Name="MainContextMenu" Background="Red" Margin="0,10,0,0" PlacementRectangle="{Binding RelativeSource={RelativeSource Self}}">
-                                <MenuItem Header="Settings"/>
-                                <MenuItem Header="History"/>
-                                <MenuItem Header="Bookmarks"/>
-                                <MenuItem Header="Settings"/>
+                            <ContextMenu Name="MainContextMenu" Margin="0,10,0,0">
+                                <MenuItem Header="Settings" Name="SettingsMenuItem" Click="SettingsMenuItem_Click"/>
+                                <MenuItem Header="History" Name="HistoryMenuItem" Click="HistoryMenuItem_Click"/>
+                                <MenuItem Header="Bookmarks" Name="BookmarksMenuItem" Click="BookmarksMenuItem_Click"/>
+                                <MenuItem Header="Downloads" Name="DownloadsBookmarkItem" Click="DownloadsBookmarkItem_Click"/>
                             </ContextMenu>
                         </Button.ContextMenu>                        
                     </Button>
@@ -162,7 +162,7 @@
 
         <!--<Grid Grid.Row="2" Name="contentGrid">-->
         <cef:ChromiumWebBrowser x:Name="webBrowser" WebBrowser="{Binding WebBrowser, Mode=OneWayToSource}" Grid.Row="2"
-                                Loaded="webBrowser_Loaded" Address="{Binding Url}" AddressChanged="webBrowser_AddressChanged"
+                                Loaded="webBrowser_Loaded" Address="{Binding Url, Mode=TwoWay}" AddressChanged="webBrowser_AddressChanged"
                                 LoadingStateChanged="webBrowser_LoadingStateChanged" TitleChanged="webBrowser_TitleChanged"
                                 >
         </cef:ChromiumWebBrowser>

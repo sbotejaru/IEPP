@@ -56,14 +56,15 @@ namespace IEPP.Utils
 
             SaveFavIconToCache(domainName + ".png");
             Decoder = null;
-
-            Console.WriteLine("download");
         }
 
         private void GetDomainName(string url)
         {
-            var domainParser = new DomainParser(new WebTldRuleProvider());
-            domainName = domainParser.Parse(url).Domain;
+            domainName = new Uri(url).GetLeftPart(UriPartial.Authority)
+                .Replace("/www.", "/")
+                .Replace("http://", "")
+                .Replace("https://", "")
+                .ToString();
         }
 
         private void SaveFavIconToCache(string filename)
@@ -72,7 +73,6 @@ namespace IEPP.Utils
             encoder.Frames.Add(Decoder.Frames.OrderBy(f => f.Width).FirstOrDefault());
 
             imagePath = cacheDirPath + '/' + filename;
-            Console.WriteLine(imagePath);
 
             if (!File.Exists(imagePath))
                 using (var fileStream = new FileStream(imagePath, FileMode.Create))
@@ -84,8 +84,6 @@ namespace IEPP.Utils
         {
             string favIconUrl = "http://www.google.com/s2/favicons?domain=";
             var baseUrl = url.GetLeftPart(UriPartial.Authority);
-
-            //GetDomainName(baseUrl);
 
             Decoder = BitmapDecoder.Create(new Uri(favIconUrl + baseUrl + "&sz=32"), BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.None);
         }
@@ -115,8 +113,7 @@ namespace IEPP.Utils
 
         public FavIconHandler()
         {
-            App.Current.Dispatcher.Invoke(() => cacheDirPath = (App.Current.MainWindow.DataContext as MainVM).CacheDir)
-            ;
+            App.Current.Dispatcher.Invoke(() => cacheDirPath = (App.Current.MainWindow.DataContext as MainVM).CacheDir);
         }
     }
 }

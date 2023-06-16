@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IEPP.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,8 @@ namespace IEPP.Models
 {
     public class Settings
     {
-        public Uri StartUrl { get; set; }
-
+        public SearchEngine SearchEngine { get; set; }
+        public bool BookmarkVisible { get; set; } = true;
+        public string DownloadsFolder { get; set; }
     }
 }

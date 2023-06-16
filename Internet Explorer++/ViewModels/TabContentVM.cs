@@ -14,6 +14,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using IEPP.Enums;
+using System.Dynamic;
 
 namespace IEPP.ViewModels
 {
@@ -28,28 +30,65 @@ namespace IEPP.ViewModels
         }
         #endregion
 
-        private string url = "https://google.com";
-        private string isSecureIconPath = "/Icons/lock.png";
+        private readonly string isSecureIconPath = "/Icons/lock.png";
         private readonly string isNotSecureIconPath = "/Icons/warning.png";
         private readonly string isBookmarkedIconPath = "/Icons/star_full.png";
-        private string bookmarkedIconPath = "/Icons/star_full.png";
         private readonly string isNotBookmarkedIconPath = "/Icons/star.png";
         private string searchBarText;
-        private string pageTitle;
-        private bool historyLoaded;
         private readonly Regex urlRegex = new Regex("^[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$");
-        //private Regex HttpsUrlRegex = new Regex("^https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$");
-        private readonly Regex httpUrlRegex = new Regex("^(http|https)?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$");
+        private readonly Regex secureUrlRegex = new Regex("^https:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$");
+        private readonly Regex httpUrlRegex = new Regex("^https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$");
 
-        private void Search(string searchUrl/*engineType?*/)
+        private void Search(string searchUrl)
         {
-            /* switch by search engine saved in settings
-            string googleSearch = "https://google.com/search?q=";
-            string yandexSearch = "https://yandex.com/search/?text=";
-            string duckSearch = "https://duckduckgo.com/?q=";
-            string yahooSearch = "https://search.yahoo.com/search?p=";
-            string bingSearch = "https://www.bing.com/search?q=";
-            */
+            switch (CurrentSearchEngine)
+            {
+                case SearchEngine.Google:
+                    string googleSearch = "https://google.com/search?q=";
+                    WebBrowser.Load(googleSearch + searchUrl);
+                    break;
+                case SearchEngine.Bing:
+                    string bingSearch = "https://www.bing.com/search?q=";
+                    WebBrowser.Load(bingSearch + searchUrl);
+                    break;
+                case SearchEngine.DuckDuckGo:
+                    string duckSearch = "https://duckduckgo.com/?q=";
+                    WebBrowser.Load(duckSearch + searchUrl);
+                    break;
+                case SearchEngine.Yandex:
+                    string yandexSearch = "https://yandex.com/search/?text=";
+                    WebBrowser.Load(yandexSearch + searchUrl);
+                    break;
+                case SearchEngine.Yahoo:
+                    string yahooSearch = "https://search.yahoo.com/search?p=";
+                    WebBrowser.Load(yahooSearch + searchUrl);
+                    break;
+                default:
+                    string googleSearch2 = "https://google.com/search?q=";
+                    WebBrowser.Load(googleSearch2 + searchUrl);
+                    break;
+            }
+        }
+
+        private string GetSearchEngineURL()
+        {
+            BookmarkBarVisibility = Visibility.Visible;
+
+            switch (CurrentSearchEngine)
+            {
+                case SearchEngine.Google:
+                    return "https://www.google.com/";
+                case SearchEngine.Bing:
+                    return "https://www.bing.com/";
+                case SearchEngine.DuckDuckGo:
+                    return "https://duckduckgo.com/";
+                case SearchEngine.Yandex:
+                    return "https://yandex.com/";
+                case SearchEngine.Yahoo:
+                    return "https://search.yahoo.com/";
+                default:
+                    return "https://www.google.com/";
+            }
         }
 
         public ChromiumWebBrowser WebBrowser { get; set; }
@@ -78,29 +117,147 @@ namespace IEPP.ViewModels
             {
                 selectedSettingsTab = value;
                 NotifyPropertyChanged("SelectedSettingsTab");
+            }
+        }
 
-                if (selectedSettingsTab == 1 && !historyLoaded)
+        public void CheckBookmarkedAddress(string url)
+        {
+            BookmarkedIconPath = IsBookmarked(url) ? isBookmarkedIconPath : isNotBookmarkedIconPath;
+        }
+
+        public void CheckSecureAddress(string url)
+        {
+            if (secureUrlRegex.IsMatch(url))
+            {
+                SecureIconPath = isSecureIconPath;
+                SecureIconToolTip = "Website is secure.";
+            }
+            else
+            {
+                SecureIconPath = isNotSecureIconPath;
+                SecureIconToolTip = "Website is not secure.";
+            }
+        }
+
+        private bool IsBookmarked(string url)
+        {
+            foreach (var bookmark in Bookmarks)
+            {
+                if (bookmark.Url == url)
                 {
-                    //App.Current.Dispatcher.Invoke(new Action(() => MainWinDC.HistoryDataToUI()), System.Windows.Threading.DispatcherPriority.Background);
-                    //MainWinDC.HistoryDataToUI();
+                    return true;
+                }
+            }
 
-                    //LoadHistory();
+            return false;
+        }
 
-                    historyLoaded = true;
+        public Settings CurrentSettings
+        {
+            get { return MainWinDC.SettingsData; }
+            set
+            {
+                MainWinDC.SettingsData = value;
+            }
+        }
+
+        private bool settingsChanged;
+        public bool SettingsChanged
+        {
+            get => settingsChanged;
+            set
+            {
+                settingsChanged = value;
+
+                if (settingsChanged)
+                    MainWinDC.ApplySettingsChanges();
+            }
+        }
+
+        private SearchEngine currentSearchEngine;
+        public SearchEngine CurrentSearchEngine
+        {
+            get { return currentSearchEngine; }
+            set
+            {
+                if (value != currentSearchEngine)
+                {
+                    currentSearchEngine = value;
+                    CurrentSettings.SearchEngine = currentSearchEngine;
+                    SettingsChanged = true;
+                    NotifyPropertyChanged("CurrentSearchEngine");
+                    NotifyPropertyChanged("SelectedEngineIndex");
                 }
             }
         }
 
+        private string downloadsFolderPath;
+        public string DownloadsFolderPath
+        {
+            get { return downloadsFolderPath; }
+            set
+            {
+                if (value != downloadsFolderPath)
+                {
+                    downloadsFolderPath = value;
+                    CurrentSettings.DownloadsFolder = downloadsFolderPath;
+                    SettingsChanged = true;
+                    NotifyPropertyChanged("DownloadsFolderPath");
+                }
+            }
+        }
+
+        private bool bookmarkBarIsVisible;
+        public bool BookmarkBarIsVisible
+        {
+            get => bookmarkBarIsVisible;
+            set
+            {
+                if (value != bookmarkBarIsVisible)
+                {
+                    bookmarkBarIsVisible = value;
+
+                    CurrentSettings.BookmarkVisible = bookmarkBarIsVisible;
+                    SettingsChanged = true;
+                    NotifyPropertyChanged("BookmarkBarIsVisible");
+                }
+            }
+        }
+
+        public int SelectedEngineIndex
+        {
+            get { return (int)CurrentSearchEngine; }
+            set
+            {
+                CurrentSearchEngine = (SearchEngine)value;
+            }
+        }
+
+        private string url;
         public String Url
         {
             get { return url; }
-            set { url = value; NotifyPropertyChanged("Url"); }
+            set
+            {
+                url = value;
+
+                if (url.Equals(GetSearchEngineURL()))
+                    BookmarkBarVisibility = Visibility.Visible;
+                else
+                    BookmarkBarVisibility = bookmarkBarIsVisible ? Visibility.Visible : Visibility.Collapsed;
+
+                NotifyPropertyChanged("Url");
+            }
         }
+
+        private string secureIconPath;
         public String SecureIconPath
         {
-            get { return isSecureIconPath; }
-            set { isSecureIconPath = value; NotifyPropertyChanged("IsSecureIconPath"); }
+            get { return secureIconPath; }
+            set { secureIconPath = value; NotifyPropertyChanged("SecureIconPath"); }
         }
+
+        private string bookmarkedIconPath;
         public String BookmarkedIconPath
         {
             get { return bookmarkedIconPath; }
@@ -111,10 +268,12 @@ namespace IEPP.ViewModels
             get { return searchBarText; }
             set { searchBarText = value; NotifyPropertyChanged("SearchBarText"); }
         }
-        public String PageTitle
+
+        private string secureIconToolTip;
+        public string SecureIconToolTip
         {
-            get { return pageTitle; }
-            set { pageTitle = value; NotifyPropertyChanged("PageTitle"); }
+            get { return secureIconToolTip; }
+            set { secureIconToolTip = value; NotifyPropertyChanged("SecureIconToolTip"); }
         }
 
         private bool wentBackOrForward;
@@ -128,15 +287,39 @@ namespace IEPP.ViewModels
         public MainVM MainWinDC
         {
             get { return mainWinDC; }
-            set { mainWinDC = value; }
+            set
+            {
+                mainWinDC = value;
+
+                if (!InitSettings())
+                {
+                    Url = "https://google.com";
+                    CurrentSearchEngine = SearchEngine.Google;
+                    BookmarkBarIsVisible = true;
+                    DownloadsFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
+                }
+            }
         }
 
         private Visibility historyLoadingTextVisibility;
-
         public Visibility HistoryLoadingTextVisibility
         {
             get { return historyLoadingTextVisibility; }
             set { historyLoadingTextVisibility = value; NotifyPropertyChanged("HistoryLoadingTextVisibility"); }
+        }
+
+        private bool initialHistoryDataLoaded;
+        public bool InitialHistoryDataLoaded
+        {
+            get { return initialHistoryDataLoaded; }
+            set { initialHistoryDataLoaded = value; }
+        }
+
+        private Visibility bookmarkBarVisibility;
+        public Visibility BookmarkBarVisibility
+        {
+            get { return bookmarkBarVisibility; }
+            set { bookmarkBarVisibility = value; NotifyPropertyChanged("BookmarkBarVisibility"); }
         }
 
         public ObservableCollection<BookmarkContainer> Bookmarks
@@ -149,7 +332,6 @@ namespace IEPP.ViewModels
                 }
                 else
                 {
-                    // Handle the case when the DataContext is not of type MainWindowViewModel
                     return null;
                 }
             }
@@ -157,62 +339,27 @@ namespace IEPP.ViewModels
 
         public async Task LoadHistory()
         {
-            await Task.Run(() =>
-            {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    for (int index = 0; index < MainWinDC.HistoryData.Count; ++index)
-                    {
-                        History.Add(MainWinDC.HistoryData[index].ToContainer());
-                    }
-                });
-            });
+            await MainWinDC.LoadHistoryDataToUI(MainWinDC.CurrentSessionHistoryData, true);
+            await MainWinDC.LoadHistoryDataToUI(MainWinDC.SavedHistoryData, false);
 
-            /*int batchSize = 4; // Number of items to process per batch
-            int currentIndex = 0; // Current index of HistoryData being processed
-
-            while (currentIndex < MainWinDC.HistoryData.Count)
-            {
-                // Get the next batch of HistoryData to process
-                var batchData = MainWinDC.HistoryData.Skip(currentIndex).Take(batchSize).ToList();
-
-                // Process the batch of HistoryData asynchronously
-                await Task.Run(() =>
-                {                  
-                    // Update the UI on the UI thread
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        var batchUI = new List<HistoryItemContainer>();
-
-                        // Convert the batchData to HistoryUI elements
-                        foreach (var historyItem in batchData)
-                        {
-                            // Convert historyItem to HistoryUI and add it to the batchUI list
-                            // ...
-                            batchUI.Add(historyItem.ToContainer());
-                        }
-
-                        // Add the batchUI elements to the ObservableCollection
-                        foreach (var historyUI in batchUI)
-                        {
-                            History.Add(historyUI);
-                        }
-                    });
-                });
-
-                // Increase the currentIndex to process the next batch
-                currentIndex += batchSize;
-
-                // Delay to allow the UI to remain responsive
-                await Task.Delay(0); // Adjust the delay duration as needed
-            }*/
-
-
-            /*foreach (var tab in MainWinDC.HistoryData)
-                History.Add(tab.ToContainer());*/
+            InitialHistoryDataLoaded = true;
         }
 
-        public ObservableCollection<HistoryItemContainer> History { get; set; }
+        private bool InitSettings()
+        {
+            if (CurrentSettings != null)
+            {
+                CurrentSearchEngine = CurrentSettings.SearchEngine;
+                DownloadsFolderPath = CurrentSettings.DownloadsFolder;
+                Url = GetSearchEngineURL();
+                BookmarkBarIsVisible = CurrentSettings.BookmarkVisible;
+
+                return true;
+            }
+
+            CurrentSettings = new Settings();
+            return false;
+        }
 
         public RelayCommand BackCommand { get; set; }
         public RelayCommand ForwardCommand { get; set; }
@@ -220,6 +367,7 @@ namespace IEPP.ViewModels
         public RelayCommand SearchCommand { get; set; }
         public RelayCommand StopLoadCommand { get; set; }
         public RelayCommand AddBookmarkCommand { get; set; }
+        public RelayCommand<int> AddSettingsTabCommand { get; set; }
 
         public void Dispose()
         {
@@ -233,46 +381,41 @@ namespace IEPP.ViewModels
         {
             string date = DateTime.Now.ToString("ddd d MMM, HH:mm");
 
-            var domainParser = new DomainParser(new WebTldRuleProvider());
-            var domainInfo = domainParser.Parse(url);
+            string hostName = new Uri(url).Host;
+            string fullDomain = new Uri(Url).GetLeftPart(UriPartial.Authority)
+                    .Replace("/www.", "/")
+                    .Replace("http://", "")
+                    .Replace("https://", "")
+                    .ToString();
 
-            var domain = domainInfo.Domain;
-            var hostName = domainInfo.Hostname;
-
-            MainWinDC.AddHistoryItem(new HistoryItem()
+            var newHistoryItem = new HistoryItem()
             {
                 Url = url,
                 Title = title,
                 BrowseDate = date,
-                Domain = domain,
+                Domain = fullDomain,
                 HostName = hostName
-            });
-        }
+            };
 
-        private void SaveBookmark()
-        {
-            BookmarkedIconPath = isBookmarkedIconPath;
-
-        }
-
-        private void DeleteBookmark()
-        {
-            BookmarkedIconPath = isNotBookmarkedIconPath;
-
-        }
-
-        private void LoadBookmarks()
-        {
-
+            if (
+                MainWinDC.CurrentSessionHistoryData.Count > 0 &&
+                newHistoryItem != MainWinDC.CurrentSessionHistoryData.Last()
+                )
+                MainWinDC.AddHistoryItem(newHistoryItem);
+            else if (MainWinDC.CurrentSessionHistoryData.Count == 0)
+                MainWinDC.AddHistoryItem(newHistoryItem);
         }
 
         private void Init()
         {
             BookmarkedIconPath = isNotBookmarkedIconPath;
+            SecureIconPath = isSecureIconPath;
             WentBackOrForward = false;
             HistoryLoadingTextVisibility = Visibility.Visible;
-            historyLoaded = false;
-            History = new ObservableCollection<HistoryItemContainer>();
+            InitialHistoryDataLoaded = false;
+            SecureIconToolTip = "Website is secure.";
+
+            //see https://stackoverflow.com/a/39220412 for zoom in/out
         }
 
         public TabContentVM()
@@ -314,19 +457,45 @@ namespace IEPP.ViewModels
                     WebBrowser.Load(SearchBarText);
                 }
                 else // change to Search()
-                    WebBrowser.Load("https://google.com/search?q=" + SearchBarText);
+                    //WebBrowser.Load("https://google.com/search?q=" + SearchBarText);
+                    Search(SearchBarText);
 
             });
 
             AddBookmarkCommand = new RelayCommand(o =>
             {
-                var domainParser = new DomainParser(new WebTldRuleProvider());
-                var domain = domainParser.Parse(WebBrowser.Address).Domain;
-                domainParser = null;
+                if (!IsBookmarked(WebBrowser.Address))
+                {
+                    BookmarkedIconPath = isBookmarkedIconPath;
 
-                MainWinDC.AddBookmark(new Bookmark() { Title = WebBrowser.Title, Url = WebBrowser.Address, Domain = domain });
+                    string fullDomain = new Uri(Url).GetLeftPart(UriPartial.Authority)
+                        .Replace("/www.", "/")
+                        .Replace("http://", "")
+                        .Replace("https://", "")
+                        .ToString();
+
+                    MainWinDC.AddBookmark(new Bookmark() { Title = WebBrowser.Title, Url = WebBrowser.Address, Domain = fullDomain });
+                }
+                else
+                {
+                    foreach (var bookmark in MainWinDC.Bookmarks)
+                    {
+                        if (bookmark.Url == Url)
+                        {
+                            MainWinDC.Bookmarks.Remove(bookmark);
+                            MainWinDC.BookmarkDeleted = true;
+                            break;
+                        }
+                    }
+
+                    BookmarkedIconPath = isNotBookmarkedIconPath;
+                }
             });
 
+            AddSettingsTabCommand = new RelayCommand<int>(index =>
+            {
+                MainWinDC.AddSettingsTab(index);
+            });
         }
     }
 }

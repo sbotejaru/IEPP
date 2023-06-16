@@ -139,12 +139,8 @@ namespace IEPP.ViewModels
             NewProfileErrorMessage = "A profile with that name already exists!";
             FacialHairOpacity = 1;
             HairAttributesOpacity = 1;
-            ChooseProfileEnabled = true;
 
             HideErrors();
-            //CreateAppDirectory();
-            //CreateUsersDirectory();
-            //LoadUsers();
             InitAttrbiuteValues();
         }
 
@@ -232,10 +228,11 @@ namespace IEPP.ViewModels
             {                
                 selectedUser = value;
                 NotifyPropertyChanged("SelectedUser");
-                CurrentUserPath = WorkingDir + "/" + selectedUser.Username;
-                //ChooseProfileEnabled = false;
 
-                //Vis = Visibility.Collapsed;
+                if (selectedUser.Username != "")
+                    CurrentUserPath = WorkingDir + "/" + selectedUser.Username;
+                else
+                    CurrentUserPath = "";
             }
         }
 
@@ -259,14 +256,6 @@ namespace IEPP.ViewModels
             get { return newProfileErrorMessage; }
             set { newProfileErrorMessage = value; NotifyPropertyChanged("NewProfileErrorMessage"); }
         }
-
-        private bool chooseProfileEnabled;
-        public bool ChooseProfileEnabled
-        {
-            get { return chooseProfileEnabled; }
-            set { chooseProfileEnabled = value; NotifyPropertyChanged("ChooseProfileEnabled"); }
-        }
-
 
         // avatar attributes binds
         #region avatar attributes
@@ -407,6 +396,7 @@ namespace IEPP.ViewModels
 
         public ObservableCollection<UserContainer> UserList { get; set; }
         public RelayCommand AddNewProfileCommand { get; set; }
+        public RelayCommand GuestCommand { get; set; }
         public RelayCommand SaveProfileCommand { get; set; }
         public RelayCommand CreateAvatarCommand { get; set; }
         public RelayCommand SaveAvatarCommand { get; set; }
