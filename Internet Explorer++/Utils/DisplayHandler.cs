@@ -10,7 +10,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using Nager.PublicSuffix;
 using System.IO;
 using System.Security.Policy;
 

@@ -8,7 +8,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
-using Nager.PublicSuffix;
 using System.Windows;
 using System.Threading;
 using System.Threading.Tasks;

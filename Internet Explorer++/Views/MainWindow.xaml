@@ -5,11 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:IEPP.Views"
         xmlns:vm="clr-namespace:IEPP.ViewModels"
-        xmlns:ct="clr-namespace:ChromeTabs;assembly=ChromeTabs"
         xmlns:controls="clr-namespace:IEPP.Controls"
         xmlns:utils="clr-namespace:IEPP.Utils"
         mc:Ignorable="d"
-        Title="MainWindow" Height="720" Width="1024" Background="{StaticResource BackgroundColor}" MinWidth="500" MinHeight="500"
+        Title="Internet Explorer++" Height="720" Width="1024" Background="{StaticResource BackgroundColor}" MinWidth="500" MinHeight="500"
         WindowStyle="None" WindowStartupLocation="CenterScreen" StateChanged="Window_StateChanged" Activated="Window_Activated" 
         AllowsTransparency="True" SizeChanged="Window_SizeChanged">
 

@@ -19,6 +19,26 @@
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>D:\IEPP\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateResourceMSBuildArchitecture>CurrentArchitecture</GenerateResourceMSBuildArchitecture>
+    <GenerateResourceMSBuildRuntime>CurrentRuntime</GenerateResourceMSBuildRuntime>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -65,6 +85,18 @@
   <PropertyGroup>
     <ApplicationIcon>IEPP.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>494E03B69763D21D3F737673B841525170D65D14</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>Internet Explorer++_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="CefSharp, Version=109.1.110.0, Culture=neutral, PublicKeyToken=40c4b6fc221f4138, processorArchitecture=MSIL">
       <HintPath>..\packages\CefSharp.Common.109.1.110\lib\net452\CefSharp.dll</HintPath>
@@ -75,21 +107,6 @@
     <Reference Include="CefSharp.Wpf, Version=109.1.110.0, Culture=neutral, PublicKeyToken=40c4b6fc221f4138, processorArchitecture=MSIL">
       <HintPath>..\packages\CefSharp.Wpf.109.1.110\lib\net462\CefSharp.Wpf.dll</HintPath>
     </Reference>
-    <Reference Include="ChromeTabs, Version=1.4.0.0, Culture=neutral, PublicKeyToken=047aad1149606307, processorArchitecture=MSIL">
-      <HintPath>..\packages\WPFChromeTabsMVVM.1.4.0\lib\net40\ChromeTabs.dll</HintPath>
-    </Reference>
-    <Reference Include="IronPython, Version=3.4.0.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
-      <HintPath>..\packages\IronPython.3.4.0\lib\net462\IronPython.dll</HintPath>
-    </Reference>
-    <Reference Include="IronPython.Modules, Version=3.4.0.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
-      <HintPath>..\packages\IronPython.3.4.0\lib\net462\IronPython.Modules.dll</HintPath>
-    </Reference>
-    <Reference Include="IronPython.SQLite, Version=3.4.0.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
-      <HintPath>..\packages\IronPython.3.4.0\lib\net462\IronPython.SQLite.dll</HintPath>
-    </Reference>
-    <Reference Include="IronPython.Wpf, Version=3.4.0.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
-      <HintPath>..\packages\IronPython.3.4.0\lib\net462\IronPython.Wpf.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Dynamic, Version=1.3.3.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
       <HintPath>..\packages\DynamicLanguageRuntime.1.3.3\lib\net452\Microsoft.Dynamic.dll</HintPath>
     </Reference>
@@ -98,9 +115,6 @@
     </Reference>
     <Reference Include="Microsoft.Scripting.Metadata, Version=1.3.3.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
       <HintPath>..\packages\DynamicLanguageRuntime.1.3.3\lib\net452\Microsoft.Scripting.Metadata.dll</HintPath>
-    </Reference>
-    <Reference Include="Nager.PublicSuffix, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Nager.PublicSuffix.2.4.0\lib\netstandard2.0\Nager.PublicSuffix.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -226,6 +240,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.manifest" />
+    <None Include="Internet Explorer++_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -297,6 +312,18 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\settings.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

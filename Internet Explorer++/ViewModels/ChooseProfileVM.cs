@@ -466,7 +466,20 @@ namespace IEPP.ViewModels
 
             GenerateAvatarCommand = new RelayCommand(o =>
             {
-                // handle attributes function
+                using (System.Diagnostics.Process pProcess = new System.Diagnostics.Process())
+                {
+                    pProcess.StartInfo.FileName = "..\\..\\..\\..\\..\\gan test\\dist\\to_onnx\\to_onnx.exe";
+                    //pProcess.StartInfo.Arguments = ""; //argument
+                    pProcess.StartInfo.UseShellExecute = false;
+                    pProcess.StartInfo.RedirectStandardOutput = true;
+                    pProcess.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    pProcess.StartInfo.CreateNoWindow = true; //not diplay a windows
+                    pProcess.Start();
+                    string output = pProcess.StandardOutput.ReadToEnd(); //The output result
+                    pProcess.WaitForExit();
+                    Console.WriteLine(output);
+                }
+                Console.WriteLine("generated");                
             });
 
             RandomizeAvatarCommand = new RelayCommand(o =>

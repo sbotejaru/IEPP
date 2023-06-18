@@ -11,7 +11,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using ChromeTabs;
 using IEPP.Views;
 using System.IO.Pipes;
 using System.Windows.Controls;
@@ -330,7 +329,7 @@ namespace IEPP.ViewModels
                 SavedHistoryData = JsonHelper.ReadPartialHistory();
             else
             {
-                JsonHelper.StartRange = scrollNumber * 50 + 1; // adding 1 because previous last item will be the next first item, so we skip it
+                JsonHelper.StartRange = scrollNumber * JsonHelper.ItemsNumber + 1; // adding 1 because previous last item will be the next first item, so we skip it
                 var temp = JsonHelper.ReadPartialHistory();
 
                 if (temp != null)

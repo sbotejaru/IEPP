@@ -19,7 +19,6 @@ using CefSharp;
 using CefSharp.Wpf;
 using IEPP.Models;
 using IEPP.ViewModels;
-using IronPython.Hosting;
 using Microsoft.Scripting.Hosting;
 
 namespace IEPP.Views
@@ -51,18 +50,6 @@ namespace IEPP.Views
             vm.MainWinDC = mainDC;
 
             vm.Url = url;
-        }
-
-        private void run_cmd()
-        {
-            ScriptEngine engine = Python.CreateEngine();
-            var searchPaths = engine.GetSearchPaths();
-
-            searchPaths.Add(@"D:\Anaconda\envs\dyve\Lib");
-            searchPaths.Add(@"D:\Anaconda\envs\dyve\Lib\site-packages");
-
-            engine.ExecuteFile("D:\\Faculta\\LICENTA\\Internet Explorer++\\Internet Explorer++/gan_test/gan.py");
-
         }
 
         private void UserBtn_Click(object sender, RoutedEventArgs e)
