@@ -8,8 +8,8 @@ namespace IEPP.Enums
 {
     public enum HairColor
     {
-        Blond,
         Black,
+        Blond,
         Brown,
         Gray
     }

@@ -1,14 +1,18 @@
 ﻿using IEPP.Controls;
+using IEPP.Enums;
 using IEPP.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace IEPP.ViewModels
@@ -51,7 +55,7 @@ namespace IEPP.ViewModels
 
                 NotifyPropertyChanged("Vis");
             }
-        }  
+        }
 
         private void CreateNewUserDirectory(string username, Uri avatarSrc) // + image
         {
@@ -131,6 +135,7 @@ namespace IEPP.ViewModels
         // Init function that sets all values to null / resets everything
         private void Init()
         {
+            LoadingScreenVisibility = Visibility.Collapsed;
             ChooseProfileVisibility = Visibility.Collapsed;
             NewProfileVisibility = Visibility.Collapsed;
             CreateAvatarVisibility = Visibility.Collapsed;
@@ -139,6 +144,8 @@ namespace IEPP.ViewModels
             NewProfileErrorMessage = "A profile with that name already exists!";
             FacialHairOpacity = 1;
             HairAttributesOpacity = 1;
+            AvatarImage = new BitmapImage(new Uri("\\Icons\\avatar_placeholder.png", UriKind.Relative));
+            LoadingText = "";            
 
             HideErrors();
             InitAttrbiuteValues();
@@ -225,7 +232,7 @@ namespace IEPP.ViewModels
         {
             get { return selectedUser; }
             set
-            {                
+            {
                 selectedUser = value;
                 NotifyPropertyChanged("SelectedUser");
 
@@ -256,6 +263,28 @@ namespace IEPP.ViewModels
             get { return newProfileErrorMessage; }
             set { newProfileErrorMessage = value; NotifyPropertyChanged("NewProfileErrorMessage"); }
         }
+
+        private string avatarPlaceholderImage;
+        public string AvatarPlaceholderImage
+        {
+            get { return avatarPlaceholderImage; }
+            set { avatarPlaceholderImage = value; NotifyPropertyChanged("AvatarPlaceholderImage"); }
+        }
+
+        private ImageSource generatedImage;
+        public ImageSource AvatarImage
+        {
+            get { return generatedImage; }
+            set { generatedImage = value; NotifyPropertyChanged("AvatarImage"); }
+        }
+
+        private Visibility loadingScreenVisibility;
+        public Visibility LoadingScreenVisibility
+        {
+            get { return loadingScreenVisibility; }
+            set { loadingScreenVisibility = value; NotifyPropertyChanged("LoadingScreenVisibility"); }
+        }
+
 
         // avatar attributes binds
         #region avatar attributes
@@ -394,6 +423,146 @@ namespace IEPP.ViewModels
 
         #endregion
 
+        private void CreateFeaturesFile()
+        {
+            List<double> featureList = new List<double>();
+            var random = new Random();
+
+            double female = IsFemale ? random.Next(70, 101) * 0.01 : random.Next(1, 30) * 0.01;
+
+            featureList.Add(female);
+            featureList.Add(1 - female);
+
+            for (int index = 0; index < 6; ++index)
+                featureList.Add(random.Next(1, 30) * 0.01);
+
+            featureList[SelectedEthnicity + 2] = random.Next(70, 101) * 0.01;
+
+            featureList.Add(IsBald ? random.Next(70, 101) * 0.01 : random.Next(1, 30) * 0.01);
+            // if isbald generate small values for bangs, hair colors, hair length and density
+            featureList.Add(HasBangs ? random.Next(70, 101) * 0.01 : random.Next(1, 30) * 0.01);
+
+            for (int index = 0; index < 5; ++index)
+                featureList.Add(random.Next(1, 30) * 0.01);
+
+            featureList[13] = HasGlasses ? random.Next(70, 101) * 0.01 : random.Next(1, 30) * 0.01;
+
+            if (SelectedHairColor != (int)HairColor.Gray)
+                featureList[SelectedHairColor + 10] = random.Next(70, 101) * 0.01;
+            else
+                featureList[14] = random.Next(70, 101) * 0.01;
+
+            featureList.Add(random.Next(1, 51) * 0.01);
+
+            featureList.Add(HasBeard ? random.Next(1, 30) * 0.01 : random.Next(70, 101) * 0.01);
+
+            switch (SelectedHairStyle)
+            {
+                case (int)HairLength.Short:
+                    if (IsFemale)
+                    {
+                        featureList.Add(random.Next(25, 51) * 0.01);
+                        featureList.Add(random.Next(25, 51) * 0.01);
+                    }
+                    else
+                    {
+                        featureList.Add(random.Next(0, 21) * 0.01);
+                        featureList.Add(random.Next(00, 21) * 0.01);
+                    }
+                    break;
+                case (int)HairLength.Medium:
+                    if (IsFemale)
+                    {
+                        featureList.Add(random.Next(50, 76) * 0.01);
+                        featureList.Add(random.Next(50, 76) * 0.01);
+                    }
+                    else
+                    {
+                        featureList.Add(random.Next(20, 41) * 0.01);
+                        featureList.Add(random.Next(20, 41) * 0.01);
+                    }
+                    break;
+                case (int)HairLength.Long:
+                    if (IsFemale)
+                    {
+                        featureList.Add(random.Next(50, 76) * 0.01);
+                        featureList.Add(random.Next(75, 101) * 0.01);
+                    }
+                    else
+                    {
+                        featureList.Add(random.Next(20, 41) * 0.01);
+                        featureList.Add(random.Next(41, 61) * 0.01);
+                    }
+                    break;
+                default:
+                    if (IsFemale)
+                    {
+                        featureList.Add(random.Next(50, 76) * 0.01);
+                        featureList.Add(random.Next(50, 76) * 0.01);
+                    }
+                    else
+                    {
+                        featureList.Add(random.Next(20, 41) * 0.01);
+                        featureList.Add(random.Next(20, 41) * 0.01);
+                    }
+                    break;
+            }
+
+            featureList.Add((100 - SelectedAge) * 0.01);
+
+            File.WriteAllLines("feature_list.txt", featureList.Select(x => x.ToString()));
+        }
+
+
+        private string loadingtext;
+        public string LoadingText
+        {
+            get { return loadingtext; }
+            set { loadingtext = value; NotifyPropertyChanged("LoadingText"); }
+        }
+
+        private void BgWorker_StartGenerationProcess(object o, DoWorkEventArgs e)
+        {
+            LoadingText = "Starting generating process...";
+
+            using (System.Diagnostics.Process pProcess = new System.Diagnostics.Process())
+            {
+                pProcess.StartInfo.FileName = "generate_avatar\\generate_avatar.exe";
+                //pProcess.StartInfo.Arguments = ""; //argument
+                pProcess.StartInfo.UseShellExecute = false;
+                pProcess.StartInfo.RedirectStandardOutput = true;
+                pProcess.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                pProcess.StartInfo.CreateNoWindow = true; //not diplay a windows
+                LoadingText = "Generating your avatar...";
+                pProcess.Start();
+                LoadingText = pProcess.StandardOutput.ReadToEnd(); //The output result               
+                pProcess.WaitForExit();
+                //Console.WriteLine(output);
+            }
+        }
+
+        private void BgWorker_GenerationCompleted(object o, RunWorkerCompletedEventArgs e)
+        {
+            LoadingText = "Loading your avatar...";
+
+            if (File.Exists("feature_list.txt"))
+                File.Delete("feature_list.txt");
+
+            string loc = AppDomain.CurrentDomain.BaseDirectory + "/avatar_temp.jpg";
+
+            if (File.Exists(loc))
+            {
+                BitmapDecoder decoder = BitmapDecoder.Create(new Uri(loc), BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
+
+                AvatarImage = decoder.Frames[0];
+            }
+
+            LoadingScreenVisibility = Visibility.Collapsed;
+            LoadingText = "";
+
+            Console.WriteLine("generated");
+        }
+
         public ObservableCollection<UserContainer> UserList { get; set; }
         public RelayCommand AddNewProfileCommand { get; set; }
         public RelayCommand GuestCommand { get; set; }
@@ -466,20 +635,14 @@ namespace IEPP.ViewModels
 
             GenerateAvatarCommand = new RelayCommand(o =>
             {
-                using (System.Diagnostics.Process pProcess = new System.Diagnostics.Process())
-                {
-                    pProcess.StartInfo.FileName = "..\\..\\..\\..\\..\\gan test\\dist\\to_onnx\\to_onnx.exe";
-                    //pProcess.StartInfo.Arguments = ""; //argument
-                    pProcess.StartInfo.UseShellExecute = false;
-                    pProcess.StartInfo.RedirectStandardOutput = true;
-                    pProcess.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                    pProcess.StartInfo.CreateNoWindow = true; //not diplay a windows
-                    pProcess.Start();
-                    string output = pProcess.StandardOutput.ReadToEnd(); //The output result
-                    pProcess.WaitForExit();
-                    Console.WriteLine(output);
-                }
-                Console.WriteLine("generated");                
+                LoadingScreenVisibility = Visibility.Visible;
+                LoadingText = "Processing Data...";
+                CreateFeaturesFile();
+
+                var bgWorker = new BackgroundWorker();
+                bgWorker.DoWork += BgWorker_StartGenerationProcess;
+                bgWorker.RunWorkerCompleted += BgWorker_GenerationCompleted;
+                bgWorker.RunWorkerAsync();
             });
 
             RandomizeAvatarCommand = new RelayCommand(o =>

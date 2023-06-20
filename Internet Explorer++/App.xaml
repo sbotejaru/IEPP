@@ -189,6 +189,7 @@
         <SolidColorBrush x:Key="ActiveText" Color="#EEEEEE"/>
         <SolidColorBrush x:Key="InactiveText" Color="#AAAAAA"/>
         <SolidColorBrush x:Key="SettingsHoverColor" Color="#505050"/>
+        <SolidColorBrush x:Key="LoadingAvatarColor" Color="#242424" Opacity="0.8"/>
 
         <!--TextBox no color change on hover-->
         <Style x:Key="StaticTextBox" TargetType="TextBox">
