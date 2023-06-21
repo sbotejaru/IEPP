@@ -50,6 +50,7 @@ namespace IEPP.Views
         {
             CurrentSessionHistoryList.GetBindingExpression(ItemsControl.ItemsSourceProperty).UpdateTarget();
             PreviousSessionsHistoryList.GetBindingExpression(ItemsControl.ItemsSourceProperty).UpdateTarget();
+            BookmarksList.GetBindingExpression(ItemsControl.ItemsSourceProperty).UpdateTarget();
 
             if (!controlLoaded)
             {

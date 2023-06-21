@@ -157,6 +157,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Controls\BookmarkContainer.cs" />
+    <Compile Include="Controls\BookmarkSettingsContainer.cs" />
     <Compile Include="Controls\BrowserTab.cs" />
     <Compile Include="Controls\BrowserTabControl.cs" />
     <Compile Include="Controls\HistoryItemContainer.cs" />
@@ -173,6 +174,7 @@
     <Compile Include="Models\Bookmark.cs" />
     <Compile Include="Utils\DisplayHandler.cs" />
     <Compile Include="Models\HistoryItem.cs" />
+    <Compile Include="Utils\DownloadHandler.cs" />
     <Compile Include="Utils\FavIconHandler.cs" />
     <Compile Include="Utils\InverseBooleanConverter.cs" />
     <Compile Include="Utils\JsonHelper.cs" />

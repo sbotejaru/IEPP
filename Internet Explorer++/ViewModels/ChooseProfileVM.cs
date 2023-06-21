@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -521,23 +522,47 @@ namespace IEPP.ViewModels
             set { loadingtext = value; NotifyPropertyChanged("LoadingText"); }
         }
 
+        private int ProcessStep { get; set; }
+
+        private void ProcessOutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            switch(ProcessStep)
+            {
+                case 0:
+                    LoadingText = "Loading image generator...";
+                    break;
+                case 1:
+                    LoadingText = "Generating image...";
+                    break;
+                case 2:
+                    LoadingText = "Animating your avatar...";
+                    break;
+                case 3:
+                    LoadingText = "Loading your avatar...";
+                    break;
+                default:
+                    break;
+            }
+            ++ProcessStep;
+        }
+
         private void BgWorker_StartGenerationProcess(object o, DoWorkEventArgs e)
         {
-            LoadingText = "Starting generating process...";
+            LoadingText = "Starting generation process...";
+            ProcessStep = 0;
 
-            using (System.Diagnostics.Process pProcess = new System.Diagnostics.Process())
+            using (Process pProcess = new Process())
             {
                 pProcess.StartInfo.FileName = "generate_avatar\\generate_avatar.exe";
-                //pProcess.StartInfo.Arguments = ""; //argument
                 pProcess.StartInfo.UseShellExecute = false;
                 pProcess.StartInfo.RedirectStandardOutput = true;
-                pProcess.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                pProcess.StartInfo.CreateNoWindow = true; //not diplay a windows
-                LoadingText = "Generating your avatar...";
-                pProcess.Start();
-                LoadingText = pProcess.StandardOutput.ReadToEnd(); //The output result               
+                pProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                pProcess.StartInfo.CreateNoWindow = true;
+                pProcess.StartInfo.RedirectStandardOutput = true;
+                pProcess.Start();                
+                pProcess.OutputDataReceived += ProcessOutputDataReceived;
+                pProcess.BeginOutputReadLine();
                 pProcess.WaitForExit();
-                //Console.WriteLine(output);
             }
         }
 

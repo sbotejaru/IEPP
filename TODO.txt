@@ -5,15 +5,13 @@ tabs resize when they dont fit v
 bookmark v
 history v
 downloads 
-search
+search v
 
 choose profile and mainwindow 2 different windows for making profile change posssible and for better manipulation
-maybe load icons directly from class and call iconhandler only to download? prob the same thing
 
-load history when settings are open/history tab is open - READ ONLY A PORTION OF THE JSON (test if it works ok) AND LOAD MORE AS THE USER SCROLLS DOWN. see chat
+menu button dropdown v
 
-menu button dropdown
-
+downloads ui - change location with dialog, option "ask everytime where the file should dl"
 settings UI
 
 

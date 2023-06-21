@@ -15,7 +15,7 @@ using IEPP.Utils;
 namespace IEPP.Controls
 {
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public class BookmarkContainer : ContentControl, INotifyPropertyChanged
+    public class BookmarkContainer : ContentControl, INotifyPropertyChanged, ICloneable
     {
         #region PropertyChanged declaration
         public event PropertyChangedEventHandler PropertyChanged;
@@ -43,6 +43,11 @@ namespace IEPP.Controls
         {
             get { return (string)GetValue(TitleProperty); }
             set { SetValue(TitleProperty, value); NotifyPropertyChanged("Title"); }
+        }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
         }
 
         //public string Url { get; set; }

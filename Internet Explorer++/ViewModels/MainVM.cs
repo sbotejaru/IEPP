@@ -320,6 +320,14 @@ namespace IEPP.ViewModels
             }
         }
 
+        public void BookmarksToSettingsContainer()
+        {
+            foreach (var bm in Bookmarks)
+            {                
+                BookmarksSettings.Add(new BookmarkSettingsContainer(new BookmarkContainer() { FavIconSource = bm.FavIconSource, Title = bm.Title, Url = bm.Url}));
+            }            
+        }
+
         public void LoadHistory(int scrollNumber)
         {
             if (Username == "")
@@ -464,7 +472,7 @@ namespace IEPP.ViewModels
             if (UserPath != "")
                 settings.CachePath = UserPath + "/cache";
 
-            settings.CefCommandLineArgs.Add("disable-threaded-scrolling", "1");
+            //settings.CefCommandLineArgs.Add("disable-threaded-scrolling", "1");
             settings.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36 /CefSharp Browser" + Cef.CefSharpVersion;
             Cef.Initialize(settings);
         }
@@ -474,6 +482,7 @@ namespace IEPP.ViewModels
             BrowserVis = Visibility.Collapsed;
             Tabs = new ObservableCollection<BrowserTab>();
             Bookmarks = new ObservableCollection<BookmarkContainer>();
+            BookmarksSettings = new ObservableCollection<BookmarkSettingsContainer>();
             History = new ObservableCollection<HistoryItemContainer>();
             CurrentSessionHistory = new ObservableCollection<HistoryItemContainer>();
             SavedBookmarksData = new List<Bookmark>();
@@ -497,6 +506,7 @@ namespace IEPP.ViewModels
 
         public ObservableCollection<BrowserTab> Tabs { get; set; }
         public ObservableCollection<BookmarkContainer> Bookmarks { get; set; }
+        public ObservableCollection<BookmarkSettingsContainer> BookmarksSettings { get; set; }
         public ObservableCollection<HistoryItemContainer> History { get; set; }
         public ObservableCollection<HistoryItemContainer> CurrentSessionHistory { get; set; }
         public List<Bookmark> SavedBookmarksData { get; set; }

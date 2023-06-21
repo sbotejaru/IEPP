@@ -38,6 +38,7 @@ namespace IEPP.Controls
             DependencyProperty.Register("Title", typeof(string), typeof(BrowserTab), new PropertyMetadata(null));
 
         public DisplayHandler DisplayHandler { get; set; }
+        public DownloadHandler DownloadHandler { get; set; }
 
         public BitmapImage FavIconSource
         {
@@ -96,6 +97,7 @@ namespace IEPP.Controls
             var browser = GetCurrentBrowser();
             browser.TitleChanged += TitleChanged;
             browser.DisplayHandler = DisplayHandler;
+            browser.DownloadHandler = DownloadHandler;
             //var icon = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/IEPP_gray.ico");
             //DisplayHandler.IconHandler.FavIcon = new BitmapImage(icon);
         }
@@ -135,6 +137,7 @@ namespace IEPP.Controls
         public BrowserTab(TabType tabType, MainVM mainDC)
         {
             DisplayHandler = new DisplayHandler();
+            DownloadHandler = new DownloadHandler(mainDC.SettingsData.DownloadsFolder);
 
             //new tab from link, see https://stackoverflow.com/a/67261947, https://stackoverflow.com/a/32092384
 
@@ -161,6 +164,7 @@ namespace IEPP.Controls
         /// <param name="settingsTabIndex"></param>
         public BrowserTab(MainVM mainDC, int settingsTabIndex)
         {
+            DownloadHandler = new DownloadHandler(mainDC.SettingsData.DownloadsFolder);
             DisplayHandler = new DisplayHandler();
 
             this.Content = new SettingsControl(mainDC, settingsTabIndex);
@@ -177,6 +181,7 @@ namespace IEPP.Controls
         public BrowserTab(MainVM mainDC, string url)
         {
             DisplayHandler = new DisplayHandler();
+            DownloadHandler = new DownloadHandler(mainDC.SettingsData.DownloadsFolder);
 
             this.Content = new TabContent(mainDC, url);
             InitializeBrowser();
@@ -194,9 +199,7 @@ namespace IEPP.Controls
 
         public void UpdateSettingsTab(int tabIndex)
         {
-            var settings = this.Content as SettingsControl;
-
-            if (settings != null)
+            if (this.Content is SettingsControl settings)
                 settings.UpdateSelectedTab(tabIndex);
         }
 
@@ -207,8 +210,7 @@ namespace IEPP.Controls
 
         public void RefreshBookmarks()
         {
-            var tabContent = this.Content as TabContent;
-            if (tabContent != null)
+            if (this.Content is TabContent tabContent)
             {
                 tabContent.RefreshBookmarkList();
             }
@@ -216,8 +218,7 @@ namespace IEPP.Controls
 
         public void RemoveBookmarkUI()
         {
-            var tabContent = this.Content as TabContent;
-            if (tabContent != null)
+            if (this.Content is TabContent tabContent)
             {
                 tabContent.BookmarkList.ItemsSource = null;
             }

@@ -96,9 +96,7 @@
                                 </ListBox>
                             </StackPanel>
                         </StackPanel>
-
-
-
+                        
                         <TextBlock Text="Loading..." Grid.Row="3" Foreground="{StaticResource InactiveText}" FontSize="20"
                                Visibility="{Binding HistoryLoadingTextVisibility}" HorizontalAlignment="Center" Margin="0,10,0,15"/>
                     </Grid>
@@ -107,9 +105,14 @@
 
             <!--Bookmarks tab-->
             <controls:SettingsTab Title="Bookmarks" IconSource="/Icons/star.png">
-                <StackPanel Orientation="Vertical" Margin="50,20,100,0" MinWidth="500" MaxWidth="850">
-                    <TextBlock Text="Bookmarks" Foreground="{StaticResource ActiveText}" FontSize="20"/>
-                </StackPanel>
+                <ScrollViewer>
+                    <StackPanel Orientation="Vertical" Margin="50,20,100,0" MinWidth="500" MaxWidth="850">
+                        <TextBlock Text="Bookmarks" Foreground="{StaticResource ActiveText}" FontSize="20"/>
+                        <ListBox Background="Transparent" BorderThickness="0" MinHeight="0" Margin="10,10,0,0"
+                                 ItemContainerStyle="{StaticResource ListBoxItemStyleTransparentSelect}"
+                                 ItemsSource="{Binding MainWinDC.BookmarksSettings}" Name="BookmarksList"/>
+                    </StackPanel>
+                </ScrollViewer>                
             </controls:SettingsTab>
 
             <!--Downloads tab-->

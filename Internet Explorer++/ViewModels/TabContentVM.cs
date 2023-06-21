@@ -115,6 +115,8 @@ namespace IEPP.ViewModels
             set
             {
                 selectedSettingsTab = value;
+                if (selectedSettingsTab == 2)
+                    MainWinDC.BookmarksToSettingsContainer();
                 NotifyPropertyChanged("SelectedSettingsTab");
             }
         }
