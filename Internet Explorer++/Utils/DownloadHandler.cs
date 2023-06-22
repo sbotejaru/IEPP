@@ -14,7 +14,7 @@ namespace IEPP.Utils
 
         public event EventHandler<DownloadItem> OnDownloadUpdatedFired;
 
-        private string DownloadPath { get; set; }
+        public string DownloadPath { get; set; }
 
         public bool CanDownload(IWebBrowser chromiumWebBrowser, IBrowser browser, string url, string requestMethod)
         {

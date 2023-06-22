@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace IEPP.Models
 {
@@ -14,9 +15,9 @@ namespace IEPP.Models
         public string Url { get; set; }
         public string Domain { get; set; }
 
-        public BookmarkContainer ToContainer(string cacheDir)
+        public BookmarkContainer ToContainer()
         {
             return new BookmarkContainer() { Title = this.Title, Url = this.Url, Domain=this.Domain };
-        }
+        }        
     }
 }

@@ -137,7 +137,11 @@ namespace IEPP.Controls
         public BrowserTab(TabType tabType, MainVM mainDC)
         {
             DisplayHandler = new DisplayHandler();
-            DownloadHandler = new DownloadHandler(mainDC.SettingsData.DownloadsFolder);
+
+            if (mainDC.SettingsData != null)
+                DownloadHandler = new DownloadHandler(mainDC.SettingsData.DownloadsFolder);
+            else
+                DownloadHandler = new DownloadHandler(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads");
 
             //new tab from link, see https://stackoverflow.com/a/67261947, https://stackoverflow.com/a/32092384
 
@@ -164,7 +168,10 @@ namespace IEPP.Controls
         /// <param name="settingsTabIndex"></param>
         public BrowserTab(MainVM mainDC, int settingsTabIndex)
         {
-            DownloadHandler = new DownloadHandler(mainDC.SettingsData.DownloadsFolder);
+            if (mainDC.SettingsData != null)
+                DownloadHandler = new DownloadHandler(mainDC.SettingsData.DownloadsFolder);
+            else
+                DownloadHandler = new DownloadHandler(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads");
             DisplayHandler = new DisplayHandler();
 
             this.Content = new SettingsControl(mainDC, settingsTabIndex);
@@ -181,7 +188,11 @@ namespace IEPP.Controls
         public BrowserTab(MainVM mainDC, string url)
         {
             DisplayHandler = new DisplayHandler();
-            DownloadHandler = new DownloadHandler(mainDC.SettingsData.DownloadsFolder);
+
+            if (mainDC.SettingsData != null)
+                DownloadHandler = new DownloadHandler(mainDC.SettingsData.DownloadsFolder);
+            else
+                DownloadHandler = new DownloadHandler(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads");
 
             this.Content = new TabContent(mainDC, url);
             InitializeBrowser();

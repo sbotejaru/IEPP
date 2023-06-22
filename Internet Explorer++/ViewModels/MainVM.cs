@@ -23,6 +23,7 @@ using Newtonsoft.Json;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using System.Threading;
+using System.Windows.Markup;
 
 namespace IEPP.ViewModels
 {
@@ -59,6 +60,13 @@ namespace IEPP.ViewModels
         {
             get { return bookmarkDeleted; }
             set { bookmarkDeleted = value; }
+        }
+
+        private bool historyDeleted;
+        public bool HistoryDeleted
+        {
+            get { return historyDeleted; }
+            set { historyDeleted = value; }
         }
 
         public string CacheDir
@@ -133,6 +141,8 @@ namespace IEPP.ViewModels
                 NotifyPropertyChanged("MaxTabWidth");
             }
         }
+
+        public bool FromBookmarksSettings { get; set; }
 
         private void CreateAppDirectory()
         {
@@ -279,8 +289,10 @@ namespace IEPP.ViewModels
             if (Username == "")
                 return;
 
-            Bookmarks.Add(newBookmark.ToContainer(cacheDir));
+            Bookmarks.Add(newBookmark.ToContainer());
             CurrentSessionBookmarksData.Add(newBookmark);
+            if (settingsTabOpen)
+                BookmarksSettings.Add(newBookmark.ToContainer().ToHistoryContainer());
         }
 
         public void AddHistoryItem(HistoryItem newHistoryItem)
@@ -290,8 +302,8 @@ namespace IEPP.ViewModels
 
             CurrentSessionHistoryData.Insert(0, newHistoryItem);
 
-            if (History.Count != 0)
-                History.Insert(0, newHistoryItem.ToContainer());
+            if (CurrentSessionHistory.Count != 0)
+                CurrentSessionHistory.Insert(0, newHistoryItem.ToContainer());
         }
 
         private void ResizeTabs()
@@ -308,12 +320,12 @@ namespace IEPP.ViewModels
         {
             if (Username == "")
                 return;
-            
+
             if (SavedBookmarksData != null)
             {
                 foreach (var bookmark in SavedBookmarksData)
                 {
-                    Bookmarks.Add(bookmark.ToContainer(CacheDir));
+                    Bookmarks.Add(bookmark.ToContainer());
                 }
 
                 SavedBookmarksData.Clear();
@@ -323,9 +335,9 @@ namespace IEPP.ViewModels
         public void BookmarksToSettingsContainer()
         {
             foreach (var bm in Bookmarks)
-            {                
-                BookmarksSettings.Add(new BookmarkSettingsContainer(new BookmarkContainer() { FavIconSource = bm.FavIconSource, Title = bm.Title, Url = bm.Url}));
-            }            
+            {
+                BookmarksSettings.Add(bm.ToHistoryContainer());
+            }
         }
 
         public void LoadHistory(int scrollNumber)
@@ -373,7 +385,8 @@ namespace IEPP.ViewModels
                         {
                             // Convert historyItem to HistoryUI and add it to the batchUI list
                             // ...
-                            batchUI.Add(historyItem.ToContainer());
+                            if (!DeletedHistoryData.Any(item => item.Url == historyItem.Url && item.BrowseDate == historyItem.BrowseDate))
+                                batchUI.Add(historyItem.ToContainer());
                         }
 
                         // Add the batchUI elements to the ObservableCollection
@@ -392,6 +405,50 @@ namespace IEPP.ViewModels
 
                 // Delay to allow the UI to remain responsive
                 await Task.Delay(0); // Adjust the delay duration as needed
+            }
+        }
+
+        public void DeleteHistoryItem(HistoryItemContainer hic)
+        {
+            if (FromBookmarksSettings)
+                foreach (var bc in Bookmarks)
+                {
+                    if (bc == hic.ToBookmarkContainer())
+                    {
+                        Bookmarks.Remove(bc);
+                        BookmarksSettings.Remove(hic);
+                        BookmarkDeleted = true;
+                        return;
+                    }
+                }
+            else
+            {
+                if (CurrentSessionHistory.Any(item => item.Url == hic.Url && item.BrowseDate == hic.BrowseDate))
+                {
+                    CurrentSessionHistory.Remove(hic);
+                    foreach (var hd in CurrentSessionHistoryData)
+                    {
+                        if (hd.Url == hic.Url && hd.BrowseDate == hic.BrowseDate)
+                        {
+                            CurrentSessionHistoryData.Remove(hd);
+                            break;
+                        }
+                    }
+                    HistoryDeleted = true;
+                }
+                else
+                {
+                    DeletedHistoryData.Add(hic.ToModel());
+                    foreach (var history in History)
+                    {
+                        if (history.Url == hic.Url && history.BrowseDate == hic.BrowseDate)
+                        {
+                            History.Remove(history);
+                            break;
+                        }
+                    }
+                    HistoryDeleted = true;
+                }
             }
         }
 
@@ -431,14 +488,29 @@ namespace IEPP.ViewModels
 
         private void BgWorker_SaveHistory(object sender, DoWorkEventArgs e)
         {
-            if (CurrentSessionHistoryData.Count == 0)
+            if (CurrentSessionHistoryData.Count == 0 && !HistoryDeleted)
                 return;
 
             var savedHistoryList = JsonHelper.ReadAllHistory();
+
             if (savedHistoryList == null || savedHistoryList.Count == 0)
             {
                 JsonHelper.Save(CurrentSessionHistoryData, "history");
                 return;
+            }
+
+            var x = DeletedHistoryData.Count;
+            while (x != 0)
+            {
+                foreach (var history in savedHistoryList)
+                {
+                    if (DeletedHistoryData.Count != 0 && DeletedHistoryData.Any(item => item.Url == history.Url && item.BrowseDate == history.BrowseDate))
+                    {
+                        savedHistoryList.Remove(history);
+                        break;
+                    }
+                }
+                --x;
             }
 
             CurrentSessionHistoryData.AddRange(savedHistoryList);
@@ -482,7 +554,7 @@ namespace IEPP.ViewModels
             BrowserVis = Visibility.Collapsed;
             Tabs = new ObservableCollection<BrowserTab>();
             Bookmarks = new ObservableCollection<BookmarkContainer>();
-            BookmarksSettings = new ObservableCollection<BookmarkSettingsContainer>();
+            BookmarksSettings = new ObservableCollection<HistoryItemContainer>();
             History = new ObservableCollection<HistoryItemContainer>();
             CurrentSessionHistory = new ObservableCollection<HistoryItemContainer>();
             SavedBookmarksData = new List<Bookmark>();
@@ -490,8 +562,11 @@ namespace IEPP.ViewModels
             SavedHistoryData = new List<HistoryItem>();
             CurrentSessionHistoryData = new List<HistoryItem>();
             TemporaryHistoryData = new List<HistoryItem>();
+            DeletedHistoryData = new List<HistoryItem>();
             BookmarkDeleted = false;
+            HistoryDeleted = false;
             MaxTabWidth = defaultMaxTabWidth;
+            FromBookmarksSettings = true;
             SettingsTabIndex = -1;
             CreateAppDirectory();
             CreateCacheDirectory();
@@ -506,7 +581,7 @@ namespace IEPP.ViewModels
 
         public ObservableCollection<BrowserTab> Tabs { get; set; }
         public ObservableCollection<BookmarkContainer> Bookmarks { get; set; }
-        public ObservableCollection<BookmarkSettingsContainer> BookmarksSettings { get; set; }
+        public ObservableCollection<HistoryItemContainer> BookmarksSettings { get; set; }
         public ObservableCollection<HistoryItemContainer> History { get; set; }
         public ObservableCollection<HistoryItemContainer> CurrentSessionHistory { get; set; }
         public List<Bookmark> SavedBookmarksData { get; set; }
@@ -514,6 +589,7 @@ namespace IEPP.ViewModels
         public List<HistoryItem> SavedHistoryData { get; set; }
         public List<HistoryItem> TemporaryHistoryData { get; set; }
         public List<HistoryItem> CurrentSessionHistoryData { get; set; }
+        public List<HistoryItem> DeletedHistoryData { get; set; }
 
         public MainVM()
         {
@@ -526,9 +602,9 @@ namespace IEPP.ViewModels
 
                 if (UserPath != "")
                 {
-                    SaveHistoryData();
                     SaveBookmarkData();
                     SaveSettingsData();
+                    SaveHistoryData();                    
                 }
 
                 Dispose();
@@ -554,6 +630,7 @@ namespace IEPP.ViewModels
                     SettingsTabIndex = -1;
                     History.Clear();
                     CurrentSessionHistory.Clear();
+                    BookmarksSettings.Clear();
                     JsonHelper.NoMoreHistoryItems = false;
                 }
 

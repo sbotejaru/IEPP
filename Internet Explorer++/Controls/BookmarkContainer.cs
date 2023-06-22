@@ -11,6 +11,7 @@ using System.Windows.Media.Imaging;
 using Newtonsoft.Json;
 using System.Windows.Media;
 using IEPP.Utils;
+using IEPP.ViewModels;
 
 namespace IEPP.Controls
 {
@@ -79,6 +80,34 @@ namespace IEPP.Controls
         {
             return new Bookmark() { Title = this.Title, Url = this.Url };
         }
+
+        public HistoryItemContainer ToHistoryContainer()
+        {
+            return new HistoryItemContainer()
+            {
+                Title = Title,
+                Url = Url,
+                BrowseDate = "",
+                Domain = Domain,
+                HostName = new Uri(Url).Host
+            };
+        }
+
+        public static bool operator ==(BookmarkContainer bc1, BookmarkContainer bc2)
+        {
+            if (ReferenceEquals(bc1, bc2))
+                return true;
+
+            if (bc2 is null)
+                return false;
+
+            if (bc1 is null)
+                return false;
+
+            return bc1.Title == bc2.Title && bc1.Url == bc2.Url;
+        }
+
+        public static bool operator !=(BookmarkContainer bc1, BookmarkContainer bc2) => !(bc1 == bc2);
 
         public BookmarkContainer()
         {

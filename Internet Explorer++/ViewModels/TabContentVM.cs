@@ -108,6 +108,8 @@ namespace IEPP.ViewModels
             }
         }
 
+        private bool bookmarksLoaded = false;
+
         private int selectedSettingsTab;
         public int SelectedSettingsTab
         {
@@ -115,8 +117,22 @@ namespace IEPP.ViewModels
             set
             {
                 selectedSettingsTab = value;
+
                 if (selectedSettingsTab == 2)
-                    MainWinDC.BookmarksToSettingsContainer();
+                { 
+                    if (!bookmarksLoaded)
+                    {
+                        MainWinDC.BookmarksToSettingsContainer();
+                        bookmarksLoaded = true;
+                    }
+
+                    MainWinDC.FromBookmarksSettings = true;
+                }
+                else
+                {
+                    MainWinDC.FromBookmarksSettings = false;
+                }
+
                 NotifyPropertyChanged("SelectedSettingsTab");
             }
         }
@@ -457,8 +473,7 @@ namespace IEPP.ViewModels
                 {
                     WebBrowser.Load(SearchBarText);
                 }
-                else // change to Search()
-                    //WebBrowser.Load("https://google.com/search?q=" + SearchBarText);
+                else 
                     Search(SearchBarText);
 
             });
@@ -484,6 +499,16 @@ namespace IEPP.ViewModels
                         if (bookmark.Url == Url)
                         {
                             MainWinDC.Bookmarks.Remove(bookmark);
+                            if (MainWinDC.BookmarksSettings.Count != 0) // dirty check if setting bookmarks tab is loaded
+                            {
+                                // removing the bookmark from the settings list
+                                foreach (var hic in MainWinDC.BookmarksSettings) // rly ugly method but works since bookmarks list cant be THAT long
+                                    if (hic.Url == Url)
+                                    {
+                                        MainWinDC.BookmarksSettings.Remove(hic);
+                                        break;
+                                    }
+                            }
                             MainWinDC.BookmarkDeleted = true;
                             break;
                         }

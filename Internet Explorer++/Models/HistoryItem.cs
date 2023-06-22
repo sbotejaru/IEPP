@@ -14,7 +14,6 @@ namespace IEPP.Models
         public string Url { get; set; }
         public string Domain { get; set; }
         public string HostName { get; set; }
-        // icon?
 
         public HistoryItemContainer ToContainer()
         {

@@ -298,7 +298,7 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    
+
 
                                     <Image Grid.Column="0" Width="18" Height="18" Margin="10,0,0,0" x:Name="FavIcon" StretchDirection="Both"
                                            Source="{Binding DisplayHandler.IconHandler.FavIcon, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type controls:BrowserTab}},
@@ -307,13 +307,12 @@
                                     <TextBlock Grid.Column="1" Margin="0,0,5,0" Padding="5,5,0,0"
                                                Text="{TemplateBinding Title}"                                               
                                                Foreground="{DynamicResource ActiveText}" 
-                                               x:Name="PageTitle"/>
+                                               x:Name="PageTitle" TextTrimming="CharacterEllipsis"/>
                                     <!-- Text="{Binding DataContext.PageTitle, RelativeSource={RelativeSource AncestorType={x:Type controls:BrowserTab}}}" -->
 
                                     <Button Grid.Column="2" Width="16" Height="16" Margin="0,0,5,0" Style="{DynamicResource RoundButton}" x:Name="CloseTabButton"                                           
                                             Command="{Binding DataContext.CloseTabCommand, RelativeSource={RelativeSource AncestorType={x:Type controls:BrowserTab}}}"
-                                            CommandParameter="{Binding RelativeSource=
-                                                    {RelativeSource AncestorType={x:Type controls:BrowserTab}}}">
+                                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type controls:BrowserTab}}}">
                                         <Image Source="/Icons/stop.png"/>
                                     </Button>
                                 </Grid>
@@ -335,7 +334,7 @@
                             <Trigger Property="IsSelected" Value="False">
                                 <Setter Property="Background" TargetName="border" Value="{DynamicResource CaptionBarColor}"/>
                             </Trigger>
-                            
+
                             <EventTrigger RoutedEvent="TabItem.Loaded">
                                 <BeginStoryboard>
                                     <Storyboard>
@@ -346,7 +345,7 @@
                                              />
                                     </Storyboard>
                                 </BeginStoryboard>
-                            </EventTrigger>                            
+                            </EventTrigger>
 
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
@@ -611,7 +610,7 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
+
         <!--Fade in and out Grid-->
         <Style TargetType="{x:Type Grid}" x:Key="FadeInOutGrid">
             <Style.Triggers>
@@ -626,7 +625,7 @@
                         </BeginStoryboard>
                     </Trigger.EnterActions>
                 </Trigger>
-                
+
                 <Trigger Property="IsEnabled" Value="False">
                     <Trigger.EnterActions>
                         <BeginStoryboard>
@@ -645,7 +644,7 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.ExitActions>
-                </Trigger>                
+                </Trigger>
 
             </Style.Triggers>
         </Style>
@@ -663,7 +662,7 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.EnterActions>
-                </Trigger>                
+                </Trigger>
             </Style.Triggers>
         </Style>
 
@@ -756,16 +755,16 @@
                                     <StackPanel Orientation="Vertical">
                                         <TextBlock Text="{TemplateBinding Title}"/>
                                         <TextBlock Text="{Binding Url}"/>
-                                    </StackPanel>                                    
+                                    </StackPanel>
                                 </Border.ToolTip>
                                 <Grid MaxWidth="220" Margin="5,0,5,0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    
+
                                     <Image Name="BookmarkFavIcon" Grid.Column="0" Source="{Binding IconHandler.FavIcon}" Height="17" HorizontalAlignment="Left"/>
-                                    
+
                                     <TextBlock Text="{TemplateBinding Title}" Grid.Column="1" FontSize="12" VerticalAlignment="Center" Margin="5,0,0,0"
                                                Foreground="{StaticResource ActiveText}" Name="bc_Title" TextTrimming="CharacterEllipsis"/>
                                 </Grid>
@@ -788,7 +787,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type controls:HistoryItemContainer}">
                         <Grid>
-                            <Border Name="hic_border" BorderThickness="0" CornerRadius="15" Height="30">                                
+                            <Border Name="hic_border" BorderThickness="0" CornerRadius="15" Height="30">
                                 <Grid Margin="5,0,10,0" MaxWidth="1000" MinWidth="500" Width="850">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -824,38 +823,14 @@
                                                VerticalAlignment="Center" Margin="10,0,0,0"/>
 
                                     <Button Grid.Column="3" HorizontalAlignment="Right" Content="Delete" Style="{StaticResource RoundButton}"
-                                            Foreground="{StaticResource ActiveText}" Width="50"/>
-
+                                            Foreground="{StaticResource ActiveText}" Width="50" Command="{Binding DeleteHistoryItemCommand}"/>
                                 </Grid>
                             </Border>
                         </Grid>
 
                         <ControlTemplate.Triggers>
-                            
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        
-        <!--Bookmark settings container style-->
-        <Style TargetType="{x:Type controls:BookmarkSettingsContainer}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type controls:BookmarkSettingsContainer}">
-                        <Border Name="bsc_border" BorderThickness="0" CornerRadius="15" Height="40">
-                            <Grid Margin="5,0,10,0" MaxWidth="500" MinWidth="200" Width="500">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
 
-                                
-                                <ContentControl Content="{Binding Bookmark}" Grid.Column="0" HorizontalAlignment="Left"/>
-                                <Button Style="{StaticResource RoundButton}" Content="Delete" Foreground="{StaticResource ActiveText}" HorizontalAlignment="Right"
-                                        Grid.Column="1"/>
-                            </Grid>
-                        </Border>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>

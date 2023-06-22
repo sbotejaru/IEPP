@@ -1,4 +1,5 @@
-﻿using IEPP.Utils;
+﻿using IEPP.Models;
+using IEPP.Utils;
 using IEPP.ViewModels;
 using Newtonsoft.Json;
 using System;
@@ -73,13 +74,44 @@ namespace IEPP.Controls
 
         public RelayCommand NewTabFromHistory { get; set; }
 
+        public BookmarkContainer ToBookmarkContainer()
+        {
+            return new BookmarkContainer()
+            {
+                Title = this.Title,
+                Url = this.Url,
+                Domain = this.Domain
+            };
+        }
+
+        public HistoryItem ToModel()
+        {
+            return new HistoryItem()
+            {
+                Title = Title,
+                Url = Url,
+                BrowseDate = BrowseDate,
+                Domain = Domain,
+                HostName = HostName
+            };
+        }
+
+        public RelayCommand DeleteHistoryItemCommand { get; set; }
+
         public HistoryItemContainer()
         {
             IconHandler = new FavIconHandler();
 
+            //Console.WriteLine(this.DataContext);
+
             NewTabFromHistory = new RelayCommand(o =>
             {
                 (App.Current.MainWindow.DataContext as MainVM).AddBrowserTab(Url);
+            });
+
+            DeleteHistoryItemCommand = new RelayCommand(o =>
+            {
+                (App.Current.MainWindow.DataContext as MainVM).DeleteHistoryItem(this);
             });
         }
     }

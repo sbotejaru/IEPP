@@ -105,10 +105,11 @@
 
             <!--Bookmarks tab-->
             <controls:SettingsTab Title="Bookmarks" IconSource="/Icons/star.png">
-                <ScrollViewer>
-                    <StackPanel Orientation="Vertical" Margin="50,20,100,0" MinWidth="500" MaxWidth="850">
+                <ScrollViewer PreviewMouseWheel="BookmarksScrollViewer_PreviewMouseWheel" Name="BookmarksScrollViewer"
+                              VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <StackPanel Orientation="Vertical" Margin="30,20,100,0" HorizontalAlignment="Center">
                         <TextBlock Text="Bookmarks" Foreground="{StaticResource ActiveText}" FontSize="20"/>
-                        <ListBox Background="Transparent" BorderThickness="0" MinHeight="0" Margin="10,10,0,0"
+                        <ListBox Background="Transparent" BorderThickness="0" MinHeight="0" Margin="-120,10,0,0"
                                  ItemContainerStyle="{StaticResource ListBoxItemStyleTransparentSelect}"
                                  ItemsSource="{Binding MainWinDC.BookmarksSettings}" Name="BookmarksList"/>
                     </StackPanel>

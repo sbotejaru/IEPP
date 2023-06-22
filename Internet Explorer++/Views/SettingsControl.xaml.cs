@@ -85,6 +85,12 @@ namespace IEPP.Views
             e.Handled = true;
         }
 
+        private void BookmarksScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            BookmarksScrollViewer.ScrollToVerticalOffset(HistoryScrollViewer.VerticalOffset - e.Delta * 0.5);
+            e.Handled = true;
+        }
+
         private void HistoryScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             if (HistoryScrollViewer.VerticalOffset == HistoryScrollViewer.ScrollableHeight && vm.InitialHistoryDataLoaded)
