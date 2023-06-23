@@ -236,6 +236,12 @@ namespace IEPP.ViewModels
 
                     CurrentSettings.BookmarkVisible = bookmarkBarIsVisible;
                     SettingsChanged = true;
+
+                    if (url.Equals(GetSearchEngineURL()))
+                        BookmarkBarVisibility = Visibility.Visible;
+                    else
+                        BookmarkBarVisibility = bookmarkBarIsVisible ? Visibility.Visible : Visibility.Collapsed;
+
                     NotifyPropertyChanged("BookmarkBarIsVisible");
                 }
             }

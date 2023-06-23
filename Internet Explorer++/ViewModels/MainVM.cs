@@ -62,6 +62,14 @@ namespace IEPP.ViewModels
             set { bookmarkDeleted = value; }
         }
 
+        private string windowTitle;
+
+        public string WindowTitle
+        {
+            get { return windowTitle; }
+            set { windowTitle = value; NotifyPropertyChanged("WindowTitle"); }
+        }
+
         private bool historyDeleted;
         public bool HistoryDeleted
         {
@@ -79,7 +87,14 @@ namespace IEPP.ViewModels
         public string Username
         {
             get { return username; }
-            set { username = value; NotifyPropertyChanged("Username"); }
+            set { 
+                username = value; 
+                NotifyPropertyChanged("Username");
+                if (username != "")
+                    WindowTitle = "IEPP - " + username;
+                else
+                    WindowTitle = "IEPP - Incognito";
+            }
         }
 
         public string UsersDir
@@ -539,19 +554,20 @@ namespace IEPP.ViewModels
 
         public void InitCef()
         {
-            CefSettings settings = new CefSettings();
+            using (CefSettings settings = new CefSettings())
+            {
+                if (UserPath != "")
+                    settings.CachePath = UserPath + "/cache";
 
-            if (UserPath != "")
-                settings.CachePath = UserPath + "/cache";
-
-            //settings.CefCommandLineArgs.Add("disable-threaded-scrolling", "1");
-            settings.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36 /CefSharp Browser" + Cef.CefSharpVersion;
-            Cef.Initialize(settings);
+                settings.LogSeverity = LogSeverity.Disable;
+                settings.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36 /CefSharp Browser" + Cef.CefSharpVersion;
+                Cef.Initialize(settings);
+            }            
         }
 
         private void Init()
         {
-            BrowserVis = Visibility.Collapsed;
+            BrowserVis = Visibility.Visible;
             Tabs = new ObservableCollection<BrowserTab>();
             Bookmarks = new ObservableCollection<BookmarkContainer>();
             BookmarksSettings = new ObservableCollection<HistoryItemContainer>();
@@ -591,6 +607,16 @@ namespace IEPP.ViewModels
         public List<HistoryItem> CurrentSessionHistoryData { get; set; }
         public List<HistoryItem> DeletedHistoryData { get; set; }
 
+        public void SaveData()
+        {
+            if (UserPath != "")
+            {
+                SaveBookmarkData();
+                SaveSettingsData();
+                SaveHistoryData();
+            }
+        }
+
         public MainVM()
         {
             Init();
@@ -598,14 +624,7 @@ namespace IEPP.ViewModels
             CloseCommand = new RelayCommand(o =>
             {
                 foreach (var tab in Tabs)
-                    tab.Dispose();
-
-                if (UserPath != "")
-                {
-                    SaveBookmarkData();
-                    SaveSettingsData();
-                    SaveHistoryData();                    
-                }
+                    tab.Dispose();                
 
                 Dispose();
             });

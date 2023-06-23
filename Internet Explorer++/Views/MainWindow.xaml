@@ -8,9 +8,9 @@
         xmlns:controls="clr-namespace:IEPP.Controls"
         xmlns:utils="clr-namespace:IEPP.Utils"
         mc:Ignorable="d"
-        Title="Internet Explorer++" Height="720" Width="1024" Background="{StaticResource BackgroundColor}" MinWidth="500" MinHeight="500"
+        Title="{Binding WindowTitle}" Height="720" Width="1024" Background="{StaticResource BackgroundColor}" MinWidth="500" MinHeight="500"
         WindowStyle="None" WindowStartupLocation="CenterScreen" StateChanged="Window_StateChanged" Activated="Window_Activated" 
-        AllowsTransparency="True" SizeChanged="Window_SizeChanged">
+        AllowsTransparency="True" SizeChanged="Window_SizeChanged" Closed="Window_Closed">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="35"/>

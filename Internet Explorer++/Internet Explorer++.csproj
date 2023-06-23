@@ -188,6 +188,9 @@
     <Compile Include="Views\ChooseProfile.xaml.cs">
       <DependentUpon>ChooseProfile.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ChooseProfileWindow.xaml.cs">
+      <DependentUpon>ChooseProfileWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SettingsControl.xaml.cs">
       <DependentUpon>SettingsControl.xaml</DependentUpon>
     </Compile>
@@ -198,6 +201,10 @@
       <DependentUpon>UserPopup.xaml</DependentUpon>
     </Compile>
     <Page Include="Views\ChooseProfile.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ChooseProfileWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

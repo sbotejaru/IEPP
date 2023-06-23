@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:IEPP.Properties"
              xmlns:controls="clr-namespace:IEPP.Controls"
              xmlns:views="clr-namespace:IEPP.Views"
-             StartupUri="Views/MainWindow.xaml">
+             StartupUri="Views/ChooseProfileWindow.xaml">
     <Application.Resources>
         <!--Round buttons style-->
         <Style TargetType="Button" x:Key="RoundButton">

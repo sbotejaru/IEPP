@@ -558,7 +558,6 @@ namespace IEPP.ViewModels
                 pProcess.StartInfo.RedirectStandardOutput = true;
                 pProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 pProcess.StartInfo.CreateNoWindow = true;
-                pProcess.StartInfo.RedirectStandardOutput = true;
                 pProcess.Start();                
                 pProcess.OutputDataReceived += ProcessOutputDataReceived;
                 pProcess.BeginOutputReadLine();

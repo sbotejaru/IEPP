@@ -128,7 +128,7 @@
 
                 <Button Height="25" Width="25" Padding="0" HorizontalAlignment="Right" Name="UserBtn" Click="UserBtn_Click"
                     BorderBrush="Transparent" BorderThickness="0" Background="Transparent" Style="{DynamicResource RoundButton}"
-                    ToolTip="User settings" ToolTipService.InitialShowDelay="400" Margin="0,0,10,0">
+                    ToolTip="Change profile" ToolTipService.InitialShowDelay="400" Margin="0,0,10,0">
                     <!-- bind tooltip to username -->
                     <Image Source="/Icons/user.png" Height="20" Width="20"/>
                 </Button>

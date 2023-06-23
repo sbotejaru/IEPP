@@ -20,6 +20,7 @@ using IEPP.Controls;
 using IEPP.ViewModels;
 using System.ComponentModel;
 using System.Threading;
+using System.Diagnostics;
 
 namespace IEPP.Views
 {
@@ -31,21 +32,22 @@ namespace IEPP.Views
         Uri restoreDownSource = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/restore_down.png");
         Uri maximizeSource = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/maximize.png");
         MainVM dataContextVM;
-        public ChooseProfile ChooseProfile;
+        //public ChooseProfileWindow ChooseProfile;
         private BackgroundWorker bgWorker;
         private bool historyLoaded;
 
-        public MainWindow()
+        public MainWindow(string username, string userPath)
         {
             InitializeComponent();
 
-            InitChooseProfile();
-
             bgWorker = new BackgroundWorker();
             dataContextVM = DataContext as MainVM;
+
             this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
             this.MaxWidth = SystemParameters.MaximizedPrimaryScreenWidth;
             historyLoaded = false;
+
+            InitWindow(username, userPath);
         }
 
         private void Minimize_Click(object sender, RoutedEventArgs e)
@@ -54,19 +56,38 @@ namespace IEPP.Views
             this.WindowState = WindowState.Minimized;
         }
 
-        /* private void Button_Click(object sender, RoutedEventArgs e)
-         {
-             this.WindowState = WindowState.Maximized;
-         }*/
+        private int newProcId;
+
+        public int NewProcId
+        {
+            get { return newProcId; }
+            set { newProcId = value; }
+        }
+
+
+        private void ProcessOutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (sender as Process != null)
+            {
+                if (e.Data == dataContextVM.Username)
+                {
+                    Process.GetProcessById(NewProcId).Kill();
+                } 
+            }
+        }
 
         public void InitChooseProfile()
         {
-            ChooseProfile = new ChooseProfile();
-            ChooseProfile.IsVisibleChanged += ChooseProfileUC_IsVisibleChanged;
-            ChooseProfile.Loaded += ChooseProfileUC_Loaded;
-            ChooseProfile.IsEnabledChanged += ChooseProfileUC_IsEnabledChanged;
-
-            ChooseProfileGrid.Children.Add(ChooseProfile);
+            using (Process pProcess = new Process())
+            {
+                pProcess.StartInfo.FileName = "Internet Explorer++.exe";
+                pProcess.StartInfo.UseShellExecute = false;
+                pProcess.StartInfo.RedirectStandardOutput = true;
+                pProcess.Start();
+                pProcess.OutputDataReceived += ProcessOutputDataReceived;
+                pProcess.BeginOutputReadLine();
+                NewProcId = pProcess.Id;
+            }
         }
 
         private void Window_StateChanged(object sender, EventArgs e)
@@ -91,25 +112,6 @@ namespace IEPP.Views
                 );*/
         }
 
-        private void ChooseProfileUC_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            /*if (e.NewValue.ToString() == "False")
-            {
-                var chooseProfileDC = ChooseProfileUC.DataContext as ChooseProfileVM;
-
-                if (chooseProfileDC.SelectedUser != null)
-                {
-                    dataContextVM.Username = chooseProfileDC.SelectedUser.Username;
-                    dataContextVM.UserPath = chooseProfileDC.CurrentUserPath;
-                    dataContextVM.AddTabCommand.Execute(null);
-                }
-
-                BrowserTabs.Visibility = Visibility.Visible;
-            }
-            else if (e.NewValue.ToString() == "True")
-                BrowserTabs.Visibility = Visibility.Collapsed;*/
-        }
-
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             dataContextVM.MaxTabsScreenWidth = e.NewSize.Width - 220.0;
@@ -118,11 +120,6 @@ namespace IEPP.Views
         private void BrowserTabs_Loaded(object sender, RoutedEventArgs e)
         {
             //
-        }
-
-        private void ChooseProfileUC_Loaded(object sender, RoutedEventArgs e)
-        {
-            ChooseProfile.UsersDir = dataContextVM.UsersDir;
         }
 
         private void bgWorker_LoadHistory(object sender, DoWorkEventArgs e)
@@ -134,17 +131,6 @@ namespace IEPP.Views
         private void bgWorker_LoadBookmarks(object sender, DoWorkEventArgs e)
         {
             dataContextVM.LoadBookmarks();
-        }
-
-        private void bgWorker_LoadSettings(object sender, DoWorkEventArgs e)
-        {
-            dataContextVM.LoadSettings();
-        }
-
-        private void bgWorker_LoadSettingsCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            bgWorker = null;
-            StartBookmarksLoad();
         }
 
         private void bgWorker_LoadHistoryCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -163,14 +149,6 @@ namespace IEPP.Views
             StartHistoryLoad();
         }
 
-        private void StartDataLoad()
-        {
-            bgWorker = new BackgroundWorker();
-            bgWorker.DoWork += bgWorker_LoadSettings;
-            bgWorker.RunWorkerCompleted += bgWorker_LoadSettingsCompleted;
-            bgWorker.RunWorkerAsync();
-        }
-
         private void StartBookmarksLoad()
         {
             bgWorker = new BackgroundWorker();
@@ -187,44 +165,32 @@ namespace IEPP.Views
             bgWorker.RunWorkerAsync();
         }
 
-        private void ChooseProfileUC_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void InitWindow(string username, string userPath)
         {
-            if (e.NewValue.ToString() == "False")
+            if (username != null && userPath != null)
             {
-                var chooseProfileDC = ChooseProfile.DataContext as ChooseProfileVM;
-
-                if (chooseProfileDC.SelectedUser != null)
+                if (dataContextVM.Username != username)
                 {
-                    if (dataContextVM.Username != chooseProfileDC.SelectedUser.Username)
-                    {
-                        dataContextVM.Username = chooseProfileDC.SelectedUser.Username;
-                        dataContextVM.UserPath = chooseProfileDC.CurrentUserPath;
-                        dataContextVM.InitCef();
+                    dataContextVM.Username = username;
+                    dataContextVM.UserPath = userPath;
+                    dataContextVM.InitCef();
 
-                        dataContextVM.LoadSettings();
-                        StartBookmarksLoad();
+                    dataContextVM.LoadSettings();
+                    StartBookmarksLoad();
 
-                        dataContextVM.AddTabCommand.Execute(null);
-                        this.ChooseProfile = null;
-                    }
+                    dataContextVM.AddTabCommand.Execute(null);
                 }
-
-                BrowserTabs.Visibility = Visibility.Visible;
             }
-            /*else if (e.NewValue.ToString() == "True")
-            {
-                BrowserTabs.Visibility = Visibility.Collapsed;
-            }*/
         }
 
         public void ChangeVisibilityToChooseProfile()
         {
             InitChooseProfile();
-            ChooseProfile.FirstSelection = false;
-            ChooseProfile.UserListGrid.IsEnabled = true;
-            ChooseProfile.IsEnabled = true;
-            BrowserTabs.Visibility = Visibility.Collapsed;
-            ChooseProfile.Visibility = Visibility.Visible;
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            dataContextVM.SaveData();
         }
     }
 }
