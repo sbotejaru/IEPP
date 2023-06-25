@@ -58,7 +58,7 @@ namespace IEPP.ViewModels
             }
         }
 
-        private void CreateNewUserDirectory(string username, Uri avatarSrc) // + image
+        private void CreateNewUserDirectory(string username, Uri avatarSrc)
         {
             var newUserDir = WorkingDir + "/" + username;
             bool exists = Directory.Exists(newUserDir);
@@ -119,11 +119,15 @@ namespace IEPP.ViewModels
             SelectedEthnicity = -1;
             SelectedHairColor = -1;
             SelectedHairStyle = -1;
+            SelectedAge = 0;
+            HasBangs = false;
+            HasBeard = false;
+            HasGlasses = false;
+            IsBald = false;
         }
 
         private void SetVisToChooseList()
         {
-            HideErrors();
             ChooseProfileVisibility = Visibility.Visible;
             NewProfileVisibility = Visibility.Collapsed;
         }
@@ -131,6 +135,21 @@ namespace IEPP.ViewModels
         private void HideErrors()
         {
             NewProfileError = Visibility.Hidden;
+        }
+
+        private void Reset()
+        {
+            HideErrors();
+            InitAttrbiuteValues();
+            NewUsername = "";
+            AvatarImage = new BitmapImage(new Uri("\\Icons\\avatar_placeholder.png", UriKind.Relative));
+            AvatarSaved = false;
+            AvatarChanged = false;
+            FacialHairOpacity = 1;
+            HairAttributesOpacity = 1;
+
+            if (File.Exists(NewAvatarPath))
+                File.Delete(NewAvatarPath);
         }
 
         // Init function that sets all values to null / resets everything
@@ -146,7 +165,11 @@ namespace IEPP.ViewModels
             FacialHairOpacity = 1;
             HairAttributesOpacity = 1;
             AvatarImage = new BitmapImage(new Uri("\\Icons\\avatar_placeholder.png", UriKind.Relative));
-            LoadingText = "";            
+            LoadingText = "";
+            AvatarChanged = false;
+            AvatarSaved = false;
+            DefaultAvatarPath = "pack://application:,,,/Internet Explorer++;component/Icons/coffee.jpg";
+            NewAvatarPath = AppDomain.CurrentDomain.BaseDirectory + "/avatar_temp.jpg";
 
             HideErrors();
             InitAttrbiuteValues();
@@ -276,8 +299,11 @@ namespace IEPP.ViewModels
         public ImageSource AvatarImage
         {
             get { return generatedImage; }
-            set { generatedImage = value; NotifyPropertyChanged("AvatarImage"); }
+            set { generatedImage = value; NotifyPropertyChanged("AvatarImage"); AvatarChanged = true; }
         }
+
+        private bool AvatarChanged { get; set; }
+        private bool AvatarSaved { get; set; }
 
         private Visibility loadingScreenVisibility;
         public Visibility LoadingScreenVisibility
@@ -286,6 +312,8 @@ namespace IEPP.ViewModels
             set { loadingScreenVisibility = value; NotifyPropertyChanged("LoadingScreenVisibility"); }
         }
 
+        private string DefaultAvatarPath { get; set; }
+        private string NewAvatarPath { get; set; }
 
         // avatar attributes binds
         #region avatar attributes
@@ -526,7 +554,7 @@ namespace IEPP.ViewModels
 
         private void ProcessOutputDataReceived(object sender, DataReceivedEventArgs e)
         {
-            switch(ProcessStep)
+            switch (ProcessStep)
             {
                 case 0:
                     LoadingText = "Loading image generator...";
@@ -558,7 +586,7 @@ namespace IEPP.ViewModels
                 pProcess.StartInfo.RedirectStandardOutput = true;
                 pProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 pProcess.StartInfo.CreateNoWindow = true;
-                pProcess.Start();                
+                pProcess.Start();
                 pProcess.OutputDataReceived += ProcessOutputDataReceived;
                 pProcess.BeginOutputReadLine();
                 pProcess.WaitForExit();
@@ -583,8 +611,6 @@ namespace IEPP.ViewModels
 
             LoadingScreenVisibility = Visibility.Collapsed;
             LoadingText = "";
-
-            Console.WriteLine("generated");
         }
 
         public ObservableCollection<UserContainer> UserList { get; set; }
@@ -595,12 +621,11 @@ namespace IEPP.ViewModels
         public RelayCommand SaveAvatarCommand { get; set; }
         public RelayCommand GenerateAvatarCommand { get; set; }
         public RelayCommand RandomizeAvatarCommand { get; set; }
+        public RelayCommand<int> GoBackCommand { get; set; }
 
         public ChooseProfileVM()
         {
-            Init();
-
-            var icon = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/coffee.jpg");
+            Init();            
 
             AddNewProfileCommand = new RelayCommand(o =>
             {
@@ -623,15 +648,18 @@ namespace IEPP.ViewModels
 
                     if (!exists)
                     {
-                        CreateNewUserDirectory(NewUsername, icon);
+                        if (AvatarChanged && AvatarSaved)
+                            CreateNewUserDirectory(NewUsername, new Uri(NewAvatarPath));
+                        else
+                            CreateNewUserDirectory(NewUsername, new Uri(DefaultAvatarPath));
+
                         AddToUserList(NewUsername);
-                        NewUsername = "";
 
                         if (UserList.Count == 5)
                             AddNewVisibility = Visibility.Collapsed;
 
-                        HideErrors();
-                        SetVisToChooseList();
+                        Reset();
+                        SetVisToChooseList();                        
                     }
                     else
                     {
@@ -653,8 +681,27 @@ namespace IEPP.ViewModels
 
             SaveAvatarCommand = new RelayCommand(o =>
             {
-                CreateAvatarVisibility = Visibility.Collapsed;
-                NewProfileVisibility = Visibility.Visible;
+                if (AvatarChanged)
+                {
+                    AvatarSaved = true;
+                    CreateAvatarVisibility = Visibility.Collapsed;
+                    NewProfileVisibility = Visibility.Visible;
+                }
+            });
+
+            GoBackCommand = new RelayCommand<int>(index =>
+            {
+                switch (index)
+                {
+                    case 0:
+                        Reset();
+                        SetVisToChooseList();
+                        break;
+                    case 1:
+                        CreateAvatarVisibility = Visibility.Collapsed;
+                        NewProfileVisibility = Visibility.Visible;
+                        break;
+                }
             });
 
             GenerateAvatarCommand = new RelayCommand(o =>

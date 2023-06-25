@@ -7,10 +7,11 @@
         xmlns:utils="clr-namespace:IEPP.Utils"
         xmlns:local="clr-namespace:IEPP.Views"
         xmlns:vm="clr-namespace:IEPP.ViewModels"
+        xmlns:mscorlib="clr-namespace:System;assembly=mscorlib"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
         mc:Ignorable="d"
         Title="Internet Explorer++" Height="720" Width="1024" Loaded="Window_Loaded"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen" Background="Transparent" MinHeight="580" MinWidth="1000">
     <Window.DataContext>
         <vm:ChooseProfileVM/>
     </Window.DataContext>
@@ -30,9 +31,18 @@
 
         <!--Choose profiles-->
         <Grid Style="{StaticResource FadeInOutGrid}" Visibility="{Binding ChooseProfileVisibility}" Name="UserListGrid">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,50" Name="ChooseProfileStack">
-                <TextBlock Text="Who's browsing?" Foreground="{StaticResource ActiveText}" FontFamily="Century Gothic" FontSize="40" Padding="0,0,0,30" Name="ChooseProfileText"
-                       HorizontalAlignment="Center" Margin="0,0,0,20"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <TextBlock Text="Who's browsing?" Foreground="{StaticResource ActiveText}" FontFamily="Century Gothic" FontSize="40" Padding="0,0,0,0" Name="ChooseProfileText"
+                       HorizontalAlignment="Center" Margin="0,120,0,0" VerticalAlignment="Bottom"/>
+            
+            <Button Height="40" Width="100" Foreground="{StaticResource ActiveText}" FontSize="20" Content="Edit" Style="{StaticResource RoundButton}"
+                    VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,100,0"/>
+            
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,50" Name="ChooseProfileStack" Grid.Row="1">                
                 <controls:UserListBox Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Foreground="White" Style="{DynamicResource ProfileList}"
                      x:Name="ChooseProfileList" BorderBrush="Transparent" BorderThickness="0" ItemsSource="{Binding UserList}" 
                      ItemContainerStyle="{StaticResource ListBoxItemStyleTransparentSelect}" SelectedItem="{Binding SelectedUser}"
@@ -43,12 +53,11 @@
                 <Button Style="{StaticResource RoundButton}" Content="Browse as Guest" Height="30" Foreground="{StaticResource InactiveText}"
                         Width="150" FontSize="15" Margin="0,50,0,0" VerticalAlignment="Bottom" Click="IncognitoBtn_Click"/>
             </StackPanel>
-
-
         </Grid>
 
         <!--Create profile-->
-        <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding NewProfileVisibility}" Style="{StaticResource FadeInGrid}">
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding NewProfileVisibility}" Style="{StaticResource FadeInGrid}"
+              Margin="0,50,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -57,7 +66,16 @@
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
+
+            <Button Grid.Row="2" Grid.ColumnSpan="2" Content="Back" Height="40" FontSize="20" Style="{StaticResource RoundButton}"
+                    Foreground="{StaticResource ActiveText}" Width="100" VerticalAlignment="Bottom" Margin="0,10,0,5"
+                    Command="{Binding GoBackCommand}" HorizontalAlignment="Center">
+                <Button.CommandParameter>
+                    <mscorlib:Int32>0</mscorlib:Int32>
+                </Button.CommandParameter>
+            </Button>
 
             <StackPanel Grid.Column="1" Grid.Row="0" VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal">
@@ -70,36 +88,6 @@
                             </controls:WatermarkService.Watermark>
                         </TextBox>
                     </AdornerDecorator>
-
-                    <!--<Grid>
-                    <TextBox  Style="{StaticResource SimpleTextBox}" Background="{StaticResource SearchBarColor}" Width="170"
-                              Height="22"  VerticalAlignment="Center" HorizontalAlignment="Center" Name="NewUsername" Margin="5,0,0,0" FontSize="15"
-                              Text="{Binding NewUsername, Mode=TwoWay}" Visibility="{Binding NewProfileVisibility}"
-                              />
-                    <TextBlock IsHitTestVisible="False" Text="" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray"
-                               FontSize="15" Visibility="{Binding NewProfileVisibility}">
-                        <TextBlock.Style>
-                            <Style TargetType="{x:Type TextBlock}">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Text, ElementName=NewUsername}" Value="">
-                                        <Setter Property="Text" Value="111"/>
-                                    </DataTrigger>
-                                    <Trigger Property="Visibility" Value="Visible">
-                                        <Trigger.EnterActions>
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                           From="0.0" To="1.0" Duration="0:0:0.4"/>
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </Trigger.EnterActions>
-                                    </Trigger>                                    
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-                </Grid>-->
                 </StackPanel>
 
                 <Button Style="{StaticResource NewProfileButtonStyle}" 
@@ -135,6 +123,13 @@
 
             <TextBlock Text="Tell us about yourself." FontSize="40" Foreground="{StaticResource ActiveText}" HorizontalAlignment="Center"
                        Grid.ColumnSpan="2" VerticalAlignment="Bottom" Grid.Row="0" FontFamily="Century Gothic"/>
+            <Button Grid.Row="0" Grid.Column="1" Content="Back" Height="40" FontSize="20" Style="{StaticResource RoundButton}"
+                    Foreground="{StaticResource ActiveText}" Width="100" VerticalAlignment="Bottom" Margin="0,0,0,5"
+                    Command="{Binding GoBackCommand}">
+                <Button.CommandParameter>
+                    <mscorlib:Int32>1</mscorlib:Int32>
+                </Button.CommandParameter>
+            </Button>
 
             <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal" Grid.Row="1">
                 <!--Main features-->
@@ -194,8 +189,6 @@
                                        FontSize="14"/>
                             <CheckBox VerticalAlignment="Center" IsChecked="{Binding HasBangs}" IsEnabled="{Binding IsBald, Converter={StaticResource InverseBool}}"/>
                         </StackPanel>
-
-
 
                         <!--Color-->
                         <StackPanel Orientation="Horizontal" Margin="0,15,0,0" Opacity="{Binding HairAttributesOpacity}" HorizontalAlignment="Right">

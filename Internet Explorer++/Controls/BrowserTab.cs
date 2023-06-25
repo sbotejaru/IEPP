@@ -17,6 +17,7 @@ using CefSharp.Wpf;
 using CefSharp.DevTools.HeapProfiler;
 using System.Collections.ObjectModel;
 using IEPP.Models;
+using CefSharp;
 
 namespace IEPP.Controls
 {
@@ -39,6 +40,7 @@ namespace IEPP.Controls
 
         public DisplayHandler DisplayHandler { get; set; }
         public DownloadHandler DownloadHandler { get; set; }
+        public RequestHandler RequestHandler { get; set; }
 
         public BitmapImage FavIconSource
         {
@@ -98,14 +100,13 @@ namespace IEPP.Controls
             browser.TitleChanged += TitleChanged;
             browser.DisplayHandler = DisplayHandler;
             browser.DownloadHandler = DownloadHandler;
-            //var icon = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/IEPP_gray.ico");
-            //DisplayHandler.IconHandler.FavIcon = new BitmapImage(icon);
+            browser.RequestHandler = RequestHandler;
         }
 
         private void InitializeSettings()
         {
-            //var icon = new Uri("pack://application:,,,/Internet Explorer++;component/Icons/settings.png");
-            //DisplayHandler.IconHandler.FavIcon = new BitmapImage(icon);
+            var icon = new Uri("/Icons/settings.png", UriKind.Relative);
+            DisplayHandler.IconHandler.FavIcon = new BitmapImage(icon);
         }
 
         private void GetTabControl()
@@ -131,17 +132,21 @@ namespace IEPP.Controls
                 tabDataContext.BookmarkBarIsVisible = s.BookmarkVisible;
                 tabDataContext.CurrentSearchEngine = s.SearchEngine;
                 tabDataContext.DownloadsFolderPath = s.DownloadsFolder;
+                tabDataContext.AskWhereToDownload = s.AskWhereToDownload;
+                DownloadHandler.DownloadPath = s.DownloadsFolder;
+                DownloadHandler.ShowDialog = s.AskWhereToDownload;
             }
         }
 
         public BrowserTab(TabType tabType, MainVM mainDC)
         {
             DisplayHandler = new DisplayHandler();
+            RequestHandler = new RequestHandler(mainDC);
 
             if (mainDC.SettingsData != null)
-                DownloadHandler = new DownloadHandler(mainDC.SettingsData.DownloadsFolder);
+                DownloadHandler = new DownloadHandler(mainDC.SettingsData.DownloadsFolder, mainDC.SettingsData.AskWhereToDownload);
             else
-                DownloadHandler = new DownloadHandler(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads");
+                DownloadHandler = new DownloadHandler(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads", true);
 
             //new tab from link, see https://stackoverflow.com/a/67261947, https://stackoverflow.com/a/32092384
 
@@ -169,9 +174,9 @@ namespace IEPP.Controls
         public BrowserTab(MainVM mainDC, int settingsTabIndex)
         {
             if (mainDC.SettingsData != null)
-                DownloadHandler = new DownloadHandler(mainDC.SettingsData.DownloadsFolder);
+                DownloadHandler = new DownloadHandler(mainDC.SettingsData.DownloadsFolder, mainDC.SettingsData.AskWhereToDownload);
             else
-                DownloadHandler = new DownloadHandler(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads");
+                DownloadHandler = new DownloadHandler(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads", true);
             DisplayHandler = new DisplayHandler();
 
             this.Content = new SettingsControl(mainDC, settingsTabIndex);
@@ -188,11 +193,12 @@ namespace IEPP.Controls
         public BrowserTab(MainVM mainDC, string url)
         {
             DisplayHandler = new DisplayHandler();
+            RequestHandler = new RequestHandler(mainDC);
 
             if (mainDC.SettingsData != null)
-                DownloadHandler = new DownloadHandler(mainDC.SettingsData.DownloadsFolder);
+                DownloadHandler = new DownloadHandler(mainDC.SettingsData.DownloadsFolder, mainDC.SettingsData.AskWhereToDownload);
             else
-                DownloadHandler = new DownloadHandler(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads");
+                DownloadHandler = new DownloadHandler(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads", true);
 
             this.Content = new TabContent(mainDC, url);
             InitializeBrowser();

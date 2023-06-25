@@ -120,6 +120,24 @@
             <controls:SettingsTab Title="Downloads" IconSource="/Icons/download.png">
                 <StackPanel Orientation="Vertical" Margin="50,20,100,0" MinWidth="500" MaxWidth="850">
                     <TextBlock Text="Downloads" Foreground="{StaticResource ActiveText}" FontSize="20"/>
+
+                    <Border CornerRadius="10" BorderThickness="3" BorderBrush="{StaticResource SettingsHoverColor}" Margin="0,10,0,0">
+                        <StackPanel Orientation="Vertical" Background="{StaticResource SettingsHoverColor}">
+                            <Grid Height="40">
+                                <TextBlock Text="{Binding DownloadsFolderPath}" Foreground="{StaticResource ActiveText}" Margin="20,0,0,0" FontSize="14"
+                                           HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                <Button HorizontalAlignment="Right" Content="Modify" Height="25" Width="70" Margin="0,0,20,0"
+                                        Command="{Binding ModifyDownloadsFolderCommand}"/>
+                            </Grid>
+                            <Border BorderThickness="0,1,0,0" BorderBrush="{StaticResource InactiveText}">
+                                <Grid Height="40">
+                                    <TextBlock Text="Ask everytime where the file should be saved" Foreground="{StaticResource ActiveText}" Margin="20,0,0,0" FontSize="14"
+                                           HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <CheckBox HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Center" IsChecked="{Binding AskWhereToDownload, Mode=TwoWay}"/>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
             </controls:SettingsTab>
         </TabControl>

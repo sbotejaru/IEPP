@@ -1,17 +1,22 @@
 tabs title from webpage v
 tabs favicon from webpage v
-tabs animation on resize v kinda?
+tabs animation on resize v
 tabs resize when they dont fit v
 bookmark v
 history v
-downloads 
+downloads v
 search v
-
-choose profile and mainwindow 2 different windows for making profile change posssible and for better manipulation
-
+choose profile and mainwindow 2 different windows for making profile change posssible and for better manipulation v
 menu button dropdown v
+settings UI v
+go back v
+save avatar v
+open in new tab v
 
-downloads ui - change location with dialog, option "ask everytime where the file should dl"
-settings UI
+edit & delete profiles
+lock features
+
+
+
 
 

@@ -194,7 +194,6 @@ namespace IEPP.Views
         private void DownloadsBookmarkItem_Click(object sender, RoutedEventArgs e)
         {
             vm.AddSettingsTabCommand.Execute(3);
-
         }
     }
 }

@@ -106,7 +106,7 @@ namespace IEPP.Controls
 
             NewTabFromHistory = new RelayCommand(o =>
             {
-                (App.Current.MainWindow.DataContext as MainVM).AddBrowserTab(Url);
+                (App.Current.MainWindow.DataContext as MainVM).AddBrowserTab(Url, true);
             });
 
             DeleteHistoryItemCommand = new RelayCommand(o =>

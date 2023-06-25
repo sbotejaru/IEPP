@@ -63,14 +63,14 @@ namespace IEPP.Views
             UserListGrid.IsEnabled = false;
 
             App.Current.MainWindow = null;
-            App.Current.MainWindow = new MainWindow(username, userPath);            
+            App.Current.MainWindow = new MainWindow(username, userPath);
 
             if (FirstSelection)
                 await Task.Delay(400);
             else
                 await Task.Delay(0);         
 
-            Visibility = Visibility.Collapsed;
+            this.Close();
             App.Current.MainWindow.Show();
         }
     }

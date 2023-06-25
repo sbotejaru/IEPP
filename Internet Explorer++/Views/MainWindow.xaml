@@ -27,14 +27,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Background="{StaticResource CaptionBarColor}"/>
-
-
-        <Grid Grid.Row="1" Name="ChooseProfileGrid">
-            <!--<local:ChooseProfile x:Name="ChooseProfileUC" Loaded="ChooseProfileUC_Loaded"
-                             IsVisibleChanged="ChooseProfileUC_IsVisibleChanged" IsEnabledChanged="ChooseProfileUC_IsEnabledChanged"/>-->
-        </Grid>
-        
+        <Grid Grid.Row="0" Background="{StaticResource CaptionBarColor}"/>        
 
         <controls:BrowserTabControl Background="Transparent" BorderThickness="0" Grid.Row="0" Grid.RowSpan="2" Margin="0,2,0,0"
                                     ItemsSource="{Binding Tabs}" NewTabCommand="{Binding AddTabCommand}" x:Name="BrowserTabs"

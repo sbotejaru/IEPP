@@ -15,6 +15,7 @@ namespace IEPP.Utils
         public event EventHandler<DownloadItem> OnDownloadUpdatedFired;
 
         public string DownloadPath { get; set; }
+        public bool ShowDialog { get; set; }
 
         public bool CanDownload(IWebBrowser chromiumWebBrowser, IBrowser browser, string url, string requestMethod)
         {
@@ -36,7 +37,7 @@ namespace IEPP.Utils
                 {
                     callback.Continue(DownloadPath + @"\" +
                             downloadItem.SuggestedFileName,
-                        showDialog: false);
+                        showDialog: ShowDialog);
                 }
             }
         }
@@ -44,6 +45,12 @@ namespace IEPP.Utils
         public void OnDownloadUpdated(IWebBrowser chromiumWebBrowser, IBrowser browser, DownloadItem downloadItem, IDownloadItemCallback callback)
         {
             OnDownloadUpdatedFired?.Invoke(this, downloadItem);
+        }
+
+        public DownloadHandler(string downloadFolderPath, bool showDialog)
+        {
+            DownloadPath = downloadFolderPath;
+            ShowDialog = showDialog;
         }
 
         public DownloadHandler(string downloadFolderPath)

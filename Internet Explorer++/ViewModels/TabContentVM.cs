@@ -15,6 +15,8 @@ using System.Collections.Generic;
 using System.Linq;
 using IEPP.Enums;
 using System.Dynamic;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using System.Windows.Controls;
 
 namespace IEPP.ViewModels
 {
@@ -119,7 +121,7 @@ namespace IEPP.ViewModels
                 selectedSettingsTab = value;
 
                 if (selectedSettingsTab == 2)
-                { 
+                {
                     if (!bookmarksLoaded)
                     {
                         MainWinDC.BookmarksToSettingsContainer();
@@ -247,6 +249,22 @@ namespace IEPP.ViewModels
             }
         }
 
+        private bool askWhereToDownload;
+        public bool AskWhereToDownload
+        {
+            get { return askWhereToDownload; }
+            set
+            {
+                if (value != askWhereToDownload)
+                {
+                    askWhereToDownload = value;
+                    CurrentSettings.AskWhereToDownload = askWhereToDownload;
+                    SettingsChanged = true;
+                    NotifyPropertyChanged("AskWhereToDownload");
+                }                
+            }
+        }
+
         public int SelectedEngineIndex
         {
             get { return (int)CurrentSearchEngine; }
@@ -320,6 +338,7 @@ namespace IEPP.ViewModels
                     CurrentSearchEngine = SearchEngine.Google;
                     BookmarkBarIsVisible = true;
                     DownloadsFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
+                    AskWhereToDownload = true;
                 }
             }
         }
@@ -376,6 +395,7 @@ namespace IEPP.ViewModels
                 DownloadsFolderPath = CurrentSettings.DownloadsFolder;
                 Url = GetSearchEngineURL();
                 BookmarkBarIsVisible = CurrentSettings.BookmarkVisible;
+                AskWhereToDownload = CurrentSettings.AskWhereToDownload;
 
                 return true;
             }
@@ -390,6 +410,7 @@ namespace IEPP.ViewModels
         public RelayCommand SearchCommand { get; set; }
         public RelayCommand StopLoadCommand { get; set; }
         public RelayCommand AddBookmarkCommand { get; set; }
+        public RelayCommand ModifyDownloadsFolderCommand { get; set; }
         public RelayCommand<int> AddSettingsTabCommand { get; set; }
 
         public void Dispose()
@@ -479,7 +500,7 @@ namespace IEPP.ViewModels
                 {
                     WebBrowser.Load(SearchBarText);
                 }
-                else 
+                else
                     Search(SearchBarText);
 
             });
@@ -527,6 +548,19 @@ namespace IEPP.ViewModels
             AddSettingsTabCommand = new RelayCommand<int>(index =>
             {
                 MainWinDC.AddSettingsTab(index);
+            });
+
+            ModifyDownloadsFolderCommand = new RelayCommand(o =>
+            {
+                using (var dialog = new CommonOpenFileDialog())
+                {
+                    dialog.InitialDirectory = DownloadsFolderPath;
+                    dialog.IsFolderPicker = true;
+                    if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                    {
+                        DownloadsFolderPath = dialog.FileName;
+                    }
+                }
             });
         }
     }

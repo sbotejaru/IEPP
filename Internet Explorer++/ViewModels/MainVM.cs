@@ -238,7 +238,7 @@ namespace IEPP.ViewModels
             Tabs.Add(newTab);
         }
 
-        public void AddBrowserTab(string url)
+        public void AddBrowserTab(string url, bool backgroundTab)
         {
             var newTab = new BrowserTab(this, url)
             {
@@ -248,7 +248,15 @@ namespace IEPP.ViewModels
 
             Tabs.Add(newTab);
 
-            SelectedTabIndex = Tabs.Count - 1;
+            var prev = SelectedTabIndex;
+
+            if (!backgroundTab)
+                SelectedTabIndex = Tabs.Count - 1;
+            else
+            {
+                SelectedTabIndex = Tabs.Count - 1;
+                SelectedTabIndex = prev;
+            }
 
             if (MaxTabWidth * Tabs.Count > MaxTabsScreenWidth)
                 ResizeTabs();
@@ -559,6 +567,7 @@ namespace IEPP.ViewModels
                 if (UserPath != "")
                     settings.CachePath = UserPath + "/cache";
 
+                settings.SetOffScreenRenderingBestPerformanceArgs();
                 settings.LogSeverity = LogSeverity.Disable;
                 settings.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36 /CefSharp Browser" + Cef.CefSharpVersion;
                 Cef.Initialize(settings);
