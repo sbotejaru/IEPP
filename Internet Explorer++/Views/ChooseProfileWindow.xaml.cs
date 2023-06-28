@@ -49,8 +49,11 @@ namespace IEPP.Views
 
         private async void ChooseProfileList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Console.WriteLine(dc.SelectedUser.Username);
-            await InitMainWindow(dc.SelectedUser.Username, dc.CurrentUserPath);
+            if (!dc.EditMode)
+            {
+                Console.WriteLine(dc.SelectedUser.Username);
+                await InitMainWindow(dc.SelectedUser.Username, dc.CurrentUserPath);
+            }
         }
 
         private async void IncognitoBtn_Click(object sender, RoutedEventArgs e)
@@ -72,6 +75,11 @@ namespace IEPP.Views
 
             this.Close();
             App.Current.MainWindow.Show();
+        }
+
+        private void GoBackToUserListButton_Click(object sender, RoutedEventArgs e)
+        {
+            ChooseProfileList.UnselectAll();
         }
     }
 }

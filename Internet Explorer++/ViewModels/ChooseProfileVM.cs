@@ -71,6 +71,51 @@ namespace IEPP.ViewModels
             }
         }
 
+        private void EditSelectedUserDirectory(string newUsername)
+        {
+            var userDir = WorkingDir + "/" + SelectedUser.Username;
+            var newUserDir = WorkingDir + "/" + newUsername;
+
+            Directory.Move(userDir, newUserDir);
+
+            SelectedUser.Username = newUsername;
+        }
+
+        private void EditSelectedUserDirectory(Uri newAvatarSrc)
+        {
+            var avatarDir = WorkingDir + "/" + SelectedUser.Username + "/avatar.jpg";
+            SaveAvatar(avatarDir, newAvatarSrc);
+
+            BitmapDecoder decoder = BitmapDecoder.Create(new Uri(avatarDir), BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
+            BitmapSource avatarSource = decoder.Frames[0];
+
+            SelectedUser.ProfilePic = ConvertBitmapSourceToBitmapImage(avatarSource);
+        }
+
+        private void EditSelectedUserDirectory(string newUsername, Uri newAvatarSrc)
+        {
+            EditSelectedUserDirectory(newAvatarSrc);
+            EditSelectedUserDirectory(newUsername);
+        }
+
+        private void DeleteSelectedUser()
+        {
+            var userPath = WorkingDir + "/" + SelectedUser.Username;
+
+            foreach (var user in UserList)
+            {
+                if (user.Username == SelectedUser.Username)
+                {
+                    UserList.Remove(user);
+                    break;
+                }
+            }
+
+            Directory.Delete(userPath, true);
+            Reset();
+            SetVisToChooseList();
+        }
+
         private void SaveAvatar(string avatarPath, Uri avatarSrc)
         {
             var encoder = new JpegBitmapEncoder();
@@ -110,7 +155,36 @@ namespace IEPP.ViewModels
         {
             var userPath = WorkingDir + "/" + username;
             var avatarPath = new Uri(userPath + "/avatar.jpg");
-            UserList.Add(new UserContainer() { Username = username, ProfilePic = new BitmapImage(avatarPath) });
+
+            BitmapDecoder decoder = BitmapDecoder.Create(avatarPath, BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
+            BitmapSource avatarSource = decoder.Frames[0];
+
+            UserList.Add(new UserContainer() { Username = username, ProfilePic = ConvertBitmapSourceToBitmapImage(avatarSource) });
+        }
+
+        public static BitmapImage ConvertBitmapSourceToBitmapImage(BitmapSource bitmapSource)
+        {
+            // before encoding/decoding, check if bitmapSource is already a BitmapImage
+            if (!(bitmapSource is BitmapImage bitmapImage))
+            {
+                bitmapImage = new BitmapImage();
+
+                BmpBitmapEncoder encoder = new BmpBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    encoder.Save(memoryStream);
+                    memoryStream.Position = 0;
+
+                    bitmapImage.BeginInit();
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.StreamSource = memoryStream;
+                    bitmapImage.EndInit();
+                }
+            }
+
+            return bitmapImage;
         }
 
         private void InitAttrbiuteValues()
@@ -147,6 +221,10 @@ namespace IEPP.ViewModels
             AvatarChanged = false;
             FacialHairOpacity = 1;
             HairAttributesOpacity = 1;
+            LockMode = false;
+            IsLockedOpacity = 1;
+            IsBaldEnabled = true;
+            IsBaldOpacity = 1;
 
             if (File.Exists(NewAvatarPath))
                 File.Delete(NewAvatarPath);
@@ -164,15 +242,41 @@ namespace IEPP.ViewModels
             NewProfileErrorMessage = "A profile with that name already exists!";
             FacialHairOpacity = 1;
             HairAttributesOpacity = 1;
+            IsLockedOpacity = 1;
             AvatarImage = new BitmapImage(new Uri("\\Icons\\avatar_placeholder.png", UriKind.Relative));
             LoadingText = "";
             AvatarChanged = false;
             AvatarSaved = false;
             DefaultAvatarPath = "pack://application:,,,/Internet Explorer++;component/Icons/coffee.jpg";
             NewAvatarPath = AppDomain.CurrentDomain.BaseDirectory + "/avatar_temp.jpg";
+            EditButtonContent = "Edit";
+            EditVisibility = Visibility.Collapsed;
+            EditMode = false;
+            DeleteButtonVisibility = Visibility.Collapsed;
+            LockMode = false;
 
             HideErrors();
             InitAttrbiuteValues();
+        }
+
+        private void ToEditMode()
+        {
+            EditMode = true;
+            EditVisibility = Visibility.Visible;
+            EditButtonContent = "Done";
+            AddNewVisibility = Visibility.Collapsed;
+            DeleteButtonVisibility = Visibility.Visible;
+        }
+
+        private void ToNormalMode()
+        {
+            EditMode = false;
+            EditVisibility = Visibility.Collapsed;
+            EditButtonContent = "Edit";
+            DeleteButtonVisibility = Visibility.Collapsed;
+
+            if (UserList.Count < 5)
+                AddNewVisibility = Visibility.Visible;
         }
 
         private void RandomizeAttributes()
@@ -211,6 +315,22 @@ namespace IEPP.ViewModels
 
             HasGlasses = true ? RandomAccessory == 1 : RandomAccessory == 0;
 
+        }
+
+        private void EditSelectedProfile()
+        {
+            NewUsername = SelectedUser.Username;
+            var userPath = WorkingDir + "/" + SelectedUser.Username;
+            var avatarPath = userPath + "/avatar.jpg";
+
+            ChooseProfileVisibility = Visibility.Collapsed;
+            NewProfileVisibility = Visibility.Visible;
+
+            if (File.Exists(avatarPath))
+            {
+                BitmapDecoder decoder = BitmapDecoder.Create(new Uri(avatarPath), BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
+                AvatarImage = decoder.Frames[0];
+            }
         }
 
         // visibilities binds
@@ -260,10 +380,17 @@ namespace IEPP.ViewModels
                 selectedUser = value;
                 NotifyPropertyChanged("SelectedUser");
 
-                if (selectedUser.Username != "")
-                    CurrentUserPath = WorkingDir + "/" + selectedUser.Username;
-                else
-                    CurrentUserPath = "";
+                if (!EditMode)
+                {
+                    if (selectedUser.Username != "")
+                        CurrentUserPath = WorkingDir + "/" + selectedUser.Username;
+                    else
+                        CurrentUserPath = "";
+                }
+                else if (selectedUser != null)
+                {
+                    EditSelectedProfile();
+                }
             }
         }
 
@@ -288,11 +415,71 @@ namespace IEPP.ViewModels
             set { newProfileErrorMessage = value; NotifyPropertyChanged("NewProfileErrorMessage"); }
         }
 
-        private string avatarPlaceholderImage;
-        public string AvatarPlaceholderImage
+        private string editButtonContent;
+        public string EditButtonContent
         {
-            get { return avatarPlaceholderImage; }
-            set { avatarPlaceholderImage = value; NotifyPropertyChanged("AvatarPlaceholderImage"); }
+            get { return editButtonContent; }
+            set { editButtonContent = value; NotifyPropertyChanged("EditButtonContent"); }
+        }
+
+        private Visibility editVisibility;
+        public Visibility EditVisibility
+        {
+            get { return editVisibility; }
+            set
+            {
+                editVisibility = value;
+
+                if (editVisibility == Visibility.Visible)
+                    WhosBrowsingVisibility = Visibility.Hidden;
+                else
+                    WhosBrowsingVisibility = Visibility.Visible;
+
+                NotifyPropertyChanged("EditVisibility");
+            }
+        }
+
+        private Visibility deleteBtnVis;
+        public Visibility DeleteButtonVisibility
+        {
+            get { return deleteBtnVis; }
+            set { deleteBtnVis = value; NotifyPropertyChanged("DeleteButtonVisibility"); }
+        }
+
+        public bool EditMode { get; set; }
+
+        private bool lockMode;
+        public bool LockMode
+        {
+            get { return lockMode; }
+            set
+            {
+                lockMode = value;
+                if (lockMode)
+                {
+                    IsLockedOpacity = 0.5;
+                    IsBaldOpacity = 0.5;
+                    IsBaldEnabled = false;
+                }
+                else
+                {
+                    IsLockedOpacity = 1;
+                    if (!IsFemale)
+                    {
+                        IsBaldOpacity = 1;
+                        IsBaldEnabled = true;
+                    }
+                }
+
+                NotifyPropertyChanged("LockMode");
+            }
+        }
+
+        private Visibility whosBrowsingVis;
+        public Visibility WhosBrowsingVisibility
+        {
+            get { return whosBrowsingVis; }
+            set { whosBrowsingVis = value; NotifyPropertyChanged("WhosBrowsingVisibility"); }
         }
 
         private ImageSource generatedImage;
@@ -326,7 +513,6 @@ namespace IEPP.ViewModels
             {
                 selectedGender = value;
                 IsFemale = true ? selectedGender == 1 : selectedGender == 0;
-
                 NotifyPropertyChanged("SelectedGender");
             }
         }
@@ -345,32 +531,81 @@ namespace IEPP.ViewModels
             set { hairAttributesOpacity = value; NotifyPropertyChanged("HairAttributesOpacity"); }
         }
 
+        private double isLockedOpacity;
+        public double IsLockedOpacity
+        {
+            get { return isLockedOpacity; }
+            set { isLockedOpacity = value; NotifyPropertyChanged("IsLockedOpacity"); }
+        }
+
         private int selectedEthnicity;
         public int SelectedEthnicity
         {
             get { return selectedEthnicity; }
-            set { selectedEthnicity = value; NotifyPropertyChanged("SelectedEthnicity"); }
+            set
+            {
+                selectedEthnicity = value;
+                NotifyPropertyChanged("SelectedEthnicity");
+            }
         }
 
         private int selectedHairColor;
         public int SelectedHairColor
         {
             get { return selectedHairColor; }
-            set { selectedHairColor = value; NotifyPropertyChanged("SelectedHairColor"); }
+            set
+            {
+                selectedHairColor = value;
+
+                if (LockMode)
+                    HairColorChanged = true;
+
+                NotifyPropertyChanged("SelectedHairColor");
+            }
         }
 
         private int selectedHairStyle;
         public int SelectedHairStyle
         {
             get { return selectedHairStyle; }
-            set { selectedHairStyle = value; NotifyPropertyChanged("SelectedHairStyle"); }
+            set
+            {
+                selectedHairStyle = value;
+
+                if (LockMode)
+                    HairStyleChanged = true;
+
+                NotifyPropertyChanged("SelectedHairStyle");
+            }
+        }
+
+        private bool isBaldEnabled = true;
+        public bool IsBaldEnabled
+        {
+            get { return isBaldEnabled; }
+            set { isBaldEnabled = value; NotifyPropertyChanged("IsBaldEnabled"); }
+        }
+
+        private double isBaldOpacity = 1;
+        public double IsBaldOpacity
+        {
+            get { return isBaldOpacity; }
+            set { isBaldOpacity = value; NotifyPropertyChanged("IsBaldOpacity"); }
         }
 
         private int selectedAge;
         public int SelectedAge
         {
             get { return selectedAge; }
-            set { selectedAge = value; NotifyPropertyChanged("SelectedAge"); }
+            set
+            {
+                selectedAge = value;
+
+                if (LockMode)
+                    AgeChanged = true;
+
+                NotifyPropertyChanged("SelectedAge");
+            }
         }
 
         private bool isBald;
@@ -401,21 +636,45 @@ namespace IEPP.ViewModels
         public bool HasBangs
         {
             get { return hasBangs; }
-            set { hasBangs = value; NotifyPropertyChanged("HasBangs"); }
+            set
+            {
+                hasBangs = value;
+
+                if (LockMode)
+                    HasBangsChanged = true;
+
+                NotifyPropertyChanged("HasBangs");
+            }
         }
 
         private bool hasGlasses;
         public bool HasGlasses
         {
             get { return hasGlasses; }
-            set { hasGlasses = value; NotifyPropertyChanged("HasGlasses"); }
+            set
+            {
+                hasGlasses = value;
+
+                if (LockMode)
+                    HasGlassesChanged = true;
+
+                NotifyPropertyChanged("HasGlasses");
+            }
         }
 
         private bool hasBeard;
         public bool HasBeard
         {
             get { return hasBeard; }
-            set { hasBeard = value; NotifyPropertyChanged("HasBeard"); }
+            set
+            {
+                hasBeard = value;
+
+                if (LockMode)
+                    HasBeardChanged = true;
+
+                NotifyPropertyChanged("HasBeard");
+            }
         }
 
         private bool hasMoustache;
@@ -438,108 +697,327 @@ namespace IEPP.ViewModels
                     HasBeard = false;
                     HasMoustache = false;
                     IsBald = false;
+                    IsBaldOpacity = 0.5;
+                    IsBaldEnabled = false;
                     FacialHairOpacity = 0.5;
                 }
                 else
                 {
                     FacialHairOpacity = 1;
+                    IsBaldOpacity = 1;
+                    IsBaldEnabled = true;
                 }
 
                 NotifyPropertyChanged("IsFemale");
             }
         }
 
+        public bool AgeChanged { get; set; } = false;
+        public bool HasBangsChanged { get; set; } = false;
+        public bool HairStyleChanged { get; set; } = false;
+        public bool HairColorChanged { get; set; } = false;
+        public bool HasBeardChanged { get; set; } = false;
+        public bool HasGlassesChanged { get; set; } = false;
 
         #endregion
 
+        private List<double> FeatureList { get; set; }
         private void CreateFeaturesFile()
         {
-            List<double> featureList = new List<double>();
             var random = new Random();
 
-            double female = IsFemale ? random.Next(70, 101) * 0.01 : random.Next(1, 30) * 0.01;
-
-            featureList.Add(female);
-            featureList.Add(1 - female);
-
-            for (int index = 0; index < 6; ++index)
-                featureList.Add(random.Next(1, 30) * 0.01);
-
-            featureList[SelectedEthnicity + 2] = random.Next(70, 101) * 0.01;
-
-            featureList.Add(IsBald ? random.Next(70, 101) * 0.01 : random.Next(1, 30) * 0.01);
-            // if isbald generate small values for bangs, hair colors, hair length and density
-            featureList.Add(HasBangs ? random.Next(70, 101) * 0.01 : random.Next(1, 30) * 0.01);
-
-            for (int index = 0; index < 5; ++index)
-                featureList.Add(random.Next(1, 30) * 0.01);
-
-            featureList[13] = HasGlasses ? random.Next(70, 101) * 0.01 : random.Next(1, 30) * 0.01;
-
-            if (SelectedHairColor != (int)HairColor.Gray)
-                featureList[SelectedHairColor + 10] = random.Next(70, 101) * 0.01;
-            else
-                featureList[14] = random.Next(70, 101) * 0.01;
-
-            featureList.Add(random.Next(1, 51) * 0.01);
-
-            featureList.Add(HasBeard ? random.Next(1, 30) * 0.01 : random.Next(70, 101) * 0.01);
-
-            switch (SelectedHairStyle)
+            if (LockMode && AvatarChanged)
             {
-                case (int)HairLength.Short:
-                    if (IsFemale)
+                if (HasBangsChanged)
+                {
+                    FeatureList[9] = HasBangs ? random.Next(70, 101) * 0.01 : random.Next(1, 30) * 0.01;
+                    HasBeardChanged = false;
+                }
+                if (HasGlassesChanged)
+                {
+                    FeatureList[13] = HasGlasses ? random.Next(70, 101) * 0.01 : random.Next(1, 30) * 0.01;
+                    HasGlassesChanged = false;
+                }
+                if (HasBeardChanged)
+                {
+                    FeatureList[16] = HasBeard ? random.Next(1, 30) * 0.01 : random.Next(70, 101) * 0.01;
+                    HasBeardChanged = false;
+                }
+                if (AgeChanged)
+                {
+                    FeatureList[19] = (100 - SelectedAge) * 0.01;
+                    AgeChanged = false;
+                }
+                if (HairColorChanged)
+                {
+                    for (int index = 10; index < 15; ++index)
+                        if (index != 13)
+                            FeatureList[index] = random.Next(0, 31) * 0.01;
+
+                    if (SelectedHairColor != (int)HairColor.Gray)
                     {
-                        featureList.Add(random.Next(25, 51) * 0.01);
-                        featureList.Add(random.Next(25, 51) * 0.01);
+                        if (SelectedHairColor != -1)
+                            FeatureList[SelectedHairColor + 10] = random.Next(70, 101) * 0.01;
                     }
                     else
                     {
-                        featureList.Add(random.Next(0, 21) * 0.01);
-                        featureList.Add(random.Next(00, 21) * 0.01);
+                        if (SelectedAge < 40)
+                        {
+                            FeatureList[14] = random.Next(20, 51) * 0.01;
+                            FeatureList[11] = random.Next(50, 81) * 0.01;
+                        }
+                        else
+                        {
+                            FeatureList[14] = random.Next(45, 71) * 0.01;
+                            FeatureList[11] = FeatureList[14];
+                        }
                     }
-                    break;
-                case (int)HairLength.Medium:
-                    if (IsFemale)
+
+                    HairColorChanged = false;
+                }
+                if (HairStyleChanged)
+                {
+                    switch (SelectedHairStyle)
                     {
-                        featureList.Add(random.Next(50, 76) * 0.01);
-                        featureList.Add(random.Next(50, 76) * 0.01);
+                        case (int)HairLength.Short:
+                            if (IsFemale)
+                            {
+                                FeatureList[17] = random.Next(20, 41) * 0.01;
+                                FeatureList[18] = (random.Next(20, 46) * 0.01);
+                            }
+                            else
+                            {
+                                if (IsBald)
+                                {
+                                    FeatureList[17] = (0);
+                                    FeatureList[18] = (0);
+                                    break;
+                                }
+
+                                FeatureList[17] = (random.Next(0, 21) * 0.01);
+                                FeatureList[18] = (random.Next(0, 21) * 0.01);
+                                if (HasBangs)
+                                    FeatureList[9] = random.Next(41, 61) * 0.01;
+                            }
+                            break;
+                        case (int)HairLength.Medium:
+                            if (IsFemale)
+                            {
+                                FeatureList[17] = (random.Next(41, 66) * 0.01);
+                                FeatureList[18] = (random.Next(45, 71) * 0.01);
+                            }
+                            else
+                            {
+                                if (IsBald)
+                                {
+                                    FeatureList[17] = (0);
+                                    FeatureList[18] = (0);
+                                    break;
+                                }
+
+                                FeatureList[17] = (random.Next(20, 41) * 0.01);
+                                FeatureList[18] = (random.Next(20, 41) * 0.01);
+
+                                if (HasBangs)
+                                    FeatureList[9] = random.Next(60, 81) * 0.01;
+                            }
+                            break;
+                        case (int)HairLength.Long:
+                            if (IsFemale)
+                            {
+                                FeatureList[17] = (random.Next(41, 66) * 0.01);
+                                FeatureList[18] = (random.Next(71, 96) * 0.01);
+                            }
+                            else
+                            {
+                                if (IsBald)
+                                {
+                                    FeatureList[17] = (0);
+                                    FeatureList[18] = (0);
+                                    break;
+                                }
+
+                                FeatureList[17] = (random.Next(20, 41) * 0.01);
+                                FeatureList[18] = (random.Next(41, 61) * 0.01);
+                                if (HasBangs)
+                                    FeatureList[9] = random.Next(81, 101) * 0.01;
+                            }
+                            break;
+                        default:
+                            if (IsFemale)
+                            {
+                                FeatureList[17] = (random.Next(50, 76) * 0.01);
+                                FeatureList[18] = (random.Next(50, 76) * 0.01);
+                            }
+                            else
+                            {
+                                if (IsBald)
+                                {
+                                    FeatureList[17] = (0);
+                                    FeatureList[18] = (0);
+                                    break;
+                                }
+
+                                FeatureList[17] = (random.Next(20, 41) * 0.01);
+                                FeatureList[18] = (random.Next(20, 41) * 0.01);
+                            }
+                            break;
+                    }
+
+                    HairStyleChanged = false;
+                }
+            }
+            else
+            {
+                FeatureList = new List<double>();
+
+                double female = IsFemale ? random.Next(70, 101) * 0.01 : random.Next(1, 30) * 0.01;
+
+                FeatureList.Add(female);
+                FeatureList.Add(1 - female);
+
+                for (int index = 0; index < 6; ++index)
+                    FeatureList.Add(random.Next(1, 21) * 0.01);
+
+                if (SelectedEthnicity != -1)
+                    FeatureList[SelectedEthnicity + 2] = random.Next(75, 101) * 0.01;
+
+                FeatureList.Add(IsBald ? 1 : random.Next(1, 30) * 0.01);
+
+                if (!IsBald)
+                    FeatureList.Add(HasBangs ? random.Next(70, 101) * 0.01 : random.Next(1, 30) * 0.01);
+                else
+                    FeatureList.Add(random.Next(0, 21) * 0.01);
+
+                for (int index = 0; index < 5; ++index)
+                    FeatureList.Add(random.Next(1, 30) * 0.01);
+
+
+                FeatureList[13] = HasGlasses ? random.Next(70, 101) * 0.01 : random.Next(1, 30) * 0.01;
+
+                if (SelectedHairColor != (int)HairColor.Gray)
+                {
+                    if (SelectedHairColor != -1)
+                        FeatureList[SelectedHairColor + 10] = random.Next(70, 101) * 0.01;
+                }
+                else
+                {
+                    if (SelectedAge < 40)
+                    {
+                        FeatureList[14] = random.Next(20, 51) * 0.01;
+                        FeatureList[11] = random.Next(50, 81) * 0.01;
                     }
                     else
                     {
-                        featureList.Add(random.Next(20, 41) * 0.01);
-                        featureList.Add(random.Next(20, 41) * 0.01);
+                        FeatureList[14] = random.Next(45, 71) * 0.01;
+                        FeatureList[11] = FeatureList[14];
                     }
-                    break;
-                case (int)HairLength.Long:
-                    if (IsFemale)
-                    {
-                        featureList.Add(random.Next(50, 76) * 0.01);
-                        featureList.Add(random.Next(75, 101) * 0.01);
-                    }
+                }
+
+                if (SelectedEthnicity == (int)Ethnicity.AfroAmerican)
+                    FeatureList.Add(random.Next(31, 76) * 0.01);
+                else
+                {
+                    if (SelectedHairColor == (int)HairColor.Gray)
+                        FeatureList.Add(random.Next(0, 36) * 0.01);
                     else
-                    {
-                        featureList.Add(random.Next(20, 41) * 0.01);
-                        featureList.Add(random.Next(41, 61) * 0.01);
-                    }
-                    break;
-                default:
-                    if (IsFemale)
-                    {
-                        featureList.Add(random.Next(50, 76) * 0.01);
-                        featureList.Add(random.Next(50, 76) * 0.01);
-                    }
-                    else
-                    {
-                        featureList.Add(random.Next(20, 41) * 0.01);
-                        featureList.Add(random.Next(20, 41) * 0.01);
-                    }
-                    break;
+                        FeatureList.Add(random.Next(0, 51) * 0.01);
+
+                }
+
+                FeatureList.Add(HasBeard ? random.Next(1, 30) * 0.01 : random.Next(70, 101) * 0.01);
+
+                switch (SelectedHairStyle)
+                {
+                    case (int)HairLength.Short:
+                        if (IsFemale)
+                        {
+                            FeatureList.Add(random.Next(20, 41) * 0.01);
+                            FeatureList.Add(random.Next(20, 46) * 0.01);
+                        }
+                        else
+                        {
+                            if (IsBald)
+                            {
+                                FeatureList.Add(0);
+                                FeatureList.Add(0);
+                                break;
+                            }
+
+                            FeatureList.Add(random.Next(0, 21) * 0.01);
+                            FeatureList.Add(random.Next(0, 21) * 0.01);
+                            if (HasBangs)
+                                FeatureList[9] = random.Next(35, 51) * 0.01;
+                        }
+                        break;
+                    case (int)HairLength.Medium:
+                        if (IsFemale)
+                        {
+                            FeatureList.Add(random.Next(41, 66) * 0.01);
+                            FeatureList.Add(random.Next(45, 71) * 0.01);
+                        }
+                        else
+                        {
+                            if (IsBald)
+                            {
+                                FeatureList.Add(0);
+                                FeatureList.Add(0);
+                                break;
+                            }
+
+                            FeatureList.Add(random.Next(20, 41) * 0.01);
+                            FeatureList.Add(random.Next(20, 41) * 0.01);
+                            if (HasBangs)
+                                FeatureList[9] = random.Next(51, 71) * 0.01;
+                        }
+                        break;
+                    case (int)HairLength.Long:
+                        if (IsFemale)
+                        {
+                            FeatureList.Add(random.Next(41, 66) * 0.01);
+                            FeatureList.Add(random.Next(71, 96) * 0.01);
+                        }
+                        else
+                        {
+                            if (IsBald)
+                            {
+                                FeatureList.Add(0);
+                                FeatureList.Add(0);
+                                break;
+                            }
+
+                            FeatureList.Add(random.Next(20, 41) * 0.01);
+                            FeatureList.Add(random.Next(41, 61) * 0.01);
+                            if (HasBangs)
+                                FeatureList[9] = random.Next(71, 91) * 0.01;
+                        }
+                        break;
+                    default:
+                        if (IsFemale)
+                        {
+                            FeatureList.Add(random.Next(50, 76) * 0.01);
+                            FeatureList.Add(random.Next(50, 76) * 0.01);
+                        }
+                        else
+                        {
+                            if (IsBald)
+                            {
+                                FeatureList.Add(0);
+                                FeatureList.Add(0);
+                                break;
+                            }
+
+                            FeatureList.Add(random.Next(20, 41) * 0.01);
+                            FeatureList.Add(random.Next(20, 41) * 0.01);
+                        }
+                        break;
+                }
+
+                FeatureList.Add((100 - SelectedAge) * 0.01);
             }
 
-            featureList.Add((100 - SelectedAge) * 0.01);
 
-            File.WriteAllLines("feature_list.txt", featureList.Select(x => x.ToString()));
+            File.WriteAllLines("feature_list.txt", FeatureList.Select(x => x.ToString()));
         }
 
 
@@ -571,6 +1049,8 @@ namespace IEPP.ViewModels
                 default:
                     break;
             }
+
+            Console.WriteLine(e.Data);
             ++ProcessStep;
         }
 
@@ -621,11 +1101,13 @@ namespace IEPP.ViewModels
         public RelayCommand SaveAvatarCommand { get; set; }
         public RelayCommand GenerateAvatarCommand { get; set; }
         public RelayCommand RandomizeAvatarCommand { get; set; }
+        public RelayCommand EditCommand { get; set; }
+        public RelayCommand DeleteProfileCommand { get; set; }
         public RelayCommand<int> GoBackCommand { get; set; }
 
         public ChooseProfileVM()
         {
-            Init();            
+            Init();
 
             AddNewProfileCommand = new RelayCommand(o =>
             {
@@ -644,27 +1126,46 @@ namespace IEPP.ViewModels
                         return;
                     }
 
-                    bool exists = InUserList(NewUsername);
-
-                    if (!exists)
+                    if (EditMode)
                     {
-                        if (AvatarChanged && AvatarSaved)
-                            CreateNewUserDirectory(NewUsername, new Uri(NewAvatarPath));
-                        else
-                            CreateNewUserDirectory(NewUsername, new Uri(DefaultAvatarPath));
+                        if (AvatarChanged && AvatarSaved && NewUsername != SelectedUser.Username)
+                            EditSelectedUserDirectory(NewUsername, new Uri(NewAvatarPath));
+                        else if (NewUsername != SelectedUser.Username)
+                            EditSelectedUserDirectory(NewUsername);
+                        else if (AvatarChanged && AvatarSaved)
+                            EditSelectedUserDirectory(new Uri(NewAvatarPath));
 
-                        AddToUserList(NewUsername);
-
-                        if (UserList.Count == 5)
-                            AddNewVisibility = Visibility.Collapsed;
+                        SelectedUser = null;
 
                         Reset();
-                        SetVisToChooseList();                        
+                        SetVisToChooseList();
                     }
                     else
                     {
-                        NewProfileErrorMessage = "A profile with that name already exists!";
-                        NewProfileError = Visibility.Visible;
+                        bool exists = InUserList(NewUsername);
+
+                        if (!exists)
+                        {
+
+                            if (AvatarChanged && AvatarSaved)
+                                CreateNewUserDirectory(NewUsername, new Uri(NewAvatarPath));
+                            else
+                                CreateNewUserDirectory(NewUsername, new Uri(DefaultAvatarPath));
+
+                            AddToUserList(NewUsername);
+
+                            if (UserList.Count == 5)
+                                AddNewVisibility = Visibility.Collapsed;
+
+
+                            Reset();
+                            SetVisToChooseList();
+                        }
+                        else
+                        {
+                            NewProfileErrorMessage = "A profile with that name already exists!";
+                            NewProfileError = Visibility.Visible;
+                        }
                     }
                 }
                 else
@@ -719,6 +1220,25 @@ namespace IEPP.ViewModels
             RandomizeAvatarCommand = new RelayCommand(o =>
             {
                 RandomizeAttributes();
+            });
+
+            EditCommand = new RelayCommand(o =>
+            {
+                if (!EditMode)
+                    ToEditMode();
+                else
+                    ToNormalMode();
+            });
+
+            DeleteProfileCommand = new RelayCommand(o =>
+            {
+                MessageBoxResult messageBoxResult = MessageBox.Show("Are you sure you want to delete the user \"" + SelectedUser.Username + "\" and all its data?",
+                    "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (messageBoxResult == MessageBoxResult.Yes)
+                {
+                    DeleteSelectedUser();
+                }
             });
         }
     }

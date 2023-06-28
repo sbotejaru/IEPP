@@ -12,8 +12,8 @@ settings UI v
 go back v
 save avatar v
 open in new tab v
+edit & delete profiles v
 
-edit & delete profiles
 lock features
 
 

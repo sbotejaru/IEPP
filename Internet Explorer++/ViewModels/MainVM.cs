@@ -497,9 +497,14 @@ namespace IEPP.ViewModels
 
         private void SaveBookmarkData()
         {
-            BackgroundWorker bw = new BackgroundWorker();
+            /*BackgroundWorker bw = new BackgroundWorker();
             bw.DoWork += BgWorker_SaveBookmarks;
-            bw.RunWorkerAsync();
+            bw.RunWorkerAsync();*/
+
+            if (CurrentSessionBookmarksData.Count == 0 && !BookmarkDeleted)
+                return;
+
+            App.Current.Dispatcher.Invoke(() => JsonHelper.Save(Bookmarks, "bookmarks"));
         }
 
         public void SaveSettingsData()
@@ -547,8 +552,7 @@ namespace IEPP.ViewModels
             if (CurrentSessionBookmarksData.Count == 0 && !BookmarkDeleted)
                 return;
 
-            App.Current.Dispatcher.Invoke(() => JsonHelper.Save(Bookmarks, "bookmarks"));
-            //Bookmarks.Clear();
+            App.Current.Dispatcher.Invoke(() => JsonHelper.Save(Bookmarks, "bookmarks"), System.Windows.Threading.DispatcherPriority.ContextIdle);
         }
 
         private void BgWorker_SaveSettings(object sender, DoWorkEventArgs e)
@@ -620,7 +624,7 @@ namespace IEPP.ViewModels
         {
             if (UserPath != "")
             {
-                SaveBookmarkData();
+                SaveBookmarkData();              
                 SaveSettingsData();
                 SaveHistoryData();
             }
