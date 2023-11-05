@@ -443,7 +443,7 @@ namespace IEPP.ViewModels
 
             if (
                 MainWinDC.CurrentSessionHistoryData.Count > 0 &&
-                newHistoryItem != MainWinDC.CurrentSessionHistoryData.Last()
+                newHistoryItem != MainWinDC.CurrentSessionHistoryData.First()
                 )
                 MainWinDC.AddHistoryItem(newHistoryItem);
             else if (MainWinDC.CurrentSessionHistoryData.Count == 0)
