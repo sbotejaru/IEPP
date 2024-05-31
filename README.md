@@ -5,7 +5,8 @@
  1. Internet Explorer++ Web Browser - made in C# WPF with Chromium Embedded Framework
  2. Custom Avatars generation - made with StyleGAN, AnimeGANv3, MXNET-Face and DeepFace using PyTorch and Tensorflow.
 
-### Video demo of the final application: https://youtu.be/iSnvY640IVg
+### Short video demo of the final application (1 min): https://youtu.be/iSnvY640IVg
+### In-depth video demo of the final application (5 min): https://youtu.be/wGYnKFuCyJk
 
 ## 1. Internet Explorer++
 
